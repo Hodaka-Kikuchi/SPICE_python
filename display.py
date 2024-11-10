@@ -134,8 +134,6 @@ frame1.columnconfigure(4, weight=1)
 frame1.columnconfigure(5, weight=1)
 frame1.rowconfigure(0, weight=1)
 frame1.rowconfigure(1, weight=1)
-frame1.rowconfigure(2, weight=1)
-frame1.rowconfigure(3, weight=1)
 
 from RLcalc import RL_calc  #
 from UBcalc import UB_calc  #
@@ -175,14 +173,8 @@ def on_UBcalc():
     
     UBtable = UB_calc(sp1,sp2,astar,bstar,cstar,alpha_star,beta_star,gamma_star,n_a,n_b,n_c,a,b,c,alpha,beta,gamma)
     #return U1,U2,U3
-    print(UBtable)
+    #print(UBtable)
     return UBtable
-    
-calculate_button1 = tk.Button(frame1, text="計算1", command=on_Rlcalc)
-calculate_button1.grid(row=4, column=0)
-
-calculate_button2 = tk.Button(frame1, text="計算2", command=on_UBcalc)
-calculate_button2.grid(row=4, column=1)
 
 # 格子定数を入力する欄
 lc1 = tk.Label(frame1,text='a (Å)')
@@ -221,42 +213,323 @@ lc_gamma = ttk.Entry(frame1,width=5)
 lc_gamma.grid(row=1, column=5,sticky="NSEW")
 lc_gamma.insert(0,'120')
 
+# ファイル選択のフレームの作成と設置
+frame2 = ttk.Labelframe(root,text= "scattering plane")
+frame2.grid(row=1,column=0,sticky="NSEW")
+
+frame2.columnconfigure(0, weight=1)
+frame2.columnconfigure(1, weight=1)
+frame2.rowconfigure(0, weight=1)
+
+frame2a = ttk.Labelframe(frame2,text= "axis 1")
+frame2a.grid(row=0,column=0,sticky="NSEW")
+
+frame2a.columnconfigure(0, weight=1)
+frame2a.columnconfigure(1, weight=1)
+frame2a.columnconfigure(2, weight=1)
+frame2a.rowconfigure(0, weight=1)
+frame2a.rowconfigure(1, weight=1)
+
+frame2b = ttk.Labelframe(frame2,text= "axis 2")
+frame2b.grid(row=0,column=1,sticky="NSEW")
+
+frame2b.columnconfigure(0, weight=1)
+frame2b.columnconfigure(1, weight=1)
+frame2b.columnconfigure(2, weight=1)
+frame2b.rowconfigure(0, weight=1)
+frame2b.rowconfigure(1, weight=1)
+
 # 散乱面を入力する欄
-sp1 = tk.Label(frame1,text='h')
-sp1.grid(row=2, column=0,sticky="NSEW")
-sp1_h = ttk.Entry(frame1,width=5)
-sp1_h.grid(row=3, column=0,sticky="NSEW")
+sp1 = tk.Label(frame2a,text='h')
+sp1.grid(row=0, column=0,sticky="NSEW")
+sp1_h = ttk.Entry(frame2a,width=5)
+sp1_h.grid(row=1, column=0,sticky="NSEW")
 sp1_h.insert(0,'1')
 
-sp1 = tk.Label(frame1,text='k')
-sp1.grid(row=2, column=1,sticky="NSEW")
-sp1_k = ttk.Entry(frame1,width=5)
-sp1_k.grid(row=3, column=1,sticky="NSEW")
+sp1 = tk.Label(frame2a,text='k')
+sp1.grid(row=0, column=1,sticky="NSEW")
+sp1_k = ttk.Entry(frame2a,width=5)
+sp1_k.grid(row=1, column=1,sticky="NSEW")
 sp1_k.insert(0,'0')
 
-sp1 = tk.Label(frame1,text='l')
-sp1.grid(row=2, column=2,sticky="NSEW")
-sp1_l = ttk.Entry(frame1,width=5)
-sp1_l.grid(row=3, column=2,sticky="NSEW")
+sp1 = tk.Label(frame2a,text='l')
+sp1.grid(row=0, column=2,sticky="NSEW")
+sp1_l = ttk.Entry(frame2a,width=5)
+sp1_l.grid(row=1, column=2,sticky="NSEW")
 sp1_l.insert(0,'0')
 
-sp2 = tk.Label(frame1,text='h')
-sp2.grid(row=2, column=3,sticky="NSEW")
-sp2_h = ttk.Entry(frame1,width=5)
-sp2_h.grid(row=3, column=3,sticky="NSEW")
+sp2 = tk.Label(frame2b,text='h')
+sp2.grid(row=0, column=0,sticky="NSEW")
+sp2_h = ttk.Entry(frame2b,width=5)
+sp2_h.grid(row=1, column=0,sticky="NSEW")
 sp2_h.insert(0,'0')
 
-sp2 = tk.Label(frame1,text='k')
-sp2.grid(row=2, column=4,sticky="NSEW")
-sp2_k = ttk.Entry(frame1,width=5)
-sp2_k.grid(row=3, column=4,sticky="NSEW")
+sp2 = tk.Label(frame2b,text='k')
+sp2.grid(row=0, column=1,sticky="NSEW")
+sp2_k = ttk.Entry(frame2b,width=5)
+sp2_k.grid(row=1, column=1,sticky="NSEW")
 sp2_k.insert(0,'0')
 
-sp2 = tk.Label(frame1,text='l')
-sp2.grid(row=2, column=5,sticky="NSEW")
-sp2_l = ttk.Entry(frame1,width=5)
-sp2_l.grid(row=3, column=5,sticky="NSEW")
+sp2 = tk.Label(frame2b,text='l')
+sp2.grid(row=0, column=2,sticky="NSEW")
+sp2_l = ttk.Entry(frame2b,width=5)
+sp2_l.grid(row=1, column=2,sticky="NSEW")
 sp2_l.insert(0,'3')
+
+# UB matrixの表示
+frame3 = ttk.Labelframe(root,text= "matrix display")
+frame3.grid(row=2,column=0,sticky="NSEW")
+
+frame3.columnconfigure(0, weight=1)
+frame3.columnconfigure(1, weight=1)
+frame3.columnconfigure(2, weight=1)
+frame3.rowconfigure(0, weight=1)
+
+frame3a = ttk.Labelframe(frame3,text= "U matrix")
+frame3a.grid(row=0,column=0,sticky="NSEW")
+
+frame3a.columnconfigure(0, weight=1)
+frame3a.columnconfigure(1, weight=1)
+frame3a.columnconfigure(2, weight=1)
+frame3a.rowconfigure(0, weight=1)
+frame3a.rowconfigure(1, weight=1)
+frame3a.rowconfigure(2, weight=1)
+
+frame3b = ttk.Labelframe(frame3,text= "B matrix")
+frame3b.grid(row=0,column=1,sticky="NSEW")
+
+frame3b.columnconfigure(0, weight=1)
+frame3b.columnconfigure(1, weight=1)
+frame3b.columnconfigure(2, weight=1)
+frame3b.rowconfigure(0, weight=1)
+frame3b.rowconfigure(1, weight=1)
+frame3b.rowconfigure(2, weight=1)
+
+frame3c = ttk.Labelframe(frame3,text= "UB matrix")
+frame3c.grid(row=0,column=2,sticky="NSEW")
+
+frame3c.columnconfigure(0, weight=1)
+frame3c.columnconfigure(1, weight=1)
+frame3c.columnconfigure(2, weight=1)
+frame3c.rowconfigure(0, weight=1)
+frame3c.rowconfigure(1, weight=1)
+frame3c.rowconfigure(2, weight=1)
+
+
+# Umatrixの表示
+txt_u_11 = ttk.Entry(frame3a,width=5,state="readonly")
+txt_u_11.insert(0,'0')
+txt_u_11.grid(row=0, column=0,sticky="NSEW")
+txt_u_12 = ttk.Entry(frame3a,width=5,state="readonly")
+txt_u_12.insert(0,'0')
+txt_u_12.grid(row=0, column=1,sticky="NSEW")
+txt_u_13 = ttk.Entry(frame3a,width=5,state="readonly")
+txt_u_13.insert(0,'0')
+txt_u_13.grid(row=0, column=2,sticky="NSEW")
+txt_u_21 = ttk.Entry(frame3a,width=5,state="readonly")
+txt_u_21.insert(0,'0')
+txt_u_21.grid(row=1, column=0,sticky="NSEW")
+txt_u_22 = ttk.Entry(frame3a,width=5,state="readonly")
+txt_u_22.insert(0,'0')
+txt_u_22.grid(row=1, column=1,sticky="NSEW")
+txt_u_23 = ttk.Entry(frame3a,width=5,state="readonly")
+txt_u_23.insert(0,'0')
+txt_u_23.grid(row=1, column=2,sticky="NSEW")
+txt_u_31 = ttk.Entry(frame3a,width=5,state="readonly")
+txt_u_31.insert(0,'0')
+txt_u_31.grid(row=2, column=0,sticky="NSEW")
+txt_u_32 = ttk.Entry(frame3a,width=5,state="readonly")
+txt_u_32.insert(0,'0')
+txt_u_32.grid(row=2, column=1,sticky="NSEW")
+txt_u_33 = ttk.Entry(frame3a,width=5,state="readonly")
+txt_u_33.insert(0,'0')
+txt_u_33.grid(row=2, column=2,sticky="NSEW")
+
+# Bmatrixの表示
+txt_b_11 = ttk.Entry(frame3b,width=5,state="readonly")
+txt_b_11.insert(0,'0')
+txt_b_11.grid(row=0, column=0,sticky="NSEW")
+txt_b_12 = ttk.Entry(frame3b,width=5,state="readonly")
+txt_b_12.insert(0,'0')
+txt_b_12.grid(row=0, column=1,sticky="NSEW")
+txt_b_13 = ttk.Entry(frame3b,width=5,state="readonly")
+txt_b_13.insert(0,'0')
+txt_b_13.grid(row=0, column=2,sticky="NSEW")
+txt_b_21 = ttk.Entry(frame3b,width=5,state="readonly")
+txt_b_21.insert(0,'0')
+txt_b_21.grid(row=1, column=0,sticky="NSEW")
+txt_b_22 = ttk.Entry(frame3b,width=5,state="readonly")
+txt_b_22.insert(0,'0')
+txt_b_22.grid(row=1, column=1,sticky="NSEW")
+txt_b_23 = ttk.Entry(frame3b,width=5,state="readonly")
+txt_b_23.insert(0,'0')
+txt_b_23.grid(row=1, column=2,sticky="NSEW")
+txt_b_31 = ttk.Entry(frame3b,width=5,state="readonly")
+txt_b_31.insert(0,'0')
+txt_b_31.grid(row=2, column=0,sticky="NSEW")
+txt_b_32 = ttk.Entry(frame3b,width=5,state="readonly")
+txt_b_32.insert(0,'0')
+txt_b_32.grid(row=2, column=1,sticky="NSEW")
+txt_b_33 = ttk.Entry(frame3b,width=5,state="readonly")
+txt_b_33.insert(0,'0')
+txt_b_33.grid(row=2, column=2,sticky="NSEW")
+
+# UBmatrixの表示
+txt_ub_11 = ttk.Entry(frame3c,width=5,state="readonly")
+txt_ub_11.insert(0,'0')
+txt_ub_11.grid(row=0, column=0,sticky="NSEW")
+txt_ub_12 = ttk.Entry(frame3c,width=5,state="readonly")
+txt_ub_12.insert(0,'0')
+txt_ub_12.grid(row=0, column=1,sticky="NSEW")
+txt_ub_13 = ttk.Entry(frame3c,width=5,state="readonly")
+txt_ub_13.insert(0,'0')
+txt_ub_13.grid(row=0, column=2,sticky="NSEW")
+txt_ub_21 = ttk.Entry(frame3c,width=5,state="readonly")
+txt_ub_21.insert(0,'0')
+txt_ub_21.grid(row=1, column=0,sticky="NSEW")
+txt_ub_22 = ttk.Entry(frame3c,width=5,state="readonly")
+txt_ub_22.insert(0,'0')
+txt_ub_22.grid(row=1, column=1,sticky="NSEW")
+txt_ub_23 = ttk.Entry(frame3c,width=5,state="readonly")
+txt_ub_23.insert(0,'0')
+txt_ub_23.grid(row=1, column=2,sticky="NSEW")
+txt_ub_31 = ttk.Entry(frame3c,width=5,state="readonly")
+txt_ub_31.insert(0,'0')
+txt_ub_31.grid(row=2, column=0,sticky="NSEW")
+txt_ub_32 = ttk.Entry(frame3c,width=5,state="readonly")
+txt_ub_32.insert(0,'0')
+txt_ub_32.grid(row=2, column=1,sticky="NSEW")
+txt_ub_33 = ttk.Entry(frame3c,width=5,state="readonly")
+txt_ub_33.insert(0,'0')
+txt_ub_33.grid(row=2, column=2,sticky="NSEW")
+
+# 1つのボタンで両方の計算を実行
+def calculate_all():
+    # on_Rlcalc の結果を取得
+    RLtable = on_Rlcalc()
+    #print("RLtable:", RLtable)
+    
+    # on_UBcalc の結果を取得
+    UBtable = on_UBcalc()
+    #print("UBtable:", UBtable)
+    
+    # U matrixを表示
+    txt_u_11.config(state="normal")  # 一時的に編集可能に
+    txt_u_11.delete(0, tk.END)
+    txt_u_11.insert(0, round(UBtable[0][0,0],4))
+    txt_u_11.config(state="readonly") # 編集不可に設定
+    txt_u_12.config(state="normal")  # 一時的に編集可能に
+    txt_u_12.delete(0, tk.END)
+    txt_u_12.insert(0, round(UBtable[0][0,1],4))
+    txt_u_12.config(state="readonly") # 編集不可に設定
+    txt_u_13.config(state="normal")  # 一時的に編集可能に
+    txt_u_13.delete(0, tk.END)
+    txt_u_13.insert(0, round(UBtable[0][0,2],4))
+    txt_u_13.config(state="readonly") # 編集不可に設定
+    txt_u_21.config(state="normal")  # 一時的に編集可能に
+    txt_u_21.delete(0, tk.END)
+    txt_u_21.insert(0, round(UBtable[0][1,0],4))
+    txt_u_21.config(state="readonly") # 編集不可に設定
+    txt_u_22.config(state="normal")  # 一時的に編集可能に
+    txt_u_22.delete(0, tk.END)
+    txt_u_22.insert(0, round(UBtable[0][1,1],4))
+    txt_u_22.config(state="readonly") # 編集不可に設定
+    txt_u_23.config(state="normal")  # 一時的に編集可能に
+    txt_u_23.delete(0, tk.END)
+    txt_u_23.insert(0, round(UBtable[0][1,2],4))
+    txt_u_23.config(state="readonly") # 編集不可に設定
+    txt_u_31.config(state="normal")  # 一時的に編集可能に
+    txt_u_31.delete(0, tk.END)
+    txt_u_31.insert(0, round(UBtable[0][2,0],4))
+    txt_u_31.config(state="readonly") # 編集不可に設定
+    txt_u_32.config(state="normal")  # 一時的に編集可能に
+    txt_u_32.delete(0, tk.END)
+    txt_u_32.insert(0, round(UBtable[0][2,1],4))
+    txt_u_32.config(state="readonly") # 編集不可に設定
+    txt_u_33.config(state="normal")  # 一時的に編集可能に
+    txt_u_33.delete(0, tk.END)
+    txt_u_33.insert(0, round(UBtable[0][2,2],4))
+    txt_u_33.config(state="readonly") # 編集不可に設定
+    
+    # B matrixを表示
+    txt_b_11.config(state="normal")  # 一時的に編集可能に
+    txt_b_11.delete(0, tk.END)
+    txt_b_11.insert(0, round(UBtable[1][0,0],4))
+    txt_b_11.config(state="readonly") # 編集不可に設定
+    txt_b_12.config(state="normal")  # 一時的に編集可能に
+    txt_b_12.delete(0, tk.END)
+    txt_b_12.insert(0, round(UBtable[1][0,1],4))
+    txt_b_12.config(state="readonly") # 編集不可に設定
+    txt_b_13.config(state="normal")  # 一時的に編集可能に
+    txt_b_13.delete(0, tk.END)
+    txt_b_13.insert(0, round(UBtable[1][0,2],4))
+    txt_b_13.config(state="readonly") # 編集不可に設定
+    txt_b_21.config(state="normal")  # 一時的に編集可能に
+    txt_b_21.delete(0, tk.END)
+    txt_b_21.insert(0, round(UBtable[1][1,0],4))
+    txt_b_21.config(state="readonly") # 編集不可に設定
+    txt_b_22.config(state="normal")  # 一時的に編集可能に
+    txt_b_22.delete(0, tk.END)
+    txt_b_22.insert(0, round(UBtable[1][1,1],4))
+    txt_b_22.config(state="readonly") # 編集不可に設定
+    txt_b_23.config(state="normal")  # 一時的に編集可能に
+    txt_b_23.delete(0, tk.END)
+    txt_b_23.insert(0, round(UBtable[1][1,2],4))
+    txt_b_23.config(state="readonly") # 編集不可に設定
+    txt_b_31.config(state="normal")  # 一時的に編集可能に
+    txt_b_31.delete(0, tk.END)
+    txt_b_31.insert(0, round(UBtable[1][2,0],4))
+    txt_b_31.config(state="readonly") # 編集不可に設定
+    txt_b_32.config(state="normal")  # 一時的に編集可能に
+    txt_b_32.delete(0, tk.END)
+    txt_b_32.insert(0, round(UBtable[1][2,1],4))
+    txt_b_32.config(state="readonly") # 編集不可に設定
+    txt_b_33.config(state="normal")  # 一時的に編集可能に
+    txt_b_33.delete(0, tk.END)
+    txt_b_33.insert(0, round(UBtable[1][2,2],4))
+    txt_b_33.config(state="readonly") # 編集不可に設定
+    
+    # UB matrixを表示
+    txt_ub_11.config(state="normal")  # 一時的に編集可能に
+    txt_ub_11.delete(0, tk.END)
+    txt_ub_11.insert(0, round(UBtable[2][0,0],4))
+    txt_ub_11.config(state="readonly") # 編集不可に設定
+    txt_ub_12.config(state="normal")  # 一時的に編集可能に
+    txt_ub_12.delete(0, tk.END)
+    txt_ub_12.insert(0, round(UBtable[2][0,1],4))
+    txt_ub_12.config(state="readonly") # 編集不可に設定
+    txt_ub_13.config(state="normal")  # 一時的に編集可能に
+    txt_ub_13.delete(0, tk.END)
+    txt_ub_13.insert(0, round(UBtable[2][0,2],4))
+    txt_ub_13.config(state="readonly") # 編集不可に設定
+    txt_ub_21.config(state="normal")  # 一時的に編集可能に
+    txt_ub_21.delete(0, tk.END)
+    txt_ub_21.insert(0, round(UBtable[2][1,0],4))
+    txt_ub_21.config(state="readonly") # 編集不可に設定
+    txt_ub_22.config(state="normal")  # 一時的に編集可能に
+    txt_ub_22.delete(0, tk.END)
+    txt_ub_22.insert(0, round(UBtable[2][1,1],4))
+    txt_ub_22.config(state="readonly") # 編集不可に設定
+    txt_ub_23.config(state="normal")  # 一時的に編集可能に
+    txt_ub_23.delete(0, tk.END)
+    txt_ub_23.insert(0, round(UBtable[2][1,2],4))
+    txt_ub_23.config(state="readonly") # 編集不可に設定
+    txt_ub_31.config(state="normal")  # 一時的に編集可能に
+    txt_ub_31.delete(0, tk.END)
+    txt_ub_31.insert(0, round(UBtable[2][2,0],4))
+    txt_ub_31.config(state="readonly") # 編集不可に設定
+    txt_ub_32.config(state="normal")  # 一時的に編集可能に
+    txt_ub_32.delete(0, tk.END)
+    txt_ub_32.insert(0, round(UBtable[2][2,1],4))
+    txt_ub_32.config(state="readonly") # 編集不可に設定
+    txt_ub_33.config(state="normal")  # 一時的に編集可能に
+    txt_ub_33.delete(0, tk.END)
+    txt_ub_33.insert(0, round(UBtable[2][2,2],4))
+    txt_ub_33.config(state="readonly") # 編集不可に設定
+    
+#ボタン1つで両方の計算を実行
+calculate_button = tk.Button(frame1, text="計算", command=calculate_all)
+calculate_button.grid(row=4, column=0)
 
 #window状態の維持
 root.mainloop()
