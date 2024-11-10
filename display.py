@@ -137,10 +137,10 @@ frame1.rowconfigure(1, weight=1)
 frame1.rowconfigure(2, weight=1)
 frame1.rowconfigure(3, weight=1)
 
-from UBcalc import UB_calc  #
-#from RLcalc import calc_RL  #
+from RLcalc import RL_calc  #
+#from UBcalc import UB_calc  #
 
-def on_UBcalc():
+def on_Rlcalc():
     a = float(la.get())
     b = float(lb.get())
     c = float(lc.get())
@@ -148,11 +148,11 @@ def on_UBcalc():
     beta = float(lc_beta.get())
     gamma = float(lc_gamma.get())
 
-    result = UB_calc(a,b,c,alpha,beta,gamma)
+    result = RL_calc(a,b,c,alpha,beta,gamma)
     #return astar,bstar,cstar,alpha_star,beta_star,gamma_star
     print(result)  
     
-calculate_button = tk.Button(frame1, text="計算", command=on_UBcalc)
+calculate_button = tk.Button(frame1, text="計算", command=on_Rlcalc)
 calculate_button.grid(row=4, column=0, columnspan=6)
 
 # 格子定数を入力する欄
