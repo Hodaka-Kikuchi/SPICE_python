@@ -149,24 +149,34 @@ def on_Rlcalc():
     gamma = float(lc_gamma.get())
 
     RLtable = RL_calc(a,b,c,alpha,beta,gamma)
-    print(RLtable)
+    #print(RLtable)
     #return astar,bstar,cstar,alpha_star,beta_star,gamma_star
     return RLtable
 
-    
 def on_UBcalc():
+    a = float(la.get())
+    b = float(lb.get())
+    c = float(lc.get())
+    alpha = float(lc_alpha.get())
+    beta = float(lc_beta.get())
+    gamma = float(lc_gamma.get())
     sp1=np.array([float(sp1_h.get()),float(sp1_k.get()),float(sp1_l.get())])
     sp2=np.array([float(sp2_h.get()),float(sp2_k.get()),float(sp2_l.get())])
     RLtable = on_Rlcalc()
     astar=RLtable[0]
     bstar=RLtable[1]
     cstar=RLtable[2]
-    print(astar,bstar,cstar)
-    print(sp1,sp2)
+    alpha_star=RLtable[3]
+    beta_star=RLtable[4]
+    gamma_star=RLtable[5]
+    n_a=RLtable[6]
+    n_b=RLtable[7]
+    n_c=RLtable[8]
     
-    UBtable = UB_calc(sp1,sp2,astar,bstar,cstar)
-    
-    print(UBtable)
+    UBtable = UB_calc(sp1,sp2,astar,bstar,cstar,alpha_star,beta_star,gamma_star,n_a,n_b,n_c,a,b,c,alpha,beta,gamma)
+    #return U1,U2,U3
+    #print(UBtable)
+    return UBtable
     
 calculate_button1 = tk.Button(frame1, text="計算1", command=on_Rlcalc)
 calculate_button1.grid(row=4, column=0)
@@ -179,19 +189,19 @@ lc1 = tk.Label(frame1,text='a (Å)')
 lc1.grid(row=0, column=0,sticky="NSEW")
 la = ttk.Entry(frame1,width=5)
 la.grid(row=1, column=0,sticky="NSEW")
-la.insert(0,'5')
+la.insert(0,'7.1963')
 
 lc2 = tk.Label(frame1,text='b (Å)')
 lc2.grid(row=0, column=1,sticky="NSEW")
 lb = ttk.Entry(frame1,width=5)
 lb.grid(row=1, column=1,sticky="NSEW")
-lb.insert(0,'5')
+lb.insert(0,'7.1963')
 
 lc3 = tk.Label(frame1,text='c (Å)')
 lc3.grid(row=0, column=2,sticky="NSEW")
 lc = ttk.Entry(frame1,width=5)
 lc.grid(row=1, column=2,sticky="NSEW")
-lc.insert(0,'5')
+lc.insert(0,'6')
 
 lc4 = tk.Label(frame1,text='α (deg)')
 lc4.grid(row=0, column=3,sticky="NSEW")
@@ -209,7 +219,7 @@ lc6 = tk.Label(frame1,text='γ (deg)')
 lc6.grid(row=0, column=5,sticky="NSEW")
 lc_gamma = ttk.Entry(frame1,width=5)
 lc_gamma.grid(row=1, column=5,sticky="NSEW")
-lc_gamma.insert(0,'90')
+lc_gamma.insert(0,'120')
 
 # 散乱面を入力する欄
 sp1 = tk.Label(frame1,text='h')
@@ -240,13 +250,13 @@ sp2 = tk.Label(frame1,text='k')
 sp2.grid(row=2, column=4,sticky="NSEW")
 sp2_k = ttk.Entry(frame1,width=5)
 sp2_k.grid(row=3, column=4,sticky="NSEW")
-sp2_k.insert(0,'1')
+sp2_k.insert(0,'0')
 
 sp2 = tk.Label(frame1,text='l')
 sp2.grid(row=2, column=5,sticky="NSEW")
 sp2_l = ttk.Entry(frame1,width=5)
 sp2_l.grid(row=3, column=5,sticky="NSEW")
-sp2_l.insert(0,'0')
+sp2_l.insert(0,'3')
 
 #window状態の維持
 root.mainloop()

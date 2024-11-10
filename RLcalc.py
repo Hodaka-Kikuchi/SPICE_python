@@ -49,5 +49,5 @@ def RL_calc(a,b,c,alpha,beta,gamma):
     n_V = n_a * n_b * n_c * V0
     
     # 結果を返す
-    return astar,bstar,cstar,alpha_star,beta_star,gamma_star
+    return astar,bstar,cstar,alpha_star,beta_star,gamma_star,n_a,n_b,n_c
     
