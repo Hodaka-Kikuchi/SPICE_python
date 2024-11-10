@@ -175,7 +175,7 @@ def on_UBcalc():
     
     UBtable = UB_calc(sp1,sp2,astar,bstar,cstar,alpha_star,beta_star,gamma_star,n_a,n_b,n_c,a,b,c,alpha,beta,gamma)
     #return U1,U2,U3
-    #print(UBtable)
+    print(UBtable)
     return UBtable
     
 calculate_button1 = tk.Button(frame1, text="計算1", command=on_Rlcalc)

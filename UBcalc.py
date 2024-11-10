@@ -20,7 +20,7 @@ def UB_calc(sp1,sp2,astar,bstar,cstar,alpha_star,beta_star,gamma_star,n_a,n_b,n_
     
     #print(U)
     #print(B)
-    
+    UB = np.dot(U,B)
     # 結果を返す
-    return U
+    return U,B,UB
     
