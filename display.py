@@ -283,7 +283,8 @@ frame3.grid(row=2,column=0,sticky="NSEW")
 frame3.columnconfigure(0, weight=1)
 frame3.columnconfigure(1, weight=1)
 frame3.columnconfigure(2, weight=1)
-frame3.rowconfigure(0, weight=1)
+frame3.rowconfigure(0, weight=3)
+frame3.rowconfigure(1, weight=1)
 
 frame3a = ttk.Labelframe(frame3,text= "U matrix")
 frame3a.grid(row=0,column=0,sticky="NSEW")
@@ -314,7 +315,6 @@ frame3c.columnconfigure(2, weight=1)
 frame3c.rowconfigure(0, weight=1)
 frame3c.rowconfigure(1, weight=1)
 frame3c.rowconfigure(2, weight=1)
-
 
 # Umatrixの表示
 txt_u_11 = ttk.Entry(frame3a,width=5,state="readonly")
@@ -528,8 +528,8 @@ def calculate_all():
     txt_ub_33.config(state="readonly") # 編集不可に設定
     
 #ボタン1つで両方の計算を実行
-calculate_button = tk.Button(frame1, text="計算", command=calculate_all)
-calculate_button.grid(row=4, column=0)
+calculate_button = tk.Button(frame3, text="UB calculation", command=calculate_all)
+calculate_button.grid(row=1, column=1,sticky="NSEW")
 
 #window状態の維持
 root.mainloop()
