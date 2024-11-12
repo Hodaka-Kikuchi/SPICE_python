@@ -22,19 +22,6 @@ def RL_calc(a, b, c, alpha, beta, gamma):
         * math.cos(math.radians(gamma))
     )
     
-    # 逆格子ベクトルの計算
-    astar = a * np.array([1, 0, 0])
-    bstar = b * np.array([
-        math.cos(math.radians(gamma)),
-        math.sin(math.radians(gamma)),
-        0
-    ])
-    cstar = c * np.array([
-        math.cos(math.radians(beta)),
-        (math.cos(math.radians(alpha)) - math.cos(math.radians(beta)) * math.cos(math.radians(gamma))) / math.sin(math.radians(gamma)),
-        V0 / math.sin(math.radians(gamma))
-    ])
-    
     # 角度の計算を簡潔化
     def acosd(x):
         return math.degrees(math.acos(x))
@@ -58,6 +45,19 @@ def RL_calc(a, b, c, alpha, beta, gamma):
     n_a = 2 * math.pi / V * b * c * math.sin(math.radians(alpha))
     n_b = 2 * math.pi / V * a * c * math.sin(math.radians(beta))
     n_c = 2 * math.pi / V * a * b * math.sin(math.radians(gamma))
+    
+    # 逆格子ベクトルの計算
+    astar = n_a * np.array([1, 0, 0])
+    bstar = n_b * np.array([
+        math.cos(math.radians(gamma_star)),
+        math.sin(math.radians(gamma_star)),
+        0
+    ])
+    cstar = n_c * np.array([
+        math.cos(math.radians(beta_star)),
+        (math.cos(math.radians(alpha_star)) - math.cos(math.radians(beta_star)) * math.cos(math.radians(gamma_star))) / math.sin(math.radians(gamma_star)),
+        V0 / math.sin(math.radians(gamma_star))
+    ])
     
     # 結果を辞書としてまとめる
     result = {
