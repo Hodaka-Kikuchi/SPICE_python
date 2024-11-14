@@ -2,7 +2,7 @@ import math
 import numpy as np
 from scipy.optimize import minimize
 
-def angle_calc2(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,hw_ini,hw_fin,hw_inc,h_cal,k_cal,l_cal):
+def angle_calc3(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,hw_cal,h_ini,k_ini,l_ini,h_fin,k_fin,l_fin,h_inc,k_inc,l_inc):
     # bragg peakの位置からoffsetを算出
     hkl_bp=bp[0]*astar+bp[1]*bstar+bp[2]*cstar
     #計算されたrlu
@@ -58,22 +58,45 @@ def angle_calc2(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,hw_ini,hw_fin,hw
     offset = bpc2 - s_ini
     
     ####################################################################################################
-    # 変数はhw
-    hw_tab = np.arange(hw_ini, hw_fin, hw_inc)
-    
-    # hklの位置から各angleを算出
-    hkl_cal=h_cal*astar+k_cal*bstar+l_cal*cstar
-    Nhkl_cal=np.linalg.norm(hkl_cal)
-    
+    # 変数はhkl
+    if h_ini!=h_fin:
+        h_tab = np.arange(h_ini, h_fin, h_inc)
+    else:
+        if k_ini!=k_fin:
+            h_tab = np.full(len(k_tab), h_ini)
+        elif l_ini!=l_fin:
+            h_tab = np.full(len(l_tab), h_ini) 
+        
+    if k_ini!=k_fin:
+        k_tab = np.arange(k_ini, k_fin, k_inc)
+    else:
+        if h_ini!=h_fin:
+            k_tab = np.full(len(h_tab), k_ini)
+        elif l_ini!=l_fin:
+            k_tab = np.full(len(l_tab), k_ini)
+            
+    if l_ini!=l_fin:
+        l_tab = np.arange(l_ini, l_fin, l_inc)
+    else:
+        if h_ini!=h_fin:
+            l_tab = np.full(len(h_tab), l_ini)
+        elif k_ini!=k_fin:
+            l_tab = np.full(len(k_tab), l_ini)
+            
+    if fixe==0: # ei fix
+        Ei = bpe
+        Ef = bpe - hw_cal
+    elif fixe==1: # ef fix
+        Ei = bpe + hw_cal
+        Ef = bpe
+
     results = []  # 結果を保存するためのリスト
     
-    for i in range(len(hw_tab)):
-        if fixe==0: # ei fix
-            Ei = bpe
-            Ef = bpe - hw_tab[i]
-        elif fixe==1: # ef fix
-            Ei = bpe + hw_tab[i]
-            Ef = bpe
+    for i in range(len(h_tab)):
+        # hklの位置から各angleを算出
+        hkl_cal=h_tab[i]*astar+k_tab[i]*bstar+l_tab[i]*cstar
+        Nhkl_cal=np.linalg.norm(hkl_cal)
+        
         #phi_cal = np.degrees(np.arccos((ki**2 + kf_cal**2 - Nhkl_cal**2) / (2 * ki_cal * kf_cal)))
         ki_cal=(Ei/2.072)**(1/2)
         kf_cal=(Ef/2.072)**(1/2)
@@ -87,7 +110,7 @@ def angle_calc2(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,hw_ini,hw_fin,hw
         QL_cal = np.array([0, ki_cal, 0]) - np.array([-kf_cal * np.sin(np.radians(phi_cal)), kf_cal * np.cos(np.radians(phi_cal)), 0])
         Qtheta_cal = np.linalg.inv(Theta_cal_mat)@(QL_cal)
         Qtheta_cal=Qtheta_cal.reshape(-1, 1)
-        Qv_cal = UBt@(np.array([h_cal, k_cal, l_cal]))
+        Qv_cal = UBt@(np.array([h_tab[i], k_tab[i], l_tab[i]]))
         Qv_cal=Qv_cal.reshape(-1, 1)
         
         # fitting process

@@ -138,6 +138,8 @@ frame1.rowconfigure(1, weight=1)
 from RLcalc import RL_calc  #
 from UBcalc import UB_calc  #
 from anglecalc import angle_calc    #
+from anglecalc2 import angle_calc2    #
+from anglecalc3 import angle_calc3    #
 
 def get_parameters():
     """GUI入力から格子パラメータを取得し辞書に格納"""
@@ -674,8 +676,8 @@ tab_002 = tk.Frame(notebook00)# constant Q scan
 tab_003 = tk.Frame(notebook00)# constant E scan
 # notebookにタブを追加
 notebook00.add(tab_001, text="single Q-E point")
-notebook00.add(tab_002, text="constant Q scan")
-notebook00.add(tab_003, text="constant E scan")
+notebook00.add(tab_002, text="scan simulation")
+notebook00.add(tab_003, text="others")
 
 # Notebookを配置
 notebook00.pack(expand=True, fill="both")
@@ -744,7 +746,7 @@ def on_anglecalc():
     # Ei or Ef fixの判定
     fixe=float(eief.get())
     
-    # UBtableを計算
+    # angleを計算
     angletable = angle_calc(
         astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe
     )
@@ -1023,86 +1025,235 @@ hwl9t.insert(0,'5')
 # グリッドの重みを設定
 tab_002.columnconfigure(0, weight=1)
 tab_002.columnconfigure(1, weight=1)
-tab_002.columnconfigure(2, weight=1)
-tab_002.columnconfigure(3, weight=1)
-tab_002.columnconfigure(4, weight=1)
-tab_002.columnconfigure(5, weight=1)
 tab_002.rowconfigure(0, weight=1)
-tab_002.rowconfigure(1, weight=1)
-tab_002.rowconfigure(2, weight=1)
 
-cqslf = tk.Label(tab_002,text='from ℏω')
-cqslf.grid(row=0, column=0,sticky="NSEW")
-cqslt = tk.Label(tab_002,text='to ℏω')
+tab_002a = ttk.Labelframe(tab_002,text= "constant Q scan")
+tab_002a.grid(row=0,column=0,sticky="NSEW")
+tab_002a.columnconfigure(0, weight=1)
+tab_002a.columnconfigure(1, weight=1)
+tab_002a.columnconfigure(2, weight=1)
+tab_002a.columnconfigure(3, weight=1)
+tab_002a.columnconfigure(4, weight=1)
+tab_002a.rowconfigure(0, weight=1)
+tab_002a.rowconfigure(1, weight=1)
+tab_002a.rowconfigure(2, weight=1)
+tab_002a.rowconfigure(3, weight=1)
+
+cqslt = tk.Label(tab_002a,text='ℏω')
 cqslt.grid(row=0, column=1,sticky="NSEW")
-cqsli = tk.Label(tab_002,text='inc ℏω')
-cqsli.grid(row=0, column=2,sticky="NSEW")
+cqslf = tk.Label(tab_002a,text='from',width=16)
+cqslf.grid(row=1, column=0,sticky="NSEW")
+cqslt = tk.Label(tab_002a,text='to')
+cqslt.grid(row=2, column=0,sticky="NSEW")
+cqsli = tk.Label(tab_002a,text='inc')
+cqsli.grid(row=3, column=0,sticky="NSEW")
 
-cqsl1 = tk.Label(tab_002,text='h')
-cqsl1.grid(row=0, column=3,sticky="NSEW")
-cqsl2 = tk.Label(tab_002,text='k')
+cqsl1 = tk.Label(tab_002a,text='h')
+cqsl1.grid(row=0, column=2,sticky="NSEW")
+cqsl2 = tk.Label(tab_002a,text='k')
+cqsl2.grid(row=0, column=3,sticky="NSEW")
+cqsl2 = tk.Label(tab_002a,text='l')
 cqsl2.grid(row=0, column=4,sticky="NSEW")
-cqsl2 = tk.Label(tab_002,text='l')
-cqsl2.grid(row=0, column=5,sticky="NSEW")
 
-cqsef = ttk.Entry(tab_002)
-cqsef.grid(row=1, column=0,sticky="NSEW")
+cqsef = ttk.Entry(tab_002a)
+cqsef.grid(row=1, column=1,sticky="NSEW")
 cqsef.insert(0,'-0.3')
-cqset = ttk.Entry(tab_002)
-cqset.grid(row=1, column=1,sticky="NSEW")
+cqset = ttk.Entry(tab_002a)
+cqset.grid(row=2, column=1,sticky="NSEW")
 cqset.insert(0,'5')
-cqsei = ttk.Entry(tab_002)
-cqsei.grid(row=1, column=2,sticky="NSEW")
+cqsei = ttk.Entry(tab_002a)
+cqsei.grid(row=3, column=1,sticky="NSEW")
 cqsei.insert(0,'0.1')
 
-cqse1 = ttk.Entry(tab_002)
-cqse1.grid(row=1, column=3,sticky="NSEW")
+cqse1 = ttk.Entry(tab_002a)
+cqse1.grid(row=1, column=2,sticky="NSEW")
 cqse1.insert(0,'1')
-cqse2 = ttk.Entry(tab_002)
-cqse2.grid(row=1, column=4,sticky="NSEW")
+cqse2 = ttk.Entry(tab_002a)
+cqse2.grid(row=1, column=3,sticky="NSEW")
 cqse2.insert(0,'0')
-cqse3 = ttk.Entry(tab_002)
-cqse3.grid(row=1, column=5,sticky="NSEW")
+cqse3 = ttk.Entry(tab_002a)
+cqse3.grid(row=1, column=4,sticky="NSEW")
 cqse3.insert(0,'0')
 
 # 別ウィンドウでデータテーブルを表示する関数
-def show_table():
-    # 新しいウィンドウの作成
-    table_window = tk.Toplevel(root)
-    table_window.title("Result of scan")
+def constQscan_show_table():
+    # 新しいウィンドウを作成
+    result_window = tk.Toplevel()
+    result_window.title("Calculation Results")
     
-    # テーブルウィジェットの作成
-    table = ttk.Treeview(table_window)
-    table['columns'] = ('Name', 'Age', 'Occupation')
+    # Treeviewの設定
+    tree = ttk.Treeview(result_window, columns=("C1", "A1", "C2", "A2", "C3", "A3", "mu", "nu"), show="headings")
+    tree.pack(fill="both", expand=True)
     
-    # 列の設定
-    table.column("#0", width=0, stretch=tk.NO)  # 最初の列を非表示
-    table.column("Name", anchor=tk.CENTER, width=100)
-    table.column("Age", anchor=tk.CENTER, width=50)
-    table.column("Occupation", anchor=tk.CENTER, width=120)
+    # 各列に見出しを設定
+    for col in tree["columns"]:
+        tree.heading(col, text=col)
+        tree.column(col, width=80, anchor="center")
     
-    # ヘッダーの設定
-    table.heading("#0", text="", anchor=tk.CENTER)
-    table.heading("Name", text="Name", anchor=tk.CENTER)
-    table.heading("Age", text="Age", anchor=tk.CENTER)
-    table.heading("Occupation", text="Occupation", anchor=tk.CENTER)
+    # RLtableを取得し、辞書から必要な変数を取り出す
+    RLtable = on_Rlcalc()
+    astar = RLtable['astar']
+    bstar = RLtable['bstar']
+    cstar = RLtable['cstar']
     
-    # サンプルデータの追加
-    data = [
-        ("Alice", 30, "Engineer"),
-        ("Bob", 25, "Designer"),
-        ("Charlie", 35, "Teacher")
-    ]
+    # UBtableを取得し、辞書から必要な変数を取り出す
+    UBtable = on_UBcalc()
     
-    for i, (name, age, occupation) in enumerate(data):
-        table.insert(parent='', index='end', iid=i, values=(name, age, occupation))
+    UB=UBtable['UB']
     
-    # テーブルを新しいウィンドウに配置
-    table.pack(pady=20)
+    # Bragg peak positionの取得
+    bpe = float(Energy.get())
+    bpc2 = float(bp_c2.get())
+    bpmu = float(bp_mu.get())
+    bpnu = float(bp_nu.get())
+    bp = np.array([float(bp_h.get()), float(bp_k.get()), float(bp_l.get())])
+    
+    # calculation pointの取得
+    hw_ini = float(cqsef.get())
+    hw_fin = float(cqset.get())
+    hw_inc = float(cqsei.get())
+    h_cal = float(cqse1.get())
+    k_cal = float(cqse2.get())
+    l_cal = float(cqse3.get())
+    
+    # Ei or Ef fixの判定
+    fixe=float(eief.get())
+    
+    angletable2 = angle_calc2(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,hw_ini,hw_fin,hw_inc,h_cal,k_cal,l_cal)
+    
+    # resultsリストの各結果をTreeviewに追加
+    for results in angletable2:
+        values = tuple(results.values())
+        tree.insert("", "end", values=values)
+    
+    return angletable2
 
 # ボタンの作成
-button = tk.Button(tab_002, text="Show Table", command=show_table)
-button.grid(row=2, column=0, columnspan=6, sticky="NSEW")
+button = tk.Button(tab_002a, text="Table", command=constQscan_show_table,width=10)
+button.grid(row=2, column=2,columnspan=3, sticky="NSEW")
+
+tab_002b = ttk.Labelframe(tab_002,text= "constant E scan")
+tab_002b.grid(row=0,column=1,sticky="NSEW")
+tab_002b.columnconfigure(0, weight=1)
+tab_002b.columnconfigure(1, weight=1)
+tab_002b.columnconfigure(2, weight=1)
+tab_002b.columnconfigure(3, weight=1)
+tab_002b.columnconfigure(4, weight=1)
+tab_002b.rowconfigure(0, weight=1)
+tab_002b.rowconfigure(1, weight=1)
+tab_002b.rowconfigure(2, weight=1)
+tab_002b.rowconfigure(3, weight=1)
+
+cesel= tk.Label(tab_002b,text='ℏω')
+cesel.grid(row=0, column=4,sticky="NSEW")
+
+cesl1= tk.Label(tab_002b,text='from',width=16)
+cesl1.grid(row=1, column=0,sticky="NSEW")
+cesl2= tk.Label(tab_002b,text='to')
+cesl2.grid(row=2, column=0,sticky="NSEW")
+cesl3= tk.Label(tab_002b,text='inc')
+cesl3.grid(row=3, column=0,sticky="NSEW")
+
+ceshl= tk.Label(tab_002b,text='h')
+ceshl.grid(row=0, column=1,sticky="NSEW")
+ceskl= tk.Label(tab_002b,text='k')
+ceskl.grid(row=0, column=2,sticky="NSEW")
+cesll= tk.Label(tab_002b,text='l')
+cesll.grid(row=0, column=3,sticky="NSEW")
+
+ces1 = ttk.Entry(tab_002b)
+ces1.grid(row=1, column=1,sticky="NSEW")
+ces1.insert(0,'0')
+ces2 = ttk.Entry(tab_002b)
+ces2.grid(row=1, column=2,sticky="NSEW")
+ces2.insert(0,'0')
+ces3 = ttk.Entry(tab_002b)
+ces3.grid(row=1, column=3,sticky="NSEW")
+ces3.insert(0,'0')
+
+ces4 = ttk.Entry(tab_002b)
+ces4.grid(row=2, column=1,sticky="NSEW")
+ces4.insert(0,'1')
+ces5 = ttk.Entry(tab_002b)
+ces5.grid(row=2, column=2,sticky="NSEW")
+ces5.insert(0,'1')
+ces6 = ttk.Entry(tab_002b)
+ces6.grid(row=2, column=3,sticky="NSEW")
+ces6.insert(0,'1')
+
+ces7 = ttk.Entry(tab_002b)
+ces7.grid(row=3, column=1,sticky="NSEW")
+ces7.insert(0,'0.1')
+ces8 = ttk.Entry(tab_002b)
+ces8.grid(row=3, column=2,sticky="NSEW")
+ces8.insert(0,'0.1')
+ces9 = ttk.Entry(tab_002b)
+ces9.grid(row=3, column=3,sticky="NSEW")
+ces9.insert(0,'0.1')
+
+ces10 = ttk.Entry(tab_002b)
+ces10.grid(row=1, column=4,sticky="NSEW")
+ces10.insert(0,'1')
+
+def conostEscan_show_table():
+    # 新しいウィンドウを作成
+    result_window = tk.Toplevel()
+    result_window.title("Calculation Results")
+    
+    # Treeviewの設定
+    tree = ttk.Treeview(result_window, columns=("C1", "A1", "C2", "A2", "C3", "A3", "mu", "nu"), show="headings")
+    tree.pack(fill="both", expand=True)
+    
+    # 各列に見出しを設定
+    for col in tree["columns"]:
+        tree.heading(col, text=col)
+        tree.column(col, width=80, anchor="center")
+    
+    # RLtableを取得し、辞書から必要な変数を取り出す
+    RLtable = on_Rlcalc()
+    astar = RLtable['astar']
+    bstar = RLtable['bstar']
+    cstar = RLtable['cstar']
+    
+    # UBtableを取得し、辞書から必要な変数を取り出す
+    UBtable = on_UBcalc()
+    
+    UB=UBtable['UB']
+    
+    # Bragg peak positionの取得
+    bpe = float(Energy.get())
+    bpc2 = float(bp_c2.get())
+    bpmu = float(bp_mu.get())
+    bpnu = float(bp_nu.get())
+    bp = np.array([float(bp_h.get()), float(bp_k.get()), float(bp_l.get())])
+    
+    # calculation pointの取得
+    hw_cal = float(ces10.get())
+    h_ini = float(ces1.get())
+    k_ini = float(ces2.get())
+    l_ini = float(ces3.get())
+    h_fin = float(ces4.get())
+    k_fin = float(ces5.get())
+    l_fin = float(ces6.get())
+    h_inc = float(ces7.get())
+    k_inc = float(ces8.get())
+    l_inc = float(ces9.get())
+
+    # Ei or Ef fixの判定
+    fixe=float(eief.get())
+    
+    angletable3 = angle_calc3(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,hw_cal,h_ini,k_ini,l_ini,h_fin,k_fin,l_fin,h_inc,k_inc,l_inc)
+    
+    # resultsリストの各結果をTreeviewに追加
+    for results in angletable3:
+        values = tuple(results.values())
+        tree.insert("", "end", values=values)
+    
+    return angletable3
+
+# ボタンの作成
+button = tk.Button(tab_002b, text="Table", command=conostEscan_show_table,width=10)
+button.grid(row=2, column=4, sticky="NSEW")
 
 #メニューバーの作成
 menubar = tk.Menu(root)
