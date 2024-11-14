@@ -28,7 +28,6 @@ def angle_calc(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe,angle_ax1
     Qv_bp=UBt@(np.array([bp[0], bp[1], bp[2]]))
     Qv_bp = Qv_bp.reshape(-1, 1)  # 列ベクトルに変
     
-    #fitting
     # fitting process
     def Omera_toration(omega):
         return np.array([[np.cos(np.radians(omega)),-np.sin(np.radians(omega)),0],[np.sin(np.radians(omega)),np.cos(np.radians(omega)),0],[0,0,1]])
@@ -49,6 +48,9 @@ def angle_calc(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe,angle_ax1
     
     # 結果を表示
     omega0, mu0, nu0 = result0.x
+    
+    # 結果を表示(-180~180に規格化。)
+    omega0, mu0, nu0 = [(angle + 180) % 360 - 180 for angle in result0.x]
     
     # s_iniの計算
     s_ini = omega0 + theta_bp
@@ -143,11 +145,14 @@ def angle_calc(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe,angle_ax1
         s_cal=omega+theta_cal
         omega_inst=s_cal+offset
         
+        # 結果を表示(-180~180に規格化。)
+        omega, mu, nu = [(angle + 180) % 360 - 180 for angle in result.x]
+        """
         if omega_inst<-180:
             omega_inst=omega_inst+360
         elif omega_inst>180:
             omega_inst=omega_inst-360
-        
+        """
         # アナライザとモノクロメータ
         d = 3.355  # PGの場合
 
@@ -175,4 +180,4 @@ def angle_calc(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe,angle_ax1
     
     except ValueError:
         # 計算が失敗した場合にエラーメッセージを返す
-        return None, "散乱の三角形を形成できませんでした"
+        return None, "The scattering triangle could not be formed."

@@ -561,7 +561,7 @@ rdo_sense1.grid(row=0, column=1, sticky="NSEW")
 
 #ボタン1つで両方の計算を実行
 UBcalculate_button = tk.Button(frame3, text="UB calculation", command=calculate_all)
-UBcalculate_button.grid(row=1, column=2,sticky="NSEW")
+UBcalculate_button.grid(row=1, column=1,sticky="NSEW")
 
 # ブラッグピーク位置を入力
 # ファイル選択のフレームの作成と設置
@@ -765,9 +765,26 @@ def calculate_angle():
     if error_message is not None:
         acl10.config(text=error_message)
         return  # 計算を中断
+    elif (round(angletable['C1'],4)<float(hwl2f.get()) or
+        round(angletable['C1'],4)>float(hwl2t.get()) or
+        round(angletable['A1'],4)<float(hwl3f.get()) or
+        round(angletable['A1'],4)>float(hwl3t.get()) or
+        round(angletable['C2'],4)<float(hwl4f.get()) or
+        round(angletable['C2'],4)>float(hwl4t.get()) or
+        round(angletable['A2'],4)<float(hwl5f.get()) or
+        round(angletable['A2'],4)>float(hwl5t.get()) or
+        round(angletable['C3'],4)<float(hwl6f.get()) or
+        round(angletable['C3'],4)>float(hwl6t.get()) or
+        round(angletable['A3'],4)<float(hwl7f.get()) or
+        round(angletable['A3'],4)>float(hwl7t.get()) or
+        round(angletable['mu'],4)<float(hwl8f.get()) or
+        round(angletable['mu'],4)>float(hwl8t.get()) or
+        round(angletable['nu'],4)<float(hwl9f.get()) or
+        round(angletable['nu'],4)>float(hwl9t.get())):
+        acl10.config(text="Out of hardware limit range.")
     else:
         # `phi_cal` の結果を用いた続きの処理
-        acl10.config(text="計算できました。")
+        acl10.config(text="The calculation was successful.")
     
     # angle計算を表示
     acb1.config(state="normal")  # 一時的に編集可能に
@@ -1008,6 +1025,110 @@ hwl9f.insert(0,'-5')
 hwl9t = ttk.Entry(frame5)
 hwl9t.grid(row=2, column=8,sticky="NSEW")
 hwl9t.insert(0,'5')
+
+# グリッドの重みを設定
+tab_002.columnconfigure(0, weight=1)
+tab_002.columnconfigure(1, weight=1)
+tab_002.columnconfigure(2, weight=1)
+tab_002.columnconfigure(3, weight=1)
+tab_002.columnconfigure(4, weight=1)
+tab_002.columnconfigure(5, weight=1)
+tab_002.rowconfigure(0, weight=1)
+tab_002.rowconfigure(1, weight=1)
+tab_002.rowconfigure(2, weight=1)
+
+cqslf = tk.Label(tab_002,text='from ℏω')
+cqslf.grid(row=0, column=0,sticky="NSEW")
+cqslt = tk.Label(tab_002,text='to ℏω')
+cqslt.grid(row=0, column=1,sticky="NSEW")
+cqsli = tk.Label(tab_002,text='inc ℏω')
+cqsli.grid(row=0, column=2,sticky="NSEW")
+
+cqsl1 = tk.Label(tab_002,text='h')
+cqsl1.grid(row=0, column=3,sticky="NSEW")
+cqsl2 = tk.Label(tab_002,text='k')
+cqsl2.grid(row=0, column=4,sticky="NSEW")
+cqsl2 = tk.Label(tab_002,text='l')
+cqsl2.grid(row=0, column=5,sticky="NSEW")
+
+cqsef = ttk.Entry(tab_002)
+cqsef.grid(row=1, column=0,sticky="NSEW")
+cqsef.insert(0,'-0.3')
+cqset = ttk.Entry(tab_002)
+cqset.grid(row=1, column=1,sticky="NSEW")
+cqset.insert(0,'5')
+cqsei = ttk.Entry(tab_002)
+cqsei.grid(row=1, column=2,sticky="NSEW")
+cqsei.insert(0,'0.1')
+
+cqse1 = ttk.Entry(tab_002)
+cqse1.grid(row=1, column=3,sticky="NSEW")
+cqse1.insert(0,'1')
+cqse2 = ttk.Entry(tab_002)
+cqse2.grid(row=1, column=4,sticky="NSEW")
+cqse2.insert(0,'0')
+cqse3 = ttk.Entry(tab_002)
+cqse3.grid(row=1, column=5,sticky="NSEW")
+cqse3.insert(0,'0')
+
+# 別ウィンドウでデータテーブルを表示する関数
+def show_table():
+    # 新しいウィンドウの作成
+    table_window = tk.Toplevel(root)
+    table_window.title("Result of scan")
+    
+    # テーブルウィジェットの作成
+    table = ttk.Treeview(table_window)
+    table['columns'] = ('Name', 'Age', 'Occupation')
+    
+    # 列の設定
+    table.column("#0", width=0, stretch=tk.NO)  # 最初の列を非表示
+    table.column("Name", anchor=tk.CENTER, width=100)
+    table.column("Age", anchor=tk.CENTER, width=50)
+    table.column("Occupation", anchor=tk.CENTER, width=120)
+    
+    # ヘッダーの設定
+    table.heading("#0", text="", anchor=tk.CENTER)
+    table.heading("Name", text="Name", anchor=tk.CENTER)
+    table.heading("Age", text="Age", anchor=tk.CENTER)
+    table.heading("Occupation", text="Occupation", anchor=tk.CENTER)
+    
+    # サンプルデータの追加
+    data = [
+        ("Alice", 30, "Engineer"),
+        ("Bob", 25, "Designer"),
+        ("Charlie", 35, "Teacher")
+    ]
+    
+    for i, (name, age, occupation) in enumerate(data):
+        table.insert(parent='', index='end', iid=i, values=(name, age, occupation))
+    
+    # テーブルを新しいウィンドウに配置
+    table.pack(pady=20)
+
+# ボタンの作成
+button = tk.Button(tab_002, text="Show Table", command=show_table)
+button.grid(row=2, column=0, columnspan=6, sticky="NSEW")
+
+#メニューバーの作成
+menubar = tk.Menu(root)
+root.configure(menu=menubar)
+
+#fileメニュー(setting)
+filemenu = tk.Menu(menubar,tearoff=0)
+menubar.add_cascade(label="setting",menu=filemenu)
+#fileメニューにexitを追加。ついでにexit funcも実装
+filemenu.add_command(label="load value",command=lambda:root.destroy())
+#fileメニューにexitを追加。ついでにexit funcも実装
+filemenu.add_command(label="exit",command=lambda:root.destroy())
+
+#fileメニュー(setting)
+filemenu2 = tk.Menu(menubar,tearoff=0)
+menubar.add_cascade(label="save",menu=filemenu2)
+#fileメニューにexitを追加。ついでにexit funcも実装
+filemenu2.add_command(label="const Q scan",command=lambda:root.destroy())
+#fileメニューにexitを追加。ついでにexit funcも実装
+filemenu2.add_command(label="const E scan",command=lambda:root.destroy())
 
 #window状態の維持
 root.mainloop()
