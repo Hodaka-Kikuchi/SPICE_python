@@ -14,7 +14,13 @@ def UB_calc(sv1, sv2, astar, bstar, cstar, alpha_star, beta_star, gamma_star, n_
     
     # U3の計算 (U1とU2の外積)
     U3 = np.cross(U1, U2)
-    
+    """
+    # senseによって変える
+    if Sense==0:#+++
+        sense_spec=[[1,0,0],[0,1,0],[0,0,1]]
+    elif Sense==1:#-+-
+        sense_spec=[[-1,0,0],[0,1,0],[0,0,1]]
+    """
     # Uマトリックス
     U = np.vstack([U1, U2, U3])
     
@@ -26,7 +32,7 @@ def UB_calc(sv1, sv2, astar, bstar, cstar, alpha_star, beta_star, gamma_star, n_
     ])
     
     # UBマトリックス
-    UB = np.dot(U, B)
+    UB = U @ B
     
     # 結果を辞書としてまとめる
     result = {

@@ -177,6 +177,8 @@ def on_UBcalc():
     n_b = RLtable['n_b']
     n_c = RLtable['n_c']
     
+    #Sense=sense.get()
+    
     # UBtableを計算
     UBtable = UB_calc(
         sv1, sv2, astar, bstar, cstar, alpha_star, beta_star, gamma_star, 
@@ -535,9 +537,31 @@ def calculate_all():
     txt_ub_33.insert(0, round(UBtable['UB'][2,2],4))
     txt_ub_33.config(state="readonly") # 編集不可に設定
 
+# UB matrixの表示
+"""
+frame3s = ttk.Labelframe(frame3,text= "sense of spectrometer")
+frame3s.grid(row=1,column=0,columnspan=2,sticky="NSEW")
+
+frame3s.columnconfigure(0, weight=1)
+frame3s.columnconfigure(1, weight=1)
+frame3s.rowconfigure(0, weight=1)
+
+# チェック有無変数
+sense = tk.IntVar()
+# value=0のラジオボタンにチェックを入れる
+sense.set(0)
+
+# ラジオボタンを設定
+rdo_sense0 = tk.Radiobutton(frame3s, value=0, variable=sense, text='+++', width=15)
+rdo_sense0.grid(row=0, column=0, sticky="NSEW")
+
+rdo_sense1 = tk.Radiobutton(frame3s, value=1, variable=sense, text='-+-', width=15)
+rdo_sense1.grid(row=0, column=1, sticky="NSEW")
+"""
+
 #ボタン1つで両方の計算を実行
 UBcalculate_button = tk.Button(frame3, text="UB calculation", command=calculate_all)
-UBcalculate_button.grid(row=1, column=1,sticky="NSEW")
+UBcalculate_button.grid(row=1, column=2,sticky="NSEW")
 
 # ブラッグピーク位置を入力
 # ファイル選択のフレームの作成と設置
@@ -614,6 +638,7 @@ bpl7.grid(row=0, column=7,sticky="NSEW")
 bp_nu = ttk.Entry(frame4)
 bp_nu.grid(row=1, column=7,sticky="NSEW")
 bp_nu.insert(0,'0')
+
 
 # select scan type
 # ファイル選択のフレームの作成と設置
@@ -734,8 +759,15 @@ def on_anglecalc():
 
 def calculate_angle():
     # on_anglecalc の結果を取得
-    angletable = on_anglecalc()
+    angletable,error_message = on_anglecalc()
     #print("RLtable:", RLtable)
+    
+    if error_message is not None:
+        acl10.config(text=error_message)
+        return  # 計算を中断
+    else:
+        # `phi_cal` の結果を用いた続きの処理
+        acl10.config(text="計算できました。")
     
     # angle計算を表示
     acb1.config(state="normal")  # 一時的に編集可能に
@@ -803,7 +835,7 @@ acbl.grid(row=1, column=3,sticky="NSEW")
 acbl.insert(0,'0')
 
 #ボタン1つで両方の計算を実行
-Angle_calculate_button = tk.Button(tab_001a, text="Angle calculation", command=calculate_angle)
+Angle_calculate_button = tk.Button(tab_001a, text="angle calculation", command=calculate_angle,width=16)
 Angle_calculate_button.grid(row=1, column=4,sticky="NSEW")
 
 tab_001b = ttk.Labelframe(tab_001,text= "calculation results")
@@ -825,51 +857,62 @@ acl1.grid(row=0, column=0,sticky="NSEW")
 acb1 = ttk.Entry(tab_001b)
 acb1.grid(row=1, column=0,sticky="NSEW")
 acb1.insert(0,'0')
+acb1.config(state="readonly") # 編集不可に設定
 
 acl2 = tk.Label(tab_001b,text='A1')
 acl2.grid(row=0, column=1,sticky="NSEW")
 acb2 = ttk.Entry(tab_001b)
 acb2.grid(row=1, column=1,sticky="NSEW")
 acb2.insert(0,'0')
+acb2.config(state="readonly") # 編集不可に設定
 
 acl3 = tk.Label(tab_001b,text='C2')
 acl3.grid(row=0, column=2,sticky="NSEW")
 acb3 = ttk.Entry(tab_001b)
 acb3.grid(row=1, column=2,sticky="NSEW")
 acb3.insert(0,'0')
+acb3.config(state="readonly") # 編集不可に設定
 
 acl4 = tk.Label(tab_001b,text='A2')
 acl4.grid(row=0, column=3,sticky="NSEW")
 acb4 = ttk.Entry(tab_001b)
 acb4.grid(row=1, column=3,sticky="NSEW")
 acb4.insert(0,'0')
+acb4.config(state="readonly") # 編集不可に設定
 
 acl5 = tk.Label(tab_001b,text='C3')
 acl5.grid(row=0, column=4,sticky="NSEW")
 acb5 = ttk.Entry(tab_001b)
 acb5.grid(row=1, column=4,sticky="NSEW")
 acb5.insert(0,'0')
+acb5.config(state="readonly") # 編集不可に設定
 
 acl6 = tk.Label(tab_001b,text='A3')
 acl6.grid(row=0, column=5,sticky="NSEW")
 acb6 = ttk.Entry(tab_001b)
 acb6.grid(row=1, column=5,sticky="NSEW")
 acb6.insert(0,'0')
+acb6.config(state="readonly") # 編集不可に設定
 
 acl7 = tk.Label(tab_001b,text='μ')
 acl7.grid(row=0, column=6,sticky="NSEW")
 acb7 = ttk.Entry(tab_001b)
 acb7.grid(row=1, column=6,sticky="NSEW")
 acb7.insert(0,'0')
+acb7.config(state="readonly") # 編集不可に設定
 
 acl8 = tk.Label(tab_001b,text='ν')
 acl8.grid(row=0, column=7,sticky="NSEW")
 acb8 = ttk.Entry(tab_001b)
 acb8.grid(row=1, column=7,sticky="NSEW")
 acb8.insert(0,'0')
+acb8.config(state="readonly") # 編集不可に設定
 
 acl9 = tk.Label(tab_001b,text='warning : ')
 acl9.grid(row=2, column=0,sticky="NSEW")
+
+acl10 = tk.Label(tab_001b,text='')
+acl10.grid(row=2, column=1,columnspan=7,sticky="NSEW")
 
 # hardware limit
 # ファイル選択のフレームの作成と設置
