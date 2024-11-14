@@ -2,7 +2,7 @@ import math
 import numpy as np
 from scipy.optimize import minimize
 
-def angle_calc(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe,angle_ax1_ax2):
+def angle_calc(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe):
     # bragg peakの位置からoffsetを算出
     hkl_bp=bp[0]*astar+bp[1]*bstar+bp[2]*cstar
     #計算されたrlu
@@ -49,6 +49,9 @@ def angle_calc(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe,angle_ax1
     # 結果を表示
     omega0, mu0, nu0 = result0.x
     
+    # 結果を表示(-180~180に規格化。)
+    omega0, mu0, nu0 = [(angle + 180) % 360 - 180 for angle in result0.x]
+    
     # s_iniの計算
     s_ini = omega0 + theta_bp
     # offsetの計算
@@ -69,6 +72,10 @@ def angle_calc(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe,angle_ax1
     
     # phi_calの計算
     phi_cal = np.degrees(np.arccos((ki_cal**2 + kf_cal**2 - Nhkl_cal**2) / (2 * ki_cal * kf_cal)))
+    
+    # 値が計算できるか確認し、NaNなら例外を発生させる
+    if np.isnan(phi_cal):
+        raise ValueError("Calculation resulted in NaN")
     
     # phi_calが正常に計算された場合のみ、後続の計算を実行
     theta_cal = np.degrees(np.arctan((ki_cal - kf_cal * np.cos(np.radians(phi_cal))) / (kf_cal * np.sin(np.radians(phi_cal)))))
@@ -96,6 +103,9 @@ def angle_calc(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe,angle_ax1
     
     s_cal=omega+theta_cal
     omega_inst=s_cal+offset
+    
+    # 結果を表示(-180~180に規格化。)
+    omega, mu, nu = [(angle + 180) % 360 - 180 for angle in result.x]
     
     # アナライザとモノクロメータ
     d = 3.355  # PGの場合

@@ -726,12 +726,6 @@ def on_anglecalc():
     norm_sv1 = np.linalg.norm(sv1[0]*astar+sv1[1]*bstar+sv1[2]*cstar)
     norm_sv2 = np.linalg.norm(sv2[0]*astar+sv2[1]*bstar+sv2[2]*cstar)
     
-    # 内積の計算
-    dat_ax1_ax2 = np.dot(axis1, axis2)
-    
-    # コサインの逆関数を用いて角度を計算 (ラジアン)
-    angle_ax1_ax2 = np.degrees(np.arccos(dat_ax1_ax2 / (norm_sv1 * norm_sv2)))
-    
     U=UBtable['U']
     B=UBtable['B']
     UB=UBtable['UB']
@@ -752,7 +746,7 @@ def on_anglecalc():
     
     # UBtableを計算
     angletable = angle_calc(
-        astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe,angle_ax1_ax2
+        astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe
     )
     
     return angletable
