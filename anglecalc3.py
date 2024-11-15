@@ -82,7 +82,11 @@ def angle_calc3(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,hw_cal,h_ini,k_i
             l_tab = np.full(len(h_tab), l_ini)
         elif k_ini!=k_fin:
             l_tab = np.full(len(k_tab), l_ini)
-            
+    
+    h_tab = np.append(h_tab, h_fin)
+    k_tab = np.append(k_tab, k_fin)
+    l_tab = np.append(l_tab, l_fin)
+    
     if fixe==0: # ei fix
         Ei = bpe
         Ef = bpe - hw_cal
@@ -146,6 +150,10 @@ def angle_calc3(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,hw_cal,h_ini,k_i
         
         # 結果を辞書としてまとめる
         result = {
+            'hw' : round(hw_cal,4),
+            'h' : round(h_tab[i],4),
+            'k' : round(k_tab[i],4),
+            'l' : round(l_tab[i],4),
             'C1' : round(C1,4),
             'A1' : round(A1,4),
             'C2' : round(omega_inst,4),

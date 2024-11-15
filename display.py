@@ -93,6 +93,9 @@ import re
 # webに飛ぶやつ
 import webbrowser
 
+import csv
+from tkinter import filedialog
+
 #windowの作成
 root=tk.Tk()
 #windowのタイトル変更
@@ -1181,7 +1184,7 @@ def constQscan_show_table():
     result_window.title("Calculation Results")
     
     # Treeviewの設定
-    tree = ttk.Treeview(result_window, columns=("C1", "A1", "C2", "A2", "C3", "A3", "mu", "nu"), show="headings")
+    tree = ttk.Treeview(result_window, columns=("hw","h","k","l","C1", "A1", "C2", "A2", "C3", "A3", "mu", "nu"), show="headings")
     tree.pack(fill="both", expand=True)
     
     # 各列に見出しを設定
@@ -1218,6 +1221,7 @@ def constQscan_show_table():
     # Ei or Ef fixの判定
     fixe=float(eief.get())
     
+    global angletable2
     angletable2 = angle_calc2(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,hw_ini,hw_fin,hw_inc,h_cal,k_cal,l_cal)
     
     # resultsリストの各結果をTreeviewに追加
@@ -1300,7 +1304,7 @@ def conostEscan_show_table():
     result_window.title("Calculation Results")
     
     # Treeviewの設定
-    tree = ttk.Treeview(result_window, columns=("C1", "A1", "C2", "A2", "C3", "A3", "mu", "nu"), show="headings")
+    tree = ttk.Treeview(result_window, columns=("hw","h","k","l","C1", "A1", "C2", "A2", "C3", "A3", "mu", "nu"), show="headings")
     tree.pack(fill="both", expand=True)
     
     # 各列に見出しを設定
@@ -1341,6 +1345,7 @@ def conostEscan_show_table():
     # Ei or Ef fixの判定
     fixe=float(eief.get())
     
+    global angletable3
     angletable3 = angle_calc3(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,hw_cal,h_ini,k_ini,l_ini,h_fin,k_fin,l_fin,h_inc,k_inc,l_inc)
     
     # resultsリストの各結果をTreeviewに追加
@@ -1362,17 +1367,63 @@ root.configure(menu=menubar)
 filemenu = tk.Menu(menubar,tearoff=0)
 menubar.add_cascade(label="setting",menu=filemenu)
 #fileメニューにexitを追加。ついでにexit funcも実装
-filemenu.add_command(label="load value",command=lambda:root.destroy())
+filemenu.add_command(label="load value",command=load_values_from_ini)
 #fileメニューにexitを追加。ついでにexit funcも実装
 filemenu.add_command(label="exit",command=lambda:root.destroy())
+
+def save_cQ_table():
+
+    # 保存ダイアログを表示してファイル名を取得
+    file_path = filedialog.asksaveasfilename(
+        defaultextension=".csv",
+        filetypes=[("CSV files", "*.csv"), ("All files", "*.*")],
+        title="Save as CSV"
+    )
+
+    if file_path:
+        with open(file_path, mode='w', newline='') as file:
+            writer = csv.writer(file)
+
+            # ヘッダーを書き込む
+            header = ['hw','h','k','l','C1', 'A1', 'C2', 'A3', 'C3', 'A3', 'mu', 'nu']  # ヘッダー名を必要に応じて調整
+            writer.writerow(header)
+
+            # angletable2 の各結果を CSV に書き込む
+            for results in angletable2:
+                # results は辞書なので、values() で値だけ取り出してタプルにする
+                values = tuple(results.values())
+                writer.writerow(values)
+
+def save_cE_table():
+
+    # 保存ダイアログを表示してファイル名を取得
+    file_path = filedialog.asksaveasfilename(
+        defaultextension=".csv",
+        filetypes=[("CSV files", "*.csv"), ("All files", "*.*")],
+        title="Save as CSV"
+    )
+
+    if file_path:
+        with open(file_path, mode='w', newline='') as file:
+            writer = csv.writer(file)
+
+            # ヘッダーを書き込む
+            header = ['hw','h','k','l','C1', 'A1', 'C2', 'A3', 'C3', 'A3', 'mu', 'nu']  # ヘッダー名を必要に応じて調整
+            writer.writerow(header)
+
+            # angletable2 の各結果を CSV に書き込む
+            for results in angletable3:
+                # results は辞書なので、values() で値だけ取り出してタプルにする
+                values = tuple(results.values())
+                writer.writerow(values)
 
 #fileメニュー(setting)
 filemenu2 = tk.Menu(menubar,tearoff=0)
 menubar.add_cascade(label="save",menu=filemenu2)
 #fileメニューにexitを追加。ついでにexit funcも実装
-filemenu2.add_command(label="const Q scan",command=lambda:root.destroy())
+filemenu2.add_command(label="const Q scan",command=save_cQ_table)
 #fileメニューにexitを追加。ついでにexit funcも実装
-filemenu2.add_command(label="const E scan",command=lambda:root.destroy())
+filemenu2.add_command(label="const E scan",command=save_cE_table)
 
 # アプリ起動時にデフォルト値を読み込む
 load_values_from_ini()

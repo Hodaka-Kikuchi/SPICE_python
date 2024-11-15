@@ -60,6 +60,9 @@ def angle_calc2(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,hw_ini,hw_fin,hw
     ####################################################################################################
     # 変数はhw
     hw_tab = np.arange(hw_ini, hw_fin, hw_inc)
+    if hw_tab[-1] != hw_fin:  # 最後の点が hw_fin でない場合
+        hw_tab = np.append(hw_tab, hw_fin)
+
     
     # hklの位置から各angleを算出
     hkl_cal=h_cal*astar+k_cal*bstar+l_cal*cstar
@@ -123,6 +126,10 @@ def angle_calc2(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,hw_ini,hw_fin,hw
         
         # 結果を辞書としてまとめる
         result = {
+            'hw' : round(hw_tab[i],4),
+            'h' : round(h_cal,4),
+            'k' : round(k_cal,4),
+            'l' : round(l_cal,4),
             'C1' : round(C1,4),
             'A1' : round(A1,4),
             'C2' : round(omega_inst,4),
