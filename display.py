@@ -40,6 +40,7 @@ from tkinter import messagebox
 from tkinter import simpledialog
 import pyperclip
 
+import configparser
 # osのインポート
 import os
 
@@ -112,6 +113,104 @@ def on_closing():
     root.destroy()
 
 root.protocol("WM_DELETE_WINDOW", on_closing)  # ウィンドウが閉じられるときの振る舞いを指定
+
+# iniファイルの読み込み
+def load_values_from_ini():
+    config = configparser.ConfigParser()
+    ini_path = os.path.join(os.path.dirname(__file__), 'config.ini')
+    config.read(ini_path)
+    """
+    # 各パラメータのデフォルト値を取得
+    values = {
+        'a': config['DEFAULT'].getfloat('a', 5.026307),
+        'b': config['DEFAULT'].getfloat('b', 5.026307),
+        'c': config['DEFAULT'].getfloat('c', 13.784500),
+        'alpha': config['DEFAULT'].getfloat('alpha', 90),
+        'beta': config['DEFAULT'].getfloat('beta', 90),
+        'gamma': config['DEFAULT'].getfloat('gamma', 120),
+        'h1': config['DEFAULT'].getint('h1', 1),
+        'k1': config['DEFAULT'].getint('k1', 0),
+        'l1': config['DEFAULT'].getint('l1', 0),
+        'h2': config['DEFAULT'].getint('h2', 0),
+        'k2': config['DEFAULT'].getint('k2', 1),
+        'l2': config['DEFAULT'].getint('l2', 0),
+        'maxC1': config['DEFAULT'].getfloat('maxC1', 19.9305),
+        'minC1': config['DEFAULT'].getfloat('minC1', 58.482),
+        'maxA1': config['DEFAULT'].getfloat('maxA1', 39.861),
+        'minA1': config['DEFAULT'].getfloat('minA1', 116.964),
+        'maxC2': config['DEFAULT'].getfloat('maxC2', -180),
+        'minC2': config['DEFAULT'].getfloat('minC2', 180),
+        'maxA2': config['DEFAULT'].getfloat('maxA2', 6),
+        'minA2': config['DEFAULT'].getfloat('minA2', 120),
+        'maxC3': config['DEFAULT'].getfloat('maxC3', 19.9305),
+        'minC3': config['DEFAULT'].getfloat('minC3', 58.482),
+        'maxA3': config['DEFAULT'].getfloat('maxA3', 39.861),
+        'minA3': config['DEFAULT'].getfloat('minA3', 116.964),
+        'maxmu': config['DEFAULT'].getfloat('maxmu', -5),
+        'minmu': config['DEFAULT'].getfloat('minmu', 5),
+        'maxnu': config['DEFAULT'].getfloat('maxnu', -5),
+        'minnu': config['DEFAULT'].getfloat('minnu', 5),
+    }
+    """
+    # 各エントリに対応する値を読み込み、挿入
+    la.delete(0, tk.END)  # 既存の値をクリア
+    la.insert(0, config['DEFAULT'].get('a', '5.026307'))
+    lb.delete(0, tk.END)  # 既存の値をクリア
+    lb.insert(0, config['DEFAULT'].get('b', '5.026307'))
+    lc.delete(0, tk.END)  # 既存の値をクリア
+    lc.insert(0, config['DEFAULT'].get('c', '13.784500'))
+    lc_alpha.delete(0, tk.END)  # 既存の値をクリア
+    lc_alpha.insert(0, config['DEFAULT'].get('alpha', '90'))
+    lc_beta.delete(0, tk.END)  # 既存の値をクリア
+    lc_beta.insert(0, config['DEFAULT'].get('beta', '90'))
+    lc_gamma.delete(0, tk.END)  # 既存の値をクリア
+    lc_gamma.insert(0, config['DEFAULT'].get('gamma', '120'))
+    
+    sv1_h.delete(0, tk.END)  # 既存の値をクリア
+    sv1_h.insert(0, config['DEFAULT'].get('h1', '1'))
+    sv1_k.delete(0, tk.END)  # 既存の値をクリア
+    sv1_k.insert(0, config['DEFAULT'].get('k1', '0'))
+    sv1_l.delete(0, tk.END)  # 既存の値をクリア
+    sv1_l.insert(0, config['DEFAULT'].get('l1', '0'))
+    sv2_h.delete(0, tk.END)  # 既存の値をクリア
+    sv2_h.insert(0, config['DEFAULT'].get('h2', '0'))
+    sv2_k.delete(0, tk.END)  # 既存の値をクリア
+    sv2_k.insert(0, config['DEFAULT'].get('k2', '1'))
+    sv2_l.delete(0, tk.END)  # 既存の値をクリア
+    sv2_l.insert(0, config['DEFAULT'].get('l2', '0'))
+    
+    hwl2f.delete(0, tk.END)  # 既存の値をクリア
+    hwl2f.insert(0, config['DEFAULT'].get('maxC1', '19.9305'))
+    hwl2t.delete(0, tk.END)  # 既存の値をクリア
+    hwl2t.insert(0, config['DEFAULT'].get('minC1', '58.482'))
+    hwl3f.delete(0, tk.END)  # 既存の値をクリア
+    hwl3f.insert(0, config['DEFAULT'].get('maxA1', '19.9305'))
+    hwl3t.delete(0, tk.END)  # 既存の値をクリア
+    hwl3t.insert(0, config['DEFAULT'].get('minA1', '58.482'))
+    hwl4f.delete(0, tk.END)  # 既存の値をクリア
+    hwl4f.insert(0, config['DEFAULT'].get('maxC2', '-180'))
+    hwl4t.delete(0, tk.END)  # 既存の値をクリア
+    hwl4t.insert(0, config['DEFAULT'].get('minC2', '180'))
+    hwl5f.delete(0, tk.END)  # 既存の値をクリア
+    hwl5f.insert(0, config['DEFAULT'].get('maxA2', '6'))
+    hwl5t.delete(0, tk.END)  # 既存の値をクリア
+    hwl5t.insert(0, config['DEFAULT'].get('minA2', '120'))
+    hwl6f.delete(0, tk.END)  # 既存の値をクリア
+    hwl6f.insert(0, config['DEFAULT'].get('maxC3', '19.9305'))
+    hwl6t.delete(0, tk.END)  # 既存の値をクリア
+    hwl6t.insert(0, config['DEFAULT'].get('minC3', '58.482'))
+    hwl7f.delete(0, tk.END)  # 既存の値をクリア
+    hwl7f.insert(0, config['DEFAULT'].get('maxA3', '39.861'))
+    hwl7t.delete(0, tk.END)  # 既存の値をクリア
+    hwl7t.insert(0, config['DEFAULT'].get('minA3', '116.964'))
+    hwl8f.delete(0, tk.END)  # 既存の値をクリア
+    hwl8f.insert(0, config['DEFAULT'].get('maxmu', '-5'))
+    hwl8t.delete(0, tk.END)  # 既存の値をクリア
+    hwl8t.insert(0, config['DEFAULT'].get('minmu', '5'))
+    hwl9f.delete(0, tk.END)  # 既存の値をクリア
+    hwl9f.insert(0, config['DEFAULT'].get('maxnu', '-5'))
+    hwl9t.delete(0, tk.END)  # 既存の値をクリア
+    hwl9t.insert(0, config['DEFAULT'].get('minnu', '5'))
 
 # GUIの配分を決める。
 root.columnconfigure(0, weight=1)
@@ -193,37 +292,37 @@ lc1 = tk.Label(frame1,text='a (Å)')
 lc1.grid(row=0, column=0,sticky="NSEW")
 la = ttk.Entry(frame1)
 la.grid(row=1, column=0,sticky="NSEW")
-la.insert(0,'5.026307')
+#la.insert(0,'5.026307')
 
 lc2 = tk.Label(frame1,text='b (Å)')
 lc2.grid(row=0, column=1,sticky="NSEW")
 lb = ttk.Entry(frame1)
 lb.grid(row=1, column=1,sticky="NSEW")
-lb.insert(0,'5.026307')
+#lb.insert(0,'5.026307')
 
 lc3 = tk.Label(frame1,text='c (Å)')
 lc3.grid(row=0, column=2,sticky="NSEW")
 lc = ttk.Entry(frame1)
 lc.grid(row=1, column=2,sticky="NSEW")
-lc.insert(0,'13.784500')
+#lc.insert(0,'13.784500')
 
 lc4 = tk.Label(frame1,text='α (deg)')
 lc4.grid(row=0, column=3,sticky="NSEW")
 lc_alpha = ttk.Entry(frame1)
 lc_alpha.grid(row=1, column=3,sticky="NSEW")
-lc_alpha.insert(0,'90')
+#lc_alpha.insert(0,'90')
 
 lc5 = tk.Label(frame1,text='β (deg)')
 lc5.grid(row=0, column=4,sticky="NSEW")
 lc_beta = ttk.Entry(frame1)
 lc_beta.grid(row=1, column=4,sticky="NSEW")
-lc_beta.insert(0,'90')
+#lc_beta.insert(0,'90')
 
 lc6 = tk.Label(frame1,text='γ (deg)')
 lc6.grid(row=0, column=5,sticky="NSEW")
 lc_gamma = ttk.Entry(frame1)
 lc_gamma.grid(row=1, column=5,sticky="NSEW")
-lc_gamma.insert(0,'120')
+#lc_gamma.insert(0,'120')
 
 # ファイル選択のフレームの作成と設置
 frame2 = ttk.Labelframe(root,text= "scattering plane")
@@ -256,37 +355,37 @@ sv1 = tk.Label(frame2a,text='h')
 sv1.grid(row=0, column=0,sticky="NSEW")
 sv1_h = ttk.Entry(frame2a)
 sv1_h.grid(row=1, column=0,sticky="NSEW")
-sv1_h.insert(0,'1')
+#sv1_h.insert(0,'1')
 
 sv1 = tk.Label(frame2a,text='k')
 sv1.grid(row=0, column=1,sticky="NSEW")
 sv1_k = ttk.Entry(frame2a)
 sv1_k.grid(row=1, column=1,sticky="NSEW")
-sv1_k.insert(0,'0')
+#sv1_k.insert(0,'0')
 
 sv1 = tk.Label(frame2a,text='l')
 sv1.grid(row=0, column=2,sticky="NSEW")
 sv1_l = ttk.Entry(frame2a)
 sv1_l.grid(row=1, column=2,sticky="NSEW")
-sv1_l.insert(0,'0')
+#sv1_l.insert(0,'0')
 
 sv2 = tk.Label(frame2b,text='h')
 sv2.grid(row=0, column=0,sticky="NSEW")
 sv2_h = ttk.Entry(frame2b)
 sv2_h.grid(row=1, column=0,sticky="NSEW")
-sv2_h.insert(0,'0')
+#sv2_h.insert(0,'0')
 
 sv2 = tk.Label(frame2b,text='k')
 sv2.grid(row=0, column=1,sticky="NSEW")
 sv2_k = ttk.Entry(frame2b)
 sv2_k.grid(row=1, column=1,sticky="NSEW")
-sv2_k.insert(0,'1')
+#sv2_k.insert(0,'1')
 
 sv2 = tk.Label(frame2b,text='l')
 sv2.grid(row=0, column=2,sticky="NSEW")
 sv2_l = ttk.Entry(frame2b)
 sv2_l.grid(row=1, column=2,sticky="NSEW")
-sv2_l.insert(0,'0')
+#sv2_l.insert(0,'0')
 
 # UB matrixの表示
 frame3 = ttk.Labelframe(root,text= "matrix display")
@@ -954,73 +1053,73 @@ hwll2 = tk.Label(frame5,text='C1')
 hwll2.grid(row=0, column=1,sticky="NSEW")
 hwl2f = ttk.Entry(frame5)
 hwl2f.grid(row=1, column=1,sticky="NSEW")
-hwl2f.insert(0,'19.9305')
+#hwl2f.insert(0,'19.9305')
 hwl2t = ttk.Entry(frame5)
 hwl2t.grid(row=2, column=1,sticky="NSEW")
-hwl2t.insert(0,'58.482')
+#hwl2t.insert(0,'58.482')
 
 hwll3 = tk.Label(frame5,text='A1')
 hwll3.grid(row=0, column=2,sticky="NSEW")
 hwl3f = ttk.Entry(frame5)
 hwl3f.grid(row=1, column=2,sticky="NSEW")
-hwl3f.insert(0,'39.861')
+#hwl3f.insert(0,'39.861')
 hwl3t = ttk.Entry(frame5)
 hwl3t.grid(row=2, column=2,sticky="NSEW")
-hwl3t.insert(0,'116.964')
+#hwl3t.insert(0,'116.964')
 
 hwll4 = tk.Label(frame5,text='C2')
 hwll4.grid(row=0, column=3,sticky="NSEW")
 hwl4f = ttk.Entry(frame5)
 hwl4f.grid(row=1, column=3,sticky="NSEW")
-hwl4f.insert(0,'-180')
+#hwl4f.insert(0,'-180')
 hwl4t = ttk.Entry(frame5)
 hwl4t.grid(row=2, column=3,sticky="NSEW")
-hwl4t.insert(0,'180')
+#hwl4t.insert(0,'180')
 
 hwll5 = tk.Label(frame5,text='A2')
 hwll5.grid(row=0, column=4,sticky="NSEW")
 hwl5f = ttk.Entry(frame5)
 hwl5f.grid(row=1, column=4,sticky="NSEW")
-hwl5f.insert(0,'6')
+#hwl5f.insert(0,'6')
 hwl5t = ttk.Entry(frame5)
 hwl5t.grid(row=2, column=4,sticky="NSEW")
-hwl5t.insert(0,'120')
+#hwl5t.insert(0,'120')
 
 hwll6 = tk.Label(frame5,text='C3')
 hwll6.grid(row=0, column=5,sticky="NSEW")
 hwl6f = ttk.Entry(frame5)
 hwl6f.grid(row=1, column=5,sticky="NSEW")
-hwl6f.insert(0,'19.9305')
+#hwl6f.insert(0,'19.9305')
 hwl6t = ttk.Entry(frame5)
 hwl6t.grid(row=2, column=5,sticky="NSEW")
-hwl6t.insert(0,'58.482')
+#hwl6t.insert(0,'58.482')
 
 hwll7 = tk.Label(frame5,text='A3')
 hwll7.grid(row=0, column=6,sticky="NSEW")
 hwl7f = ttk.Entry(frame5)
 hwl7f.grid(row=1, column=6,sticky="NSEW")
-hwl7f.insert(0,'39.861')
+#hwl7f.insert(0,'39.861')
 hwl7t = ttk.Entry(frame5)
 hwl7t.grid(row=2, column=6,sticky="NSEW")
-hwl7t.insert(0,'116.964')
+#hwl7t.insert(0,'116.964')
 
 hwll8 = tk.Label(frame5,text='μ')
 hwll8.grid(row=0, column=7,sticky="NSEW")
 hwl8f = ttk.Entry(frame5)
 hwl8f.grid(row=1, column=7,sticky="NSEW")
-hwl8f.insert(0,'-5')
+#hwl8f.insert(0,'-5')
 hwl8t = ttk.Entry(frame5)
 hwl8t.grid(row=2, column=7,sticky="NSEW")
-hwl8t.insert(0,'5')
+#hwl8t.insert(0,'5')
 
 hwll9 = tk.Label(frame5,text='ν')
 hwll9.grid(row=0, column=8,sticky="NSEW")
 hwl9f = ttk.Entry(frame5)
 hwl9f.grid(row=1, column=8,sticky="NSEW")
-hwl9f.insert(0,'-5')
+#hwl9f.insert(0,'-5')
 hwl9t = ttk.Entry(frame5)
 hwl9t.grid(row=2, column=8,sticky="NSEW")
-hwl9t.insert(0,'5')
+#hwl9t.insert(0,'5')
 
 # グリッドの重みを設定
 tab_002.columnconfigure(0, weight=1)
@@ -1041,7 +1140,7 @@ tab_002a.rowconfigure(3, weight=1)
 
 cqslt = tk.Label(tab_002a,text='ℏω')
 cqslt.grid(row=0, column=1,sticky="NSEW")
-cqslf = tk.Label(tab_002a,text='from',width=16)
+cqslf = tk.Label(tab_002a,text='from',width=15)
 cqslf.grid(row=1, column=0,sticky="NSEW")
 cqslt = tk.Label(tab_002a,text='to')
 cqslt.grid(row=2, column=0,sticky="NSEW")
@@ -1147,7 +1246,7 @@ tab_002b.rowconfigure(3, weight=1)
 cesel= tk.Label(tab_002b,text='ℏω')
 cesel.grid(row=0, column=4,sticky="NSEW")
 
-cesl1= tk.Label(tab_002b,text='from',width=16)
+cesl1= tk.Label(tab_002b,text='from',width=15)
 cesl1.grid(row=1, column=0,sticky="NSEW")
 cesl2= tk.Label(tab_002b,text='to')
 cesl2.grid(row=2, column=0,sticky="NSEW")
@@ -1163,10 +1262,10 @@ cesll.grid(row=0, column=3,sticky="NSEW")
 
 ces1 = ttk.Entry(tab_002b)
 ces1.grid(row=1, column=1,sticky="NSEW")
-ces1.insert(0,'0')
+ces1.insert(0,'-1')
 ces2 = ttk.Entry(tab_002b)
 ces2.grid(row=1, column=2,sticky="NSEW")
-ces2.insert(0,'0')
+ces2.insert(0,'2')
 ces3 = ttk.Entry(tab_002b)
 ces3.grid(row=1, column=3,sticky="NSEW")
 ces3.insert(0,'0')
@@ -1179,17 +1278,17 @@ ces5.grid(row=2, column=2,sticky="NSEW")
 ces5.insert(0,'1')
 ces6 = ttk.Entry(tab_002b)
 ces6.grid(row=2, column=3,sticky="NSEW")
-ces6.insert(0,'1')
+ces6.insert(0,'0')
 
 ces7 = ttk.Entry(tab_002b)
 ces7.grid(row=3, column=1,sticky="NSEW")
-ces7.insert(0,'0.1')
+ces7.insert(0,'0.2')
 ces8 = ttk.Entry(tab_002b)
 ces8.grid(row=3, column=2,sticky="NSEW")
-ces8.insert(0,'0.1')
+ces8.insert(0,'-0.1')
 ces9 = ttk.Entry(tab_002b)
 ces9.grid(row=3, column=3,sticky="NSEW")
-ces9.insert(0,'0.1')
+ces9.insert(0,'0')
 
 ces10 = ttk.Entry(tab_002b)
 ces10.grid(row=1, column=4,sticky="NSEW")
@@ -1274,6 +1373,9 @@ menubar.add_cascade(label="save",menu=filemenu2)
 filemenu2.add_command(label="const Q scan",command=lambda:root.destroy())
 #fileメニューにexitを追加。ついでにexit funcも実装
 filemenu2.add_command(label="const E scan",command=lambda:root.destroy())
+
+# アプリ起動時にデフォルト値を読み込む
+load_values_from_ini()
 
 #window状態の維持
 root.mainloop()
