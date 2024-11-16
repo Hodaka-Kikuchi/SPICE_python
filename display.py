@@ -92,6 +92,7 @@ from scipy.optimize import curve_fit
 
 # ファイル読み込みのためのやつ
 import re
+import sys
 
 # webに飛ぶやつ
 import webbrowser
@@ -123,7 +124,13 @@ root.protocol("WM_DELETE_WINDOW", on_closing)  # ウィンドウが閉じられ�
 # iniファイルの読み込み
 def load_values_from_ini():
     config = configparser.ConfigParser()
-    ini_path = os.path.join(os.path.dirname(__file__), 'config.ini')
+    # .exe化した場合に対応する
+    if getattr(sys, 'frozen', False):
+        # .exeの場合、sys.argv[0]が実行ファイルのパスになる
+        ini_path = os.path.join(os.path.dirname(sys.argv[0]), 'config.ini')
+    else:
+        # .pyの場合、__file__がスクリプトのパスになる
+        ini_path = os.path.join(os.path.dirname(__file__), 'config.ini')
     config.read(ini_path)
     """
     # 各パラメータのデフォルト値を取得
@@ -1472,10 +1479,10 @@ root.mainloop()
 
 #############
 # pyinstaller tips
-# pyinstaller -F --noconsole display.py
+# pyinstaller --onefile --add-data "config.ini;." display.py
 """
 コマンド
-pyinstaller ASYURA.py --noconsole
+pyinstaller display.py --noconsole
 --onedir or -D
 出力を1ディレクトリにまとめる
 --onefile or -F

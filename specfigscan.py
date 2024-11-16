@@ -5,6 +5,7 @@ from matplotlib.patches import Rectangle
 import matplotlib.patches as patches
 from matplotlib.widgets import Slider
 import os
+import sys
 
 def plot_spectrometer(A_sets,QE_sets, initial_index=0):
     """
@@ -15,7 +16,14 @@ def plot_spectrometer(A_sets,QE_sets, initial_index=0):
     # 距離と半径の設定
     # INIファイルから設定を読み込む
     config = configparser.ConfigParser()
-    ini_path = os.path.join(os.path.dirname(__file__), 'config.ini')
+    # .exe化した場合に対応する
+    if getattr(sys, 'frozen', False):
+        # .exeの場合、sys.argv[0]が実行ファイルのパスになる
+        ini_path = os.path.join(os.path.dirname(sys.argv[0]), 'config.ini')
+    else:
+        # .pyの場合、__file__がスクリプトのパスになる
+        ini_path = os.path.join(os.path.dirname(__file__), 'config.ini')
+
     config.read(ini_path)
     
     # 設定を変数に代入
@@ -50,7 +58,7 @@ def plot_spectrometer(A_sets,QE_sets, initial_index=0):
     slider = Slider(ax_slider, 'scan number', 0, len(A_sets) - 1, valinit=initial_index, valstep=1)
 
     # スキャン条件表示用テキストを初期化
-    ax.text(0.2, 1.05, f'ℏω: {QE_sets[initial_index][0]} meV, h: {QE_sets[initial_index][1]}, k: {QE_sets[initial_index][2]}, l: {QE_sets[initial_index][3]}', 
+    ax.text(0.4, 1.05, f'ℏω: {QE_sets[initial_index][0]} meV, h: {QE_sets[initial_index][1]}, k: {QE_sets[initial_index][2]}, l: {QE_sets[initial_index][3]}', 
                                    horizontalalignment='center', verticalalignment='center', transform=ax.transAxes)
 
     def update(val):
@@ -101,7 +109,7 @@ def plot_spectrometer(A_sets,QE_sets, initial_index=0):
         ax.legend(bbox_to_anchor=(1.01, 1), loc='upper left')
         
         # スキャン条件の更新
-        ax.text(0.2, 1.05, f'ℏω: {QE_sets[index][0]} meV, h: {QE_sets[index][1]}, k: {QE_sets[index][2]}, l: {QE_sets[index][3]}', 
+        ax.text(0.4, 1.05, f'ℏω: {QE_sets[index][0]} meV, h: {QE_sets[index][1]}, k: {QE_sets[index][2]}, l: {QE_sets[index][3]}', 
                                    horizontalalignment='center', verticalalignment='center', transform=ax.transAxes)
         plt.draw()
 
