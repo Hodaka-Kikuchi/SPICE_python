@@ -790,7 +790,7 @@ tab_003 = tk.Frame(notebook00)# constant E scan
 # notebookにタブを追加
 notebook00.add(tab_001, text="single Q-E point")
 notebook00.add(tab_002, text="scan simulation")
-notebook00.add(tab_003, text="others")
+notebook00.add(tab_003, text="tool")
 
 # Notebookを配置
 notebook00.pack(expand=True, fill="both")
@@ -1413,7 +1413,7 @@ root.configure(menu=menubar)
 filemenu = tk.Menu(menubar,tearoff=0)
 menubar.add_cascade(label="setting",menu=filemenu)
 #fileメニューにexitを追加。ついでにexit funcも実装
-filemenu.add_command(label="load value",command=load_values_from_ini)
+filemenu.add_command(label="load ini.file",command=load_values_from_ini)
 #fileメニューにexitを追加。ついでにexit funcも実装
 filemenu.add_command(label="exit",command=lambda:root.destroy())
 
@@ -1479,7 +1479,7 @@ root.mainloop()
 
 #############
 # pyinstaller tips
-# pyinstaller --onefile --add-data "config.ini;." display.py
+# pyinstaller --noconsole --onefile --add-data "config.ini;." display.py
 """
 コマンド
 pyinstaller display.py --noconsole
