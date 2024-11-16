@@ -1242,7 +1242,7 @@ def constQscan_show_table():
         A_sets.append([A1, A2, A3])  # A_sets に追加
         # hw, h,k,l
         hw = round(results['hw'], 4)  # 'A1'
-        h = -round(results['h'], 4)  # 'A2'
+        h = round(results['h'], 4)  # 'A2'
         k = round(results['k'], 4)  # 'A3'
         l = round(results['l'], 4)  # 'A3'
         QE_sets.append([hw, h, k,l])
@@ -1384,7 +1384,7 @@ def conostEscan_show_table():
         A_sets.append([A1, A2, A3])  # A_sets に追加
         # hw, h,k,l
         hw = round(results['hw'], 4)  # 'A1'
-        h = -round(results['h'], 4)  # 'A2'
+        h = round(results['h'], 4)  # 'A2'
         k = round(results['k'], 4)  # 'A3'
         l = round(results['l'], 4)  # 'A3'
         QE_sets.append([hw, h, k,l])
