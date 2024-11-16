@@ -1260,7 +1260,7 @@ def constQscan_show_table():
     return angletable2
 
 # ボタンの作成
-button = tk.Button(tab_002a, text="Table", command=constQscan_show_table,width=10)
+button = tk.Button(tab_002a, text="Show", command=constQscan_show_table,width=10)
 button.grid(row=2, column=2,columnspan=3, sticky="NSEW")
 
 tab_002b = ttk.Labelframe(tab_002,text= "constant E scan")
@@ -1402,7 +1402,7 @@ def conostEscan_show_table():
     return angletable3
 
 # ボタンの作成
-button = tk.Button(tab_002b, text="Table", command=conostEscan_show_table,width=10)
+button = tk.Button(tab_002b, text="Show", command=conostEscan_show_table,width=10)
 button.grid(row=2, column=4, sticky="NSEW")
 
 #メニューバーの作成

@@ -55,7 +55,7 @@ def plot_spectrometer(A_sets,QE_sets, initial_index=0):
 
     # スライダー設定
     ax_slider = plt.axes([0.25, 0.10, 0.65, 0.03], facecolor='lightgoldenrodyellow')
-    slider = Slider(ax_slider, 'scan number', 0, len(A_sets) - 1, valinit=initial_index, valstep=1)
+    slider = Slider(ax_slider, 'scan number', 1, len(A_sets) , valinit=initial_index+1, valstep=1)
 
     # スキャン条件表示用テキストを初期化
     ax.text(0.4, 1.05, f'ℏω: {QE_sets[initial_index][0]} meV, h: {QE_sets[initial_index][1]}, k: {QE_sets[initial_index][2]}, l: {QE_sets[initial_index][3]}', 
@@ -63,7 +63,7 @@ def plot_spectrometer(A_sets,QE_sets, initial_index=0):
 
     def update(val):
         # スライダーの値に基づいて角度セットを選択
-        index = int(val)
+        index = int(val)-1
         A1, A2, A3 = A_sets[index]
 
         # 位置計算
@@ -123,9 +123,9 @@ def plot_spectrometer(A_sets,QE_sets, initial_index=0):
         左右矢印キーでスライダーを動かす
         """
         if event.key == 'right':
-            slider.set_val(min(slider.val + 1, len(A_sets) - 1))
+            slider.set_val(min(slider.val + 1, len(A_sets)))
         elif event.key == 'left':
-            slider.set_val(max(slider.val - 1, 0))
+            slider.set_val(max(slider.val - 1, 1))
 
     # キーイベントを設定
     fig.canvas.mpl_connect('key_press_event', on_key)
