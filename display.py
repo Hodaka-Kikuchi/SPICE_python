@@ -82,6 +82,9 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from matplotlib.widgets import TextBox
 
+from matplotlib.patches import Rectangle
+import matplotlib.patches as patches
+
 import statistics as stat
 from scipy import stats
 from scipy.stats import norm
@@ -242,6 +245,7 @@ from UBcalc import UB_calc  #
 from anglecalc import angle_calc    #
 from anglecalc2 import angle_calc2    #
 from anglecalc3 import angle_calc3    #
+from specfigscan import plot_spectrometer
 
 def get_parameters():
     """GUI入力から格子パラメータを取得し辞書に格納"""
@@ -1222,13 +1226,30 @@ def constQscan_show_table():
     fixe=float(eief.get())
     
     global angletable2
-    angletable2 = angle_calc2(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,hw_ini,hw_fin,hw_inc,h_cal,k_cal,l_cal)
+    angletable2 = angle_calc2(astar, bstar, cstar, UB, bpe, bpc2, bpmu, bpnu, bp, fixe, hw_ini, hw_fin, hw_inc, h_cal, k_cal, l_cal)
     
+    A_sets = []  # A_setsリストを初期化
+    QE_sets = []
     # resultsリストの各結果をTreeviewに追加
     for results in angletable2:
         values = tuple(results.values())
         tree.insert("", "end", values=values)
     
+        # A1, A2, A3 を取得して A_sets に追加
+        A1 = round(results['A1'], 4)  # 'A1'
+        A2 = -round(results['A2'], 4)  # 'A2'
+        A3 = round(results['A3'], 4)  # 'A3'
+        A_sets.append([A1, A2, A3])  # A_sets に追加
+        # hw, h,k,l
+        hw = round(results['hw'], 4)  # 'A1'
+        h = -round(results['h'], 4)  # 'A2'
+        k = round(results['k'], 4)  # 'A3'
+        l = round(results['l'], 4)  # 'A3'
+        QE_sets.append([hw, h, k,l])
+
+    # プロット関数を呼び出し
+    plot_spectrometer(A_sets,QE_sets)
+        
     return angletable2
 
 # ボタンの作成
