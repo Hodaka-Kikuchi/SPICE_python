@@ -302,7 +302,8 @@ from UBcalc import UB_calc  #
 from anglecalc import angle_calc    #
 from anglecalc2 import angle_calc2    #
 from anglecalc3 import angle_calc3    #
-from specfigscan import plot_spectrometer
+from specfigscan import plot_spectrometer #
+from fitLC import fittingLC #
 
 def get_parameters():
     """GUI入力から格子パラメータを取得し辞書に格納"""
@@ -840,7 +841,7 @@ tab_003 = tk.Frame(notebook00)# constant E scan
 # notebookにタブを追加
 notebook00.add(tab_001, text="single Q-E point")
 notebook00.add(tab_002, text="scan simulation")
-notebook00.add(tab_003, text="tool")
+notebook00.add(tab_003, text="calculation")
 
 # Notebookを配置
 notebook00.pack(expand=True, fill="both")
@@ -1516,6 +1517,104 @@ def save_cE_table():
                 # results は辞書なので、values() で値だけ取り出してタプルにする
                 values = tuple(results.values())
                 writer.writerow(values)
+
+# グリッドの重みを設定
+tab_003.columnconfigure(0, weight=1)
+tab_003.rowconfigure(0, weight=1)
+tab_003.rowconfigure(1, weight=1)
+
+tab_003a = ttk.Labelframe(tab_003,text= "fitting lattice paramter")
+tab_003a.grid(row=0,column=0,sticky="NSEW")
+tab_003a.columnconfigure(0, weight=1)
+tab_003a.columnconfigure(1, weight=1)
+tab_003a.columnconfigure(2, weight=1)
+tab_003a.columnconfigure(3, weight=1)
+tab_003a.columnconfigure(4, weight=1)
+tab_003a.columnconfigure(5, weight=1)
+tab_003a.rowconfigure(0, weight=1)
+tab_003a.rowconfigure(1, weight=1)
+
+# 結晶系コンボボックスのリスト
+cryst_list =['cubic','tetragonal', 'orthorhombic', 'hexagonal' ,'monoclinic', 'triclinic']
+
+# Xコンボボックスのラベル
+lbl_cl = tk.Label(tab_003a,text='crystal')
+lbl_cl.grid(row=0, column=0,sticky="NSEW")
+
+# Xコンボボックスを設置
+cb_cl = ttk.Combobox(tab_003a, values = cryst_list,width=18)
+cb_cl.grid(row=1, column=0,sticky="NSEW")
+
+#コンボボックスのリストの先頭を表示
+cb_cl.set(cryst_list[0])
+
+cry_fit= tk.Label(tab_003a,text='h')
+cry_fit.grid(row=0, column=1,sticky="NSEW")
+cry_fit_h = ttk.Entry(tab_003a)
+cry_fit_h.grid(row=1, column=1,sticky="NSEW")
+cry_fit_h.insert(0,'1')
+
+cry_fit= tk.Label(tab_003a,text='k')
+cry_fit.grid(row=0, column=2,sticky="NSEW")
+cry_fit_k = ttk.Entry(tab_003a)
+cry_fit_k.grid(row=1, column=2,sticky="NSEW")
+cry_fit_k.insert(0,'0')
+
+cry_fit= tk.Label(tab_003a,text='l')
+cry_fit.grid(row=0, column=3,sticky="NSEW")
+cry_fit_l = ttk.Entry(tab_003a)
+cry_fit_l.grid(row=1, column=3,sticky="NSEW")
+cry_fit_l.insert(0,'0')
+
+cry_fit= tk.Label(tab_003a,text='A2')
+cry_fit.grid(row=0, column=4,sticky="NSEW")
+cry_fit_a2 = ttk.Entry(tab_003a)
+cry_fit_a2.grid(row=1, column=4,sticky="NSEW")
+cry_fit_a2.insert(0,'0')
+
+def fitting_process():
+    # selectされたindexを読み込む
+    cry_select = cb_cl.current()
+    
+    # 変数初期化
+    a2 = float(cry_fit_a2.get())  # A2の初期値
+    h = int(cry_fit_h.get())     # h
+    k = int(cry_fit_k.get())     # k
+    l = int(cry_fit_l.get())     # l
+    
+    # 結晶系の選択に基づいてフィッティング処理を分ける
+    if cry_select == 0:  # cubic
+        cryst_type = 'cubic'
+    elif cry_select == 1:  # tetragonal
+        cryst_type = 'tetragonal'
+    elif cry_select == 2:  # orthorhombic
+        cryst_type = 'orthorhombic'
+    elif cry_select == 3:  # hexagonal
+        cryst_type = 'hexagonal'
+    elif cry_select == 4:  # monoclinic
+        cryst_type = 'monoclinic'
+    elif cry_select == 5:  # triclinic
+        cryst_type = 'triclinic'
+    
+    # フィッティング処理を実行
+    try:
+        # a2_measuredは仮の値として設定していますが、実際のデータをここに渡してください
+        a2_measured = float(cry_fit_a2.get())  # 実際の測定値を使う
+        ki = 1.0  # 入射波ベクトルの仮の値
+        kf = 1.0  # 反射波ベクトルの仮の値
+
+        result = fitLC(ki, kf, (h, k, l), a2_measured, cryst_type)
+        
+        # 結果を表示
+        update_result(result)
+        
+    except ValueError as e:
+        print("Error:", e)
+        update_result("Error during fitting process.")
+    
+# フィッティング開始ボタン
+fit_button = tk.Button(tab_003a, text="Fit", command=fitting_process,width=16)
+fit_button.grid(row=1, column=5, sticky="NSEW")
 
 #fileメニュー(setting)
 filemenu2 = tk.Menu(menubar,tearoff=0)
