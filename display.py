@@ -303,7 +303,7 @@ from anglecalc import angle_calc    #
 from anglecalc2 import angle_calc2    #
 from anglecalc3 import angle_calc3    #
 from specfigscan import plot_spectrometer #
-from fitLC import fittingLC #
+from fittingLC import fit_lattice_constants
 
 def get_parameters():
     """GUI入力から格子パラメータを取得し辞書に格納"""
@@ -1577,12 +1577,15 @@ def fitting_process():
     cry_select = cb_cl.current()
     
     # 変数初期化
-    a2 = float(cry_fit_a2.get())  # A2の初期値
     h = int(cry_fit_h.get())     # h
     k = int(cry_fit_k.get())     # k
     l = int(cry_fit_l.get())     # l
     
+    kf = (float(Energy.get()) / 2.072) ** (1 / 2)
+    ki = (float(Energy.get()) / 2.072) ** (1 / 2)
+    
     # 結晶系の選択に基づいてフィッティング処理を分ける
+    cryst_type = ''
     if cry_select == 0:  # cubic
         cryst_type = 'cubic'
     elif cry_select == 1:  # tetragonal
@@ -1600,18 +1603,23 @@ def fitting_process():
     try:
         # a2_measuredは仮の値として設定していますが、実際のデータをここに渡してください
         a2_measured = float(cry_fit_a2.get())  # 実際の測定値を使う
-        ki = 1.0  # 入射波ベクトルの仮の値
-        kf = 1.0  # 反射波ベクトルの仮の値
 
-        result = fitLC(ki, kf, (h, k, l), a2_measured, cryst_type)
+        # GUI から初期値を取得
+        initial_params = get_parameters()  # これが GUI の初期値を取得する部分
+        
+        # 修正済みの fit_lattice_constants を呼び出す
+        result = fit_lattice_constants(
+            ki, kf, (h, k, l), a2_measured, cryst_type,
+            initial_params=initial_params  # 取得した初期値を渡す
+        )
         
         # 結果を表示
-        update_result(result)
+        print(result)
         
     except ValueError as e:
         print("Error:", e)
-        update_result("Error during fitting process.")
-    
+
+
 # フィッティング開始ボタン
 fit_button = tk.Button(tab_003a, text="Fit", command=fitting_process,width=16)
 fit_button.grid(row=1, column=5, sticky="NSEW")
