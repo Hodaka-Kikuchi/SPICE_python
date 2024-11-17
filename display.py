@@ -225,6 +225,56 @@ def load_values_from_ini():
     hwl9t.delete(0, tk.END)  # 既存の値をクリア
     hwl9t.insert(0, config['DEFAULT'].get('minnu', '5'))
 
+def save_values_to_ini():
+    """
+    現在のウィジェットの値をINIファイルに保存する
+    """
+    config = configparser.ConfigParser()
+    
+    # ウィジェットの値を取得して設定
+    config['DEFAULT'] = {
+        'a': la.get(),
+        'b': lb.get(),
+        'c': lc.get(),
+        'alpha': lc_alpha.get(),
+        'beta': lc_beta.get(),
+        'gamma': lc_gamma.get(),
+        'h1': sv1_h.get(),
+        'k1': sv1_k.get(),
+        'l1': sv1_l.get(),
+        'h2': sv2_h.get(),
+        'k2': sv2_k.get(),
+        'l2': sv2_l.get(),
+        'maxC1': hwl2f.get(),
+        'minC1': hwl2t.get(),
+        'maxA1': hwl3f.get(),
+        'minA1': hwl3t.get(),
+        'maxC2': hwl4f.get(),
+        'minC2': hwl4t.get(),
+        'maxA2': hwl5f.get(),
+        'minA2': hwl5t.get(),
+        'maxC3': hwl6f.get(),
+        'minC3': hwl6t.get(),
+        'maxA3': hwl7f.get(),
+        'minA3': hwl7t.get(),
+        'maxmu': hwl8f.get(),
+        'minmu': hwl8t.get(),
+        'maxnu': hwl9f.get(),
+        'minnu': hwl9t.get(),
+    }
+
+    # INIファイルのパスを決定
+    if getattr(sys, 'frozen', False):
+        ini_path = os.path.join(os.path.dirname(sys.argv[0]), 'config.ini')
+    else:
+        ini_path = os.path.join(os.path.dirname(__file__), 'config.ini')
+
+    # INIファイルに書き込み
+    with open(ini_path, 'w') as configfile:
+        config.write(configfile)
+
+
+
 # GUIの配分を決める。
 root.columnconfigure(0, weight=1)
 root.rowconfigure(0, weight=2)
@@ -1412,9 +1462,13 @@ root.configure(menu=menubar)
 #fileメニュー(setting)
 filemenu = tk.Menu(menubar,tearoff=0)
 menubar.add_cascade(label="setting",menu=filemenu)
-#fileメニューにexitを追加。ついでにexit funcも実装
+#fileメニューにini fileのload
 filemenu.add_command(label="load ini.file",command=load_values_from_ini)
 #fileメニューにexitを追加。ついでにexit funcも実装
+
+#fileメニューにini fileのsave
+filemenu.add_command(label="save ini.file",command=save_values_to_ini)
+
 filemenu.add_command(label="exit",command=lambda:root.destroy())
 
 def save_cQ_table():
