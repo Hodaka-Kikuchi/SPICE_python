@@ -923,7 +923,7 @@ def calculate_angle():
     #print("RLtable:", RLtable)
     
     if error_message is not None:
-        acl10.config(text=error_message)
+        acl10.config(text=error_message, fg="red")
         return  # 計算を中断
     elif (round(angletable['C1'],4)<float(hwl2f.get()) or
         round(angletable['C1'],4)>float(hwl2t.get()) or
@@ -941,10 +941,10 @@ def calculate_angle():
         round(angletable['mu'],4)>float(hwl8t.get()) or
         round(angletable['nu'],4)<float(hwl9f.get()) or
         round(angletable['nu'],4)>float(hwl9t.get())):
-        acl10.config(text="Out of hardware limit range.")
+        acl10.config(text="Out of hardware limit range.", fg="red")
     else:
         # `phi_cal` の結果を用いた続きの処理
-        acl10.config(text="The calculation was successful.")
+        acl10.config(text="The calculation was successful.", fg="black")
     
     # angle計算を表示
     acb1.config(state="normal")  # 一時的に編集可能に
@@ -1456,6 +1456,188 @@ def conostEscan_show_table():
 button = tk.Button(tab_002b, text="Show", command=conostEscan_show_table,width=10)
 button.grid(row=2, column=4, sticky="NSEW")
 
+# グリッドの重みを設定
+tab_003.columnconfigure(0, weight=1)
+tab_003.rowconfigure(0, weight=2)
+tab_003.rowconfigure(1, weight=3)
+
+tab_003a = ttk.Labelframe(tab_003,text= "fitting lattice paramter")
+tab_003a.grid(row=0,column=0,sticky="NSEW")
+tab_003a.columnconfigure(0, weight=1)
+tab_003a.columnconfigure(1, weight=1)
+tab_003a.columnconfigure(2, weight=1)
+tab_003a.columnconfigure(3, weight=1)
+tab_003a.columnconfigure(4, weight=1)
+tab_003a.columnconfigure(5, weight=1)
+tab_003a.rowconfigure(0, weight=1)
+tab_003a.rowconfigure(1, weight=1)
+
+tab_003b = ttk.Labelframe(tab_003,text= "fitting results")
+tab_003b.grid(row=1,column=0,sticky="NSEW")
+tab_003b.columnconfigure(0, weight=1)
+tab_003b.columnconfigure(1, weight=1)
+tab_003b.columnconfigure(2, weight=1)
+tab_003b.columnconfigure(3, weight=1)
+tab_003b.columnconfigure(4, weight=1)
+tab_003b.columnconfigure(5, weight=1)
+tab_003b.columnconfigure(6, weight=1)
+tab_003b.rowconfigure(0, weight=1)
+tab_003b.rowconfigure(1, weight=1)
+tab_003b.rowconfigure(2, weight=1)
+
+# 結晶系コンボボックスのリスト
+cryst_list =['cubic','tetragonal', 'orthorhombic', 'hexagonal' ,'monoclinic', 'triclinic']
+
+# Xコンボボックスのラベル
+lbl_cl = tk.Label(tab_003a,text='crystal')
+lbl_cl.grid(row=0, column=0,sticky="NSEW")
+
+# Xコンボボックスを設置
+cb_cl = ttk.Combobox(tab_003a, values = cryst_list,width=18)
+cb_cl.grid(row=1, column=0,sticky="NSEW")
+
+#コンボボックスのリストの先頭を表示
+cb_cl.set(cryst_list[0])
+
+cry_fit= tk.Label(tab_003a,text='h')
+cry_fit.grid(row=0, column=1,sticky="NSEW")
+cry_fit_h = ttk.Entry(tab_003a)
+cry_fit_h.grid(row=1, column=1,sticky="NSEW")
+cry_fit_h.insert(0,'1.5')
+
+cry_fit= tk.Label(tab_003a,text='k')
+cry_fit.grid(row=0, column=2,sticky="NSEW")
+cry_fit_k = ttk.Entry(tab_003a)
+cry_fit_k.grid(row=1, column=2,sticky="NSEW")
+cry_fit_k.insert(0,'0')
+
+cry_fit= tk.Label(tab_003a,text='l')
+cry_fit.grid(row=0, column=3,sticky="NSEW")
+cry_fit_l = ttk.Entry(tab_003a)
+cry_fit_l.grid(row=1, column=3,sticky="NSEW")
+cry_fit_l.insert(0,'0')
+
+cry_fit= tk.Label(tab_003a,text='A2')
+cry_fit.grid(row=0, column=4,sticky="NSEW")
+cry_fit_a2 = ttk.Entry(tab_003a)
+cry_fit_a2.grid(row=1, column=4,sticky="NSEW")
+cry_fit_a2.insert(0,'90.6')
+
+def fitting_process():
+    # selectされたindexを読み込む
+    cry_select = cb_cl.current()
+    
+    # 変数初期化
+    h = float(cry_fit_h.get())     # h
+    k = float(cry_fit_k.get())     # k
+    l = float(cry_fit_l.get())     # l
+    
+    kf = (float(Energy.get()) / 2.072) ** (1 / 2)
+    ki = (float(Energy.get()) / 2.072) ** (1 / 2)
+    
+    # 結晶系の選択に基づいてフィッティング処理を分ける
+    cryst_type = ''
+    if cry_select == 0:  # cubic
+        cryst_type = 'cubic'
+    elif cry_select == 1:  # tetragonal
+        cryst_type = 'tetragonal'
+    elif cry_select == 2:  # orthorhombic
+        cryst_type = 'orthorhombic'
+    elif cry_select == 3:  # hexagonal
+        cryst_type = 'hexagonal'
+    elif cry_select == 4:  # monoclinic
+        cryst_type = 'monoclinic'
+    elif cry_select == 5:  # triclinic
+        cryst_type = 'triclinic'
+    
+    # フィッティング処理を実行
+    try:
+        # a2_measuredは仮の値として設定していますが、実際のデータをここに渡してください
+        a2_measured = float(cry_fit_a2.get())  # 実際の測定値を使う
+
+        # GUI から初期値を取得
+        initial_params = get_parameters()  # これが GUI の初期値を取得する部分
+        
+        # 修正済みの fit_lattice_constants を呼び出す
+        result = fit_lattice_constants(
+            ki, kf, (h, k, l), a2_measured, cryst_type,
+            initial_params=initial_params  # 取得した初期値を渡す
+        )
+        
+        # 結果を表示
+         # 結果をGUIに反映
+        fit_resa.configure(state="normal")
+        fit_resb.configure(state="normal")
+        fit_resc.configure(state="normal")
+        fit_resal.configure(state="normal")
+        fit_resbe.configure(state="normal")
+        fit_resga.configure(state="normal")
+
+        fit_resa.delete(0, tk.END)
+        fit_resb.delete(0, tk.END)
+        fit_resc.delete(0, tk.END)
+        fit_resal.delete(0, tk.END)
+        fit_resbe.delete(0, tk.END)
+        fit_resga.delete(0, tk.END)
+
+        fit_resa.insert(0, round(result.get("a", "N/A"),4))
+        fit_resb.insert(0, round(result.get("b", "N/A"),4))
+        fit_resc.insert(0, round(result.get("c", "N/A"),4))
+        fit_resal.insert(0, round(result.get("alpha", "N/A"),4))
+        fit_resbe.insert(0, round(result.get("beta", "N/A"),4))
+        fit_resga.insert(0, round(result.get("gamma", "N/A"),4))
+
+        fit_resa.configure(state="readonly")
+        fit_resb.configure(state="readonly")
+        fit_resc.configure(state="readonly")
+        fit_resal.configure(state="readonly")
+        fit_resbe.configure(state="readonly")
+        fit_resga.configure(state="readonly")
+
+        # エラーメッセージラベルをクリア
+        fit_resme.configure(text="The fitting was successful.", fg="black")
+
+    except ValueError as e:
+        # エラー発生時、エラーメッセージを表示
+        fit_resme.configure(text=f"{str(e)}", fg="red")
+
+# フィッティング開始ボタン
+fit_button = tk.Button(tab_003a, text="Fit", command=fitting_process,width=16)
+fit_button.grid(row=1, column=5, sticky="NSEW")
+
+# fitting結果の表示
+fit_res1= tk.Label(tab_003b,text='a')
+fit_res1.grid(row=0, column=0,sticky="NSEW")
+fit_res2= tk.Label(tab_003b,text='b')
+fit_res2.grid(row=0, column=1,sticky="NSEW")
+fit_res3= tk.Label(tab_003b,text='c')
+fit_res3.grid(row=0, column=2,sticky="NSEW")
+fit_res4= tk.Label(tab_003b,text='α')
+fit_res4.grid(row=0, column=3,sticky="NSEW")
+fit_res5= tk.Label(tab_003b,text='β')
+fit_res5.grid(row=0, column=4,sticky="NSEW")
+fit_res6= tk.Label(tab_003b,text='γ')
+fit_res6.grid(row=0, column=5,sticky="NSEW")
+
+fit_resa = ttk.Entry(tab_003b,state="readonly")
+fit_resa.grid(row=1, column=0,sticky="NSEW")
+fit_resb = ttk.Entry(tab_003b,state="readonly")
+fit_resb.grid(row=1, column=1,sticky="NSEW")
+fit_resc = ttk.Entry(tab_003b,state="readonly")
+fit_resc.grid(row=1, column=2,sticky="NSEW")
+fit_resal = ttk.Entry(tab_003b,state="readonly")
+fit_resal.grid(row=1, column=3,sticky="NSEW")
+fit_resbe = ttk.Entry(tab_003b,state="readonly")
+fit_resbe.grid(row=1, column=4,sticky="NSEW")
+fit_resga = ttk.Entry(tab_003b,state="readonly")
+fit_resga.grid(row=1, column=5,sticky="NSEW")
+
+fit_reswa = tk.Label(tab_003b,text='warning : ')
+fit_reswa.grid(row=2, column=0,sticky="NSEW")
+
+fit_resme = tk.Label(tab_003b,text='')
+fit_resme.grid(row=2, column=1,columnspan=5,sticky="NSEW")
+
 #メニューバーの作成
 menubar = tk.Menu(root)
 root.configure(menu=menubar)
@@ -1517,112 +1699,6 @@ def save_cE_table():
                 # results は辞書なので、values() で値だけ取り出してタプルにする
                 values = tuple(results.values())
                 writer.writerow(values)
-
-# グリッドの重みを設定
-tab_003.columnconfigure(0, weight=1)
-tab_003.rowconfigure(0, weight=1)
-tab_003.rowconfigure(1, weight=1)
-
-tab_003a = ttk.Labelframe(tab_003,text= "fitting lattice paramter")
-tab_003a.grid(row=0,column=0,sticky="NSEW")
-tab_003a.columnconfigure(0, weight=1)
-tab_003a.columnconfigure(1, weight=1)
-tab_003a.columnconfigure(2, weight=1)
-tab_003a.columnconfigure(3, weight=1)
-tab_003a.columnconfigure(4, weight=1)
-tab_003a.columnconfigure(5, weight=1)
-tab_003a.rowconfigure(0, weight=1)
-tab_003a.rowconfigure(1, weight=1)
-
-# 結晶系コンボボックスのリスト
-cryst_list =['cubic','tetragonal', 'orthorhombic', 'hexagonal' ,'monoclinic', 'triclinic']
-
-# Xコンボボックスのラベル
-lbl_cl = tk.Label(tab_003a,text='crystal')
-lbl_cl.grid(row=0, column=0,sticky="NSEW")
-
-# Xコンボボックスを設置
-cb_cl = ttk.Combobox(tab_003a, values = cryst_list,width=18)
-cb_cl.grid(row=1, column=0,sticky="NSEW")
-
-#コンボボックスのリストの先頭を表示
-cb_cl.set(cryst_list[0])
-
-cry_fit= tk.Label(tab_003a,text='h')
-cry_fit.grid(row=0, column=1,sticky="NSEW")
-cry_fit_h = ttk.Entry(tab_003a)
-cry_fit_h.grid(row=1, column=1,sticky="NSEW")
-cry_fit_h.insert(0,'1')
-
-cry_fit= tk.Label(tab_003a,text='k')
-cry_fit.grid(row=0, column=2,sticky="NSEW")
-cry_fit_k = ttk.Entry(tab_003a)
-cry_fit_k.grid(row=1, column=2,sticky="NSEW")
-cry_fit_k.insert(0,'0')
-
-cry_fit= tk.Label(tab_003a,text='l')
-cry_fit.grid(row=0, column=3,sticky="NSEW")
-cry_fit_l = ttk.Entry(tab_003a)
-cry_fit_l.grid(row=1, column=3,sticky="NSEW")
-cry_fit_l.insert(0,'0')
-
-cry_fit= tk.Label(tab_003a,text='A2')
-cry_fit.grid(row=0, column=4,sticky="NSEW")
-cry_fit_a2 = ttk.Entry(tab_003a)
-cry_fit_a2.grid(row=1, column=4,sticky="NSEW")
-cry_fit_a2.insert(0,'0')
-
-def fitting_process():
-    # selectされたindexを読み込む
-    cry_select = cb_cl.current()
-    
-    # 変数初期化
-    h = int(cry_fit_h.get())     # h
-    k = int(cry_fit_k.get())     # k
-    l = int(cry_fit_l.get())     # l
-    
-    kf = (float(Energy.get()) / 2.072) ** (1 / 2)
-    ki = (float(Energy.get()) / 2.072) ** (1 / 2)
-    
-    # 結晶系の選択に基づいてフィッティング処理を分ける
-    cryst_type = ''
-    if cry_select == 0:  # cubic
-        cryst_type = 'cubic'
-    elif cry_select == 1:  # tetragonal
-        cryst_type = 'tetragonal'
-    elif cry_select == 2:  # orthorhombic
-        cryst_type = 'orthorhombic'
-    elif cry_select == 3:  # hexagonal
-        cryst_type = 'hexagonal'
-    elif cry_select == 4:  # monoclinic
-        cryst_type = 'monoclinic'
-    elif cry_select == 5:  # triclinic
-        cryst_type = 'triclinic'
-    
-    # フィッティング処理を実行
-    try:
-        # a2_measuredは仮の値として設定していますが、実際のデータをここに渡してください
-        a2_measured = float(cry_fit_a2.get())  # 実際の測定値を使う
-
-        # GUI から初期値を取得
-        initial_params = get_parameters()  # これが GUI の初期値を取得する部分
-        
-        # 修正済みの fit_lattice_constants を呼び出す
-        result = fit_lattice_constants(
-            ki, kf, (h, k, l), a2_measured, cryst_type,
-            initial_params=initial_params  # 取得した初期値を渡す
-        )
-        
-        # 結果を表示
-        print(result)
-        
-    except ValueError as e:
-        print("Error:", e)
-
-
-# フィッティング開始ボタン
-fit_button = tk.Button(tab_003a, text="Fit", command=fitting_process,width=16)
-fit_button.grid(row=1, column=5, sticky="NSEW")
 
 #fileメニュー(setting)
 filemenu2 = tk.Menu(menubar,tearoff=0)

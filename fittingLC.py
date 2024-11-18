@@ -128,5 +128,5 @@ def fit_lattice_constants(ki, kf, hkl, a2_measured, crystal_system, initial_para
 
         return final_params
     else:
-        raise ValueError("フィッティングが収束しませんでした。")
+        raise ValueError("The fitting did not converge.")
 
