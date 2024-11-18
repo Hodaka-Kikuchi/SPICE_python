@@ -273,7 +273,14 @@ def save_values_to_ini():
     with open(ini_path, 'w') as configfile:
         config.write(configfile)
 
-
+# fuction setting
+from RLcalc import RL_calc  #
+from UBcalc import UB_calc  #
+from anglecalc import angle_calc    #
+from anglecalc2 import angle_calc2    #
+from anglecalc3 import angle_calc3    #
+from specfigscan import plot_spectrometer #
+from fittingLC import fit_lattice_constants
 
 # GUIの配分を決める。
 root.columnconfigure(0, weight=1)
@@ -296,14 +303,6 @@ frame1.columnconfigure(4, weight=1)
 frame1.columnconfigure(5, weight=1)
 frame1.rowconfigure(0, weight=1)
 frame1.rowconfigure(1, weight=1)
-
-from RLcalc import RL_calc  #
-from UBcalc import UB_calc  #
-from anglecalc import angle_calc    #
-from anglecalc2 import angle_calc2    #
-from anglecalc3 import angle_calc3    #
-from specfigscan import plot_spectrometer #
-from fittingLC import fit_lattice_constants
 
 def get_parameters():
     """GUI入力から格子パラメータを取得し辞書に格納"""
@@ -841,7 +840,7 @@ tab_003 = tk.Frame(notebook00)# constant E scan
 # notebookにタブを追加
 notebook00.add(tab_001, text="single Q-E point")
 notebook00.add(tab_002, text="scan simulation")
-notebook00.add(tab_003, text="calculation")
+notebook00.add(tab_003, text="lattice constant")
 
 # Notebookを配置
 notebook00.pack(expand=True, fill="both")
@@ -1631,6 +1630,32 @@ fit_resbe = ttk.Entry(tab_003b,state="readonly")
 fit_resbe.grid(row=1, column=4,sticky="NSEW")
 fit_resga = ttk.Entry(tab_003b,state="readonly")
 fit_resga.grid(row=1, column=5,sticky="NSEW")
+
+def reflection():
+    fit_a =float(fit_resa.get())
+    fit_b =float(fit_resb.get())
+    fit_c =float(fit_resc.get())
+    fit_al =float(fit_resal.get())
+    fit_be =float(fit_resbe.get())
+    fit_ga =float(fit_resga.get())
+    
+    la.delete(0, tk.END)
+    lb.delete(0, tk.END)
+    lc.delete(0, tk.END)
+    lc_alpha.delete(0, tk.END)
+    lc_beta.delete(0, tk.END)
+    lc_gamma.delete(0, tk.END)
+    
+    la.insert(0, fit_a)
+    lb.insert(0, fit_b)
+    lc.insert(0, fit_c)
+    lc_alpha.insert(0, fit_al)
+    lc_beta.insert(0, fit_be)
+    lc_gamma.insert(0, fit_ga)
+
+# fitting結果を反映させるボタン
+ref_button = tk.Button(tab_003b, text="Reflect", command=reflection,width=16)
+ref_button.grid(row=1, column=6, sticky="NSEW")
 
 fit_reswa = tk.Label(tab_003b,text='warning : ')
 fit_reswa.grid(row=2, column=0,sticky="NSEW")
