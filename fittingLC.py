@@ -115,7 +115,7 @@ def fit_lattice_constants(ki, kf, hkl, a2_measured, crystal_system, initial_para
 
     # フィッティング可能なパラメータがない場合
     if not fit_params:
-        print("フィッティング可能な自由度がありません。初期値を返します。")
+        print("No degrees of freedom available for fitting, returning initial values.")
         return fixed_params
 
     initial_guess = [fixed_params[param] for param in fit_params]
