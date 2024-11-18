@@ -33,13 +33,22 @@ def determine_fit_params(crystal_system, hkl, initial_params=None):
     # 結晶系に応じた初期制約条件
     if crystal_system == "cubic":
         lattice_constraints = {"b": "a", "c": "a"}
+        fixed_params["alpha"] = 90.0
+        fixed_params["beta"] = 90.0
+        fixed_params["gamma"] = 90.0
         fit_params = ["a"] if h or k or l else []
     elif crystal_system == "tetragonal":
         lattice_constraints = {"b": "a"}
+        fixed_params["alpha"] = 90.0
+        fixed_params["beta"] = 90.0
+        fixed_params["gamma"] = 90.0
         fit_params = ["a"] if h or k else []
         if l:
             fit_params.append("c")
     elif crystal_system == "orthorhombic":
+        fixed_params["alpha"] = 90.0
+        fixed_params["beta"] = 90.0
+        fixed_params["gamma"] = 90.0
         if h:
             fit_params.append("a")
         if k:
@@ -47,6 +56,8 @@ def determine_fit_params(crystal_system, hkl, initial_params=None):
         if l:
             fit_params.append("c")
     elif crystal_system == "hexagonal":
+        fixed_params["alpha"] = 90.0
+        fixed_params["beta"] = 90.0
         fixed_params["gamma"] = 120.0
         lattice_constraints = {"b": "a"}
         fit_params = ["a"] if h or k else []
