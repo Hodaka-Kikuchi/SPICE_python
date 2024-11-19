@@ -103,7 +103,8 @@ from tkinter import filedialog
 #windowの作成
 root=tk.Tk()
 #windowのタイトル変更
-root.title(f"TAS simulation ver: {__version__}")
+root.title(f"TriAxionSim ver: {__version__}")
+# TriAxionSim: 三軸 (triple-axis) と「軌跡」や「軸」 (axion) 、Simulationを意識
 #windowのサイズ指定
 root.geometry("550x840")#550*840
 
@@ -1220,17 +1221,17 @@ cqsl2.grid(row=0, column=4,sticky="NSEW")
 
 cqsef = ttk.Entry(tab_002a)
 cqsef.grid(row=1, column=1,sticky="NSEW")
-cqsef.insert(0,'-0.3')
+cqsef.insert(0,'-0.4')
 cqset = ttk.Entry(tab_002a)
 cqset.grid(row=2, column=1,sticky="NSEW")
-cqset.insert(0,'5')
+cqset.insert(0,'7')
 cqsei = ttk.Entry(tab_002a)
 cqsei.grid(row=3, column=1,sticky="NSEW")
-cqsei.insert(0,'0.1')
+cqsei.insert(0,'0.2')
 
 cqse1 = ttk.Entry(tab_002a)
 cqse1.grid(row=1, column=2,sticky="NSEW")
-cqse1.insert(0,'1')
+cqse1.insert(0,'1.5')
 cqse2 = ttk.Entry(tab_002a)
 cqse2.grid(row=1, column=3,sticky="NSEW")
 cqse2.insert(0,'0')
@@ -1741,10 +1742,10 @@ root.mainloop()
 
 #############
 # pyinstaller tips
-# pyinstaller --noconsole --onefile --add-data "config.ini;." display.py
+# pyinstaller --noconsole --onefile --add-data "config.ini;." TriAxionSim.py
 """
 コマンド
-pyinstaller display.py --noconsole
+pyinstaller TriAxionSim.py --noconsole
 --onedir or -D
 出力を1ディレクトリにまとめる
 --onefile or -F

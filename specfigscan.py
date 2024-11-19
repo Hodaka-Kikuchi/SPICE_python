@@ -52,9 +52,6 @@ def plot_spectrometer(A_sets,QE_sets, initial_index=0):
     fig, ax = plt.subplots(figsize=(8, 5))  # 図のサイズを縮小
     plt.subplots_adjust(left=0.01, bottom=0.25)  # 左の余白を削る
 
-    # ソース
-    ax.scatter(-max_L, 0, color='black', s=1, label='Source')
-
     # スライダー設定
     ax_slider = plt.axes([0.25, 0.10, 0.65, 0.03], facecolor='lightgoldenrodyellow')
     slider = Slider(ax_slider, 'scan number', 1, len(A_sets) , valinit=initial_index+1, valstep=1)
@@ -78,18 +75,18 @@ def plot_spectrometer(A_sets,QE_sets, initial_index=0):
 
         # プロットを再描画
         ax.clear()
-        ax.scatter(-max_L, 0, color='black', s=1, label='Source')
+        ax.scatter(-max_L, 0, color='black', s=10, label='Source')
         ax.add_patch(patches.Circle((x_mono, y_mono), monochromator_radius, linewidth=2, edgecolor='none', facecolor='blue', linestyle='--'))
-        ax.scatter(x_mono, y_mono, color='blue', s=monochromator_radius, label='Monochromator')
+        ax.scatter(x_mono, y_mono, color='blue', s=10, label='Monochromator')
 
         ax.add_patch(patches.Circle((x_sample, y_sample), sample_goniometer_radius, linewidth=2, edgecolor='none', facecolor='green', linestyle='--'))
-        ax.scatter(x_sample, y_sample, color='green', s=sample_goniometer_radius, label='Sample Gonio')
+        ax.scatter(x_sample, y_sample, color='green', s=10, label='Sample Gonio')
 
         ax.add_patch(patches.Circle((x_analyzer, y_analyzer), analyzer_radius, linewidth=2, edgecolor='none', facecolor='red', linestyle='--'))
-        ax.scatter(x_analyzer, y_analyzer, color='red', s=analyzer_radius, label='Analyzer')
+        ax.scatter(x_analyzer, y_analyzer, color='red', s=10, label='Analyzer')
 
         ax.add_patch(patches.Circle((x_detector, y_detector), detector_radius, linewidth=2, edgecolor='none', facecolor='purple', linestyle='--'))
-        ax.scatter(x_detector, y_detector, color='purple', s=detector_radius, label='Detector')
+        ax.scatter(x_detector, y_detector, color='purple', s=10, label='Detector')
 
         # 各コンポーネント間の線を引く
         ax.plot([-max_L, x_mono], [0, y_mono], color='black', linestyle='--')
