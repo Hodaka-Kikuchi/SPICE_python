@@ -1354,10 +1354,10 @@ ces3.insert(0,'0')
 
 ces4 = ttk.Entry(tab_002b)
 ces4.grid(row=2, column=1,sticky="NSEW")
-ces4.insert(0,'1')
+ces4.insert(0,'3')
 ces5 = ttk.Entry(tab_002b)
 ces5.grid(row=2, column=2,sticky="NSEW")
-ces5.insert(0,'1')
+ces5.insert(0,'0')
 ces6 = ttk.Entry(tab_002b)
 ces6.grid(row=2, column=3,sticky="NSEW")
 ces6.insert(0,'0')
@@ -1654,7 +1654,7 @@ def reflection():
     lc_gamma.insert(0, fit_ga)
 
 # fitting結果を反映させるボタン
-ref_button = tk.Button(tab_003b, text="Reflect", command=reflection,width=16)
+ref_button = tk.Button(tab_003b, text="set paramter", command=reflection,width=16)
 ref_button.grid(row=1, column=6, sticky="NSEW")
 
 fit_reswa = tk.Label(tab_003b,text='warning : ')
