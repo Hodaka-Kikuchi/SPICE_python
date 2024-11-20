@@ -752,7 +752,10 @@ rdo_eief0.grid(row=0, column=0, sticky="NSEW")
 rdo_eief1 = tk.Radiobutton(frame4, value=1, variable=eief, text='Ef fix', command=update_label, width=15)
 rdo_eief1.grid(row=1, column=0, sticky="NSEW")
 
-bpl1 = tk.Label(frame4,text='Ef')
+if eief.get()==0:
+    bpl1 = tk.Label(frame4,text='Ei (meV)')
+elif eief.get()==1:
+    bpl1 = tk.Label(frame4,text='Ef (meV)')
 bpl1.grid(row=0, column=1,sticky="NSEW")
 Energy = ttk.Entry(frame4)
 Energy.grid(row=1, column=1,sticky="NSEW")
@@ -975,6 +978,24 @@ def calculate_angle():
     acb8.delete(0, tk.END)
     acb8.insert(0, round(angletable['nu'],4))
     acb8.config(state="readonly") # 編集不可に設定
+    
+    A_sets = []  # A_setsリストを初期化
+    QE_sets = []
+    
+    # A1, A2, A3 を取得して A_sets に追加
+    A1 = round(angletable['A1'],4)  # 'A1'
+    A2 = -round(angletable['A2'],4)  # 'A2'
+    A3 = round(angletable['A3'],4)  # 'A3'
+    A_sets.append([A1, A2, A3])  # A_sets に追加
+    # hw, h,k,l
+    hw = round(float(acbe.get()), 4)  # 'hw'
+    h = round(float(acbh.get()), 4)  # 'h'
+    k = round(float(acbk.get()), 4)  # 'k'
+    l = round(float(acbl.get()), 4)  # 'l'
+    QE_sets.append([hw, h, k, l])
+
+    # プロット関数を呼び出し
+    plot_spectrometer(A_sets,QE_sets)
 
 acle = tk.Label(tab_001a,text='ℏω')
 acle.grid(row=0, column=0,sticky="NSEW")
