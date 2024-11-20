@@ -1,6 +1,9 @@
 import math
 import numpy as np
 from scipy.optimize import minimize
+import configparser
+import os
+import sys
 
 def angle_calc(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe):
     # bragg peakの位置からoffsetを算出
@@ -153,15 +156,24 @@ def angle_calc(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe):
         elif omega_inst>180:
             omega_inst=omega_inst-360
         """
-        # アナライザとモノクロメータ
-        d = 3.355  # PGの場合
+        # アナライザとモノクロメータの面間隔
+        # INIファイルの設定読み込み
+        config = configparser.ConfigParser()
+        if getattr(sys, 'frozen', False):
+            ini_path = os.path.join(os.path.dirname(sys.argv[0]), 'config.ini')
+        else:
+            ini_path = os.path.join(os.path.dirname(__file__), 'config.ini')
+        config.read(ini_path)
+        d_mono = float(config['settings']['d_mono'])
+        d_ana = float(config['settings']['d_ana'])
+        #d = 3.355  # PGの場合
 
         # C1とA1の計算
-        C1 = np.degrees(np.arcsin((2 * np.pi / d) / (2 * np.sqrt(Ei / 2.072))))
+        C1 = np.degrees(np.arcsin((2 * np.pi / d_mono) / (2 * np.sqrt(Ei / 2.072))))
         A1 = 2 * C1
         
         # C3とA3の計算
-        C3 = np.degrees(np.arcsin((2 * np.pi / d) / (2 * np.sqrt(Ef / 2.072))))
+        C3 = np.degrees(np.arcsin((2 * np.pi / d_ana) / (2 * np.sqrt(Ef / 2.072))))
         A3 = 2 * C3
             
         # 結果を辞書としてまとめる

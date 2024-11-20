@@ -26,20 +26,20 @@ def plot_spectrometer_with_gif(A_sets, QE_sets, initial_index=0, save_gif=True, 
     config.read(ini_path)
     
     # 各設定値を取得
-    monochromator_radius = int(config['settings']['monochromator_radius'])
-    monochromator_to_sample = int(config['settings']['monochromator_to_sample'])
-    sample_goniometer_radius = int(config['settings']['sample_goniometer_radius'])
-    sample_to_analyzer = int(config['settings']['sample_to_analyzer'])
-    analyzer_radius = int(config['settings']['analyzer_radius'])
-    analyzer_to_detector = int(config['settings']['analyzer_to_detector'])
-    detector_radius = int(config['settings']['detector_radius'])
-    floor_length = int(config['settings']['floor_length'])
-    floor_width = int(config['settings']['floor_width'])
-    floor_position_x = int(config['settings']['floor_position_x'])
-    floor_position_y = int(config['settings']['floor_position_y'])
-    max_L = monochromator_to_sample + sample_to_analyzer + analyzer_to_detector
-
+    # systemセクションのview設定を読み込む
     view_mode = config['settings']['system']
+    monochromator_radius = float(config['settings']['monochromator_radius'])
+    monochromator_to_sample = float(config['settings']['monochromator_to_sample'])
+    sample_goniometer_radius = float(config['settings']['sample_goniometer_radius'])
+    sample_to_analyzer = float(config['settings']['sample_to_analyzer'])
+    analyzer_radius = float(config['settings']['analyzer_radius'])
+    analyzer_to_detector = float(config['settings']['analyzer_to_detector'])
+    detector_radius = float(config['settings']['detector_radius'])
+    floor_length = float(config['settings']['floor_length'])
+    floor_width = float(config['settings']['floor_width'])
+    floor_position_x = float(config['settings']['floor_position_x'])
+    floor_position_y = float(config['settings']['floor_position_y'])
+    max_L = monochromator_to_sample + sample_to_analyzer + analyzer_to_detector
 
     # プロット準備
     fig, ax = plt.subplots(figsize=(8, 5))

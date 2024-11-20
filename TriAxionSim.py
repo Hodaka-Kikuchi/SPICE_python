@@ -272,7 +272,7 @@ from anglecalc3 import angle_calc3    #
 from specfigscan import plot_spectrometer #
 from fittingLC import fit_lattice_constants
 
-#from specfigscan_gif import plot_spectrometer_with_gif #画像をgif保存したいとき
+from specfigscan_gif import plot_spectrometer_with_gif #画像をgif保存したいとき
 
 # GUIの配分を決める。
 root.columnconfigure(0, weight=1)
@@ -997,6 +997,7 @@ def calculate_angle():
     QE_sets.append([hw, h, k, l])
 
     # プロット関数を呼び出し
+    #plot_spectrometer_with_gif(A_sets,QE_sets)
     plot_spectrometer(A_sets,QE_sets)
 
 acle = tk.Label(tab_001a,text='ℏω')
@@ -1318,8 +1319,9 @@ def constQscan_show_table():
         QE_sets.append([hw, h, k,l])
 
     # プロット関数を呼び出し
+    #plot_spectrometer_with_gif(A_sets,QE_sets)
     plot_spectrometer(A_sets,QE_sets)
-        
+    
     return angletable2
 
 # ボタンの作成
@@ -1460,6 +1462,7 @@ def conostEscan_show_table():
         QE_sets.append([hw, h, k,l])
 
     # プロット関数を呼び出し
+    #plot_spectrometer_with_gif(A_sets,QE_sets)
     plot_spectrometer(A_sets,QE_sets)
     
     return angletable3
