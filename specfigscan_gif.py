@@ -8,7 +8,7 @@ from PIL import Image  # GIF 保存のために必要
 import os
 import sys
 
-def plot_spectrometer_with_gif(A_sets, QE_sets, initial_index=0, save_gif=False, gif_name="spectrometer.gif"):
+def plot_spectrometer_with_gif(A_sets, QE_sets, initial_index=0, save_gif=True, gif_name="spectrometer.gif"):
     """
     三軸分光器のXY平面図を描く + GIF 保存機能
     :param A_sets: A1, A2, A3 の角度セットのリスト
@@ -116,9 +116,10 @@ def plot_spectrometer_with_gif(A_sets, QE_sets, initial_index=0, save_gif=False,
 
     plt.show()
 
-
+"""
 # サンプルデータ
 A_sets = [(0, 30, 60), (10, 40, 70), (20, 50, 80)]
 QE_sets = [(10, 1, 0, 0), (15, 1, 1, 0), (20, 1, 1, 1)]
 
 plot_spectrometer_with_gif(A_sets, QE_sets, save_gif=True)
+"""

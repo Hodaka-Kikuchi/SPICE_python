@@ -272,6 +272,8 @@ from anglecalc3 import angle_calc3    #
 from specfigscan import plot_spectrometer #
 from fittingLC import fit_lattice_constants
 
+#from specfigscan_gif import plot_spectrometer_with_gif #画像をgif保存したいとき
+
 # GUIの配分を決める。
 root.columnconfigure(0, weight=1)
 root.rowconfigure(0, weight=2)
