@@ -100,6 +100,8 @@ import webbrowser
 import csv
 from tkinter import filedialog
 
+from tkinter import PhotoImage
+
 #windowの作成
 root=tk.Tk()
 #windowのタイトル変更
@@ -107,6 +109,18 @@ root.title(f"TriAxionSim ver: {__version__}")
 # TriAxionSim: 三軸 (triple-axis) と「軌跡」や「軸」 (axion) 、Simulationを意識
 #windowのサイズ指定
 root.geometry("550x840")#550*840
+
+# ロゴを設定
+# 実行時のリソースパスを設定
+def resource_path(relative_path):
+    """PyInstallerでパスを解決する関数"""
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
+
+# アイコンの設定
+logo_path = resource_path("logo.ico")
+root.iconbitmap(logo_path)
 
 # フォント設定
 default_font_size = 10
@@ -1742,7 +1756,8 @@ root.mainloop()
 
 #############
 # pyinstaller tips
-# pyinstaller --noconsole --onefile --add-data "config.ini;." TriAxionSim.py
+# pyinstaller --noconsole --onefile --add-data "config.ini;." --add-data "logo.ico;." --icon=logo.ico TriAxionSim.py
+
 """
 コマンド
 pyinstaller TriAxionSim.py --noconsole
