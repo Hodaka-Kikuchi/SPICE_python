@@ -1704,7 +1704,7 @@ def save_cQ_table():
             writer = csv.writer(file)
 
             # ヘッダーを書き込む
-            header = ['hw','h','k','l','C1', 'A1', 'C2', 'A3', 'C3', 'A3', 'mu', 'nu']  # ヘッダー名を必要に応じて調整
+            header = ['hw','h','k','l','C1', 'A1', 'C2', 'A2', 'C3', 'A3', 'mu', 'nu']  # ヘッダー名を必要に応じて調整
             writer.writerow(header)
 
             # angletable2 の各結果を CSV に書き込む
@@ -1727,7 +1727,7 @@ def save_cE_table():
             writer = csv.writer(file)
 
             # ヘッダーを書き込む
-            header = ['hw','h','k','l','C1', 'A1', 'C2', 'A3', 'C3', 'A3', 'mu', 'nu']  # ヘッダー名を必要に応じて調整
+            header = ['hw','h','k','l','C1', 'A1', 'C2', 'A2', 'C3', 'A3', 'mu', 'nu']  # ヘッダー名を必要に応じて調整
             writer.writerow(header)
 
             # angletable2 の各結果を CSV に書き込む
