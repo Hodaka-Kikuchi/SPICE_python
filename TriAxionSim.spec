@@ -5,7 +5,7 @@ a = Analysis(
     ['TriAxionSim.py'],
     pathex=[],
     binaries=[],
-    datas=[('config.ini', '.'), ('logo.ico', '.')],
+    datas=[('config.ini', '.'), ('logo2.ico', '.')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -34,5 +34,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['logo.ico'],
+    icon=['logo2.ico'],
 )

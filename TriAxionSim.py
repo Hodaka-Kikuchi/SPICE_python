@@ -119,7 +119,7 @@ def resource_path(relative_path):
     return os.path.join(os.path.abspath("."), relative_path)
 
 # アイコンの設定
-logo_path = resource_path("logo.ico")
+logo_path = resource_path("logo2.ico")
 root.iconbitmap(logo_path)
 
 # フォント設定
@@ -147,39 +147,7 @@ def load_values_from_ini():
         # .pyの場合、__file__がスクリプトのパスになる
         ini_path = os.path.join(os.path.dirname(__file__), 'config.ini')
     config.read(ini_path)
-    """
-    # 各パラメータのデフォルト値を取得
-    values = {
-        'a': config['DEFAULT'].getfloat('a', 5.026307),
-        'b': config['DEFAULT'].getfloat('b', 5.026307),
-        'c': config['DEFAULT'].getfloat('c', 13.784500),
-        'alpha': config['DEFAULT'].getfloat('alpha', 90),
-        'beta': config['DEFAULT'].getfloat('beta', 90),
-        'gamma': config['DEFAULT'].getfloat('gamma', 120),
-        'h1': config['DEFAULT'].getint('h1', 1),
-        'k1': config['DEFAULT'].getint('k1', 0),
-        'l1': config['DEFAULT'].getint('l1', 0),
-        'h2': config['DEFAULT'].getint('h2', 0),
-        'k2': config['DEFAULT'].getint('k2', 1),
-        'l2': config['DEFAULT'].getint('l2', 0),
-        'maxC1': config['DEFAULT'].getfloat('maxC1', 19.9305),
-        'minC1': config['DEFAULT'].getfloat('minC1', 58.482),
-        'maxA1': config['DEFAULT'].getfloat('maxA1', 39.861),
-        'minA1': config['DEFAULT'].getfloat('minA1', 116.964),
-        'maxC2': config['DEFAULT'].getfloat('maxC2', -180),
-        'minC2': config['DEFAULT'].getfloat('minC2', 180),
-        'maxA2': config['DEFAULT'].getfloat('maxA2', 6),
-        'minA2': config['DEFAULT'].getfloat('minA2', 120),
-        'maxC3': config['DEFAULT'].getfloat('maxC3', 19.9305),
-        'minC3': config['DEFAULT'].getfloat('minC3', 58.482),
-        'maxA3': config['DEFAULT'].getfloat('maxA3', 39.861),
-        'minA3': config['DEFAULT'].getfloat('minA3', 116.964),
-        'maxmu': config['DEFAULT'].getfloat('maxmu', -5),
-        'minmu': config['DEFAULT'].getfloat('minmu', 5),
-        'maxnu': config['DEFAULT'].getfloat('maxnu', -5),
-        'minnu': config['DEFAULT'].getfloat('minnu', 5),
-    }
-    """
+    
     # 各エントリに対応する値を読み込み、挿入
     la.delete(0, tk.END)  # 既存の値をクリア
     la.insert(0, config['DEFAULT'].get('a', '5.026307'))
@@ -193,6 +161,12 @@ def load_values_from_ini():
     lc_beta.insert(0, config['DEFAULT'].get('beta', '90'))
     lc_gamma.delete(0, tk.END)  # 既存の値をクリア
     lc_gamma.insert(0, config['DEFAULT'].get('gamma', '120'))
+    
+    # ラジオボタンの初期状態を読み込む
+    eief_value = int(config['DEFAULT'].get('eief', '1'))  # 1がデフォルト
+
+    # eiefの初期値を設定
+    eief.set(eief_value)
     
     sv1_h.delete(0, tk.END)  # 既存の値をクリア
     sv1_h.insert(0, config['DEFAULT'].get('h1', '1'))
@@ -260,6 +234,7 @@ def save_values_to_ini():
         'h2': sv2_h.get(),
         'k2': sv2_k.get(),
         'l2': sv2_l.get(),
+        'eief': str(eief.get()),  # ラジオボタンの状態を保存
         'maxC1': hwl2f.get(),
         'minC1': hwl2t.get(),
         'maxA1': hwl3f.get(),
@@ -768,7 +743,7 @@ def update_label():
 # チェック有無変数
 eief = tk.IntVar()
 # value=0のラジオボタンにチェックを入れる
-eief.set(1)
+#eief.set(1)
 
 # ラジオボタンを作成し、commandにupdate_labelを設定
 rdo_eief0 = tk.Radiobutton(frame4, value=0, variable=eief, text='Ei fix', command=update_label, width=15)
@@ -1756,7 +1731,7 @@ root.mainloop()
 
 #############
 # pyinstaller tips
-# pyinstaller --noconsole --onefile --add-data "config.ini;." --add-data "logo.ico;." --icon=logo.ico TriAxionSim.py
+# pyinstaller --noconsole --onefile --add-data "config.ini;." --add-data "logo2.ico;." --icon=logo2.ico TriAxionSim.py
 
 """
 コマンド
