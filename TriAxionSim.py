@@ -150,69 +150,93 @@ def load_values_from_ini():
     
     # 各エントリに対応する値を読み込み、挿入
     la.delete(0, tk.END)  # 既存の値をクリア
-    la.insert(0, config['DEFAULT'].get('a', '5.026307'))
+    la.insert(0, config['sample'].get('a', '5.026307'))
     lb.delete(0, tk.END)  # 既存の値をクリア
-    lb.insert(0, config['DEFAULT'].get('b', '5.026307'))
+    lb.insert(0, config['sample'].get('b', '5.026307'))
     lc.delete(0, tk.END)  # 既存の値をクリア
-    lc.insert(0, config['DEFAULT'].get('c', '13.784500'))
+    lc.insert(0, config['sample'].get('c', '13.784500'))
     lc_alpha.delete(0, tk.END)  # 既存の値をクリア
-    lc_alpha.insert(0, config['DEFAULT'].get('alpha', '90'))
+    lc_alpha.insert(0, config['sample'].get('alpha', '90'))
     lc_beta.delete(0, tk.END)  # 既存の値をクリア
-    lc_beta.insert(0, config['DEFAULT'].get('beta', '90'))
+    lc_beta.insert(0, config['sample'].get('beta', '90'))
     lc_gamma.delete(0, tk.END)  # 既存の値をクリア
-    lc_gamma.insert(0, config['DEFAULT'].get('gamma', '120'))
+    lc_gamma.insert(0, config['sample'].get('gamma', '120'))
     
     # ラジオボタンの初期状態を読み込む
-    eief_value = int(config['DEFAULT'].get('eief', '1'))  # 1がデフォルト
+    eief_value = int(config['instrument'].get('eief', '1'))  # 1がデフォルト
 
     # eiefの初期値を設定
     eief.set(eief_value)
     
+    # collimator & mosaic
+    div_1st_h.delete(0, tk.END)  # 既存の値をクリア
+    div_1st_h.insert(0, config['instrument'].get('div_1st_h', '20'))
+    div_1st_v.delete(0, tk.END)  # 既存の値をクリア
+    div_1st_v.insert(0, config['instrument'].get('div_1st_v', '200'))
+    div_2nd_h.delete(0, tk.END)  # 既存の値をクリア
+    div_2nd_h.insert(0, config['instrument'].get('div_2nd_h', '120'))
+    div_2nd_v.delete(0, tk.END)  # 既存の値をクリア
+    div_2nd_v.insert(0, config['instrument'].get('div_2nd_v', '200'))
+    div_3rd_h.delete(0, tk.END)  # 既存の値をクリア
+    div_3rd_h.insert(0, config['instrument'].get('div_3rd_h', '80'))
+    div_3rd_v.delete(0, tk.END)  # 既存の値をクリア
+    div_3rd_v.insert(0, config['instrument'].get('div_3rd_v', '200'))
+    div_4th_h.delete(0, tk.END)  # 既存の値をクリア
+    div_4th_h.insert(0, config['instrument'].get('div_4th_h', '120'))
+    div_4th_v.delete(0, tk.END)  # 既存の値をクリア
+    div_4th_v.insert(0, config['instrument'].get('div_4th_v', '200'))
+    
+    mos_mono.delete(0, tk.END)  # 既存の値をクリア
+    mos_mono.insert(0, config['instrument'].get('mos_mono', '50'))
+    mos_ana.delete(0, tk.END)  # 既存の値をクリア
+    mos_ana.insert(0, config['instrument'].get('mos_ana', '50'))
+    
+    # hardware limit
     sv1_h.delete(0, tk.END)  # 既存の値をクリア
-    sv1_h.insert(0, config['DEFAULT'].get('h1', '1'))
+    sv1_h.insert(0, config['instrument'].get('h1', '1'))
     sv1_k.delete(0, tk.END)  # 既存の値をクリア
-    sv1_k.insert(0, config['DEFAULT'].get('k1', '0'))
+    sv1_k.insert(0, config['instrument'].get('k1', '0'))
     sv1_l.delete(0, tk.END)  # 既存の値をクリア
-    sv1_l.insert(0, config['DEFAULT'].get('l1', '0'))
+    sv1_l.insert(0, config['instrument'].get('l1', '0'))
     sv2_h.delete(0, tk.END)  # 既存の値をクリア
-    sv2_h.insert(0, config['DEFAULT'].get('h2', '0'))
+    sv2_h.insert(0, config['instrument'].get('h2', '0'))
     sv2_k.delete(0, tk.END)  # 既存の値をクリア
-    sv2_k.insert(0, config['DEFAULT'].get('k2', '1'))
+    sv2_k.insert(0, config['instrument'].get('k2', '1'))
     sv2_l.delete(0, tk.END)  # 既存の値をクリア
-    sv2_l.insert(0, config['DEFAULT'].get('l2', '0'))
+    sv2_l.insert(0, config['instrument'].get('l2', '0'))
     
     hwl2f.delete(0, tk.END)  # 既存の値をクリア
-    hwl2f.insert(0, config['DEFAULT'].get('maxC1', '19.9305'))
+    hwl2f.insert(0, config['instrument'].get('maxC1', '19.9305'))
     hwl2t.delete(0, tk.END)  # 既存の値をクリア
-    hwl2t.insert(0, config['DEFAULT'].get('minC1', '58.482'))
+    hwl2t.insert(0, config['instrument'].get('minC1', '58.482'))
     hwl3f.delete(0, tk.END)  # 既存の値をクリア
-    hwl3f.insert(0, config['DEFAULT'].get('maxA1', '19.9305'))
+    hwl3f.insert(0, config['instrument'].get('maxA1', '19.9305'))
     hwl3t.delete(0, tk.END)  # 既存の値をクリア
-    hwl3t.insert(0, config['DEFAULT'].get('minA1', '58.482'))
+    hwl3t.insert(0, config['instrument'].get('minA1', '58.482'))
     hwl4f.delete(0, tk.END)  # 既存の値をクリア
-    hwl4f.insert(0, config['DEFAULT'].get('maxC2', '-180'))
+    hwl4f.insert(0, config['instrument'].get('maxC2', '-180'))
     hwl4t.delete(0, tk.END)  # 既存の値をクリア
-    hwl4t.insert(0, config['DEFAULT'].get('minC2', '180'))
+    hwl4t.insert(0, config['instrument'].get('minC2', '180'))
     hwl5f.delete(0, tk.END)  # 既存の値をクリア
-    hwl5f.insert(0, config['DEFAULT'].get('maxA2', '6'))
+    hwl5f.insert(0, config['instrument'].get('maxA2', '6'))
     hwl5t.delete(0, tk.END)  # 既存の値をクリア
-    hwl5t.insert(0, config['DEFAULT'].get('minA2', '120'))
+    hwl5t.insert(0, config['instrument'].get('minA2', '120'))
     hwl6f.delete(0, tk.END)  # 既存の値をクリア
-    hwl6f.insert(0, config['DEFAULT'].get('maxC3', '19.9305'))
+    hwl6f.insert(0, config['instrument'].get('maxC3', '19.9305'))
     hwl6t.delete(0, tk.END)  # 既存の値をクリア
-    hwl6t.insert(0, config['DEFAULT'].get('minC3', '58.482'))
+    hwl6t.insert(0, config['instrument'].get('minC3', '58.482'))
     hwl7f.delete(0, tk.END)  # 既存の値をクリア
-    hwl7f.insert(0, config['DEFAULT'].get('maxA3', '39.861'))
+    hwl7f.insert(0, config['instrument'].get('maxA3', '39.861'))
     hwl7t.delete(0, tk.END)  # 既存の値をクリア
-    hwl7t.insert(0, config['DEFAULT'].get('minA3', '116.964'))
+    hwl7t.insert(0, config['instrument'].get('minA3', '116.964'))
     hwl8f.delete(0, tk.END)  # 既存の値をクリア
-    hwl8f.insert(0, config['DEFAULT'].get('maxmu', '-5'))
+    hwl8f.insert(0, config['instrument'].get('maxmu', '-5'))
     hwl8t.delete(0, tk.END)  # 既存の値をクリア
-    hwl8t.insert(0, config['DEFAULT'].get('minmu', '5'))
+    hwl8t.insert(0, config['instrument'].get('minmu', '5'))
     hwl9f.delete(0, tk.END)  # 既存の値をクリア
-    hwl9f.insert(0, config['DEFAULT'].get('maxnu', '-5'))
+    hwl9f.insert(0, config['instrument'].get('maxnu', '-5'))
     hwl9t.delete(0, tk.END)  # 既存の値をクリア
-    hwl9t.insert(0, config['DEFAULT'].get('minnu', '5'))
+    hwl9t.insert(0, config['instrument'].get('minnu', '5'))
 
 def save_values_to_ini():
     """
@@ -220,8 +244,24 @@ def save_values_to_ini():
     """
     config = configparser.ConfigParser()
     
-    # ウィジェットの値を取得して設定
-    config['DEFAULT'] = {
+    # INIファイルのパスを決定
+    if getattr(sys, 'frozen', False):
+        ini_path = os.path.join(os.path.dirname(sys.argv[0]), 'config.ini')
+    else:
+        ini_path = os.path.join(os.path.dirname(__file__), 'config.ini')
+    
+    # 既存のINIファイルを読み込む
+    if os.path.exists(ini_path):
+        config.read(ini_path, encoding='utf-8')  # UTF-8で読み込み
+    
+    # 必要なセクションがなければ作成
+    if 'sample' not in config:
+        config['sample'] = {}
+    if 'instrument' not in config:
+        config['instrument'] = {}
+
+    # 'sample'セクションを更新
+    config['sample'].update({
         'a': la.get(),
         'b': lb.get(),
         'c': lc.get(),
@@ -233,8 +273,22 @@ def save_values_to_ini():
         'l1': sv1_l.get(),
         'h2': sv2_h.get(),
         'k2': sv2_k.get(),
-        'l2': sv2_l.get(),
+        'l2': sv2_l.get()
+    })
+
+    # 'instrument'セクションを更新
+    config['instrument'].update({
         'eief': str(eief.get()),  # ラジオボタンの状態を保存
+        'div_1st_h': div_1st_h.get(),
+        'div_1st_v': div_1st_v.get(),
+        'div_2nd_h': div_2nd_h.get(),
+        'div_2nd_v': div_2nd_v.get(),
+        'div_3rd_h': div_3rd_h.get(),
+        'div_3rd_v': div_3rd_v.get(),
+        'div_4th_h': div_4th_h.get(),
+        'div_4th_v': div_4th_v.get(),
+        'mos_mono': mos_mono.get(),
+        'mos_ana': mos_ana.get(),
         'maxC1': hwl2f.get(),
         'minC1': hwl2t.get(),
         'maxA1': hwl3f.get(),
@@ -251,13 +305,7 @@ def save_values_to_ini():
         'minmu': hwl8t.get(),
         'maxnu': hwl9f.get(),
         'minnu': hwl9t.get(),
-    }
-
-    # INIファイルのパスを決定
-    if getattr(sys, 'frozen', False):
-        ini_path = os.path.join(os.path.dirname(sys.argv[0]), 'config.ini')
-    else:
-        ini_path = os.path.join(os.path.dirname(__file__), 'config.ini')
+    })
 
     # INIファイルに書き込み
     with open(ini_path, 'w') as configfile:
@@ -282,6 +330,7 @@ root.rowconfigure(2, weight=4)
 root.rowconfigure(3, weight=2)
 root.rowconfigure(4, weight=5)
 root.rowconfigure(5, weight=3)
+root.rowconfigure(6, weight=3)
 
 # ファイル選択のフレームの作成と設置
 frame1 = ttk.Labelframe(root,text= "lattice infromation")
@@ -717,7 +766,7 @@ rdo_sense1.grid(row=0, column=1, sticky="NSEW")
 """
 
 #ボタン1つで両方の計算を実行
-UBcalculate_button = tk.Button(frame3, text="UB calculation", command=calculate_all)
+UBcalculate_button = tk.Button(frame3, text="UB display", command=calculate_all)
 UBcalculate_button.grid(row=1, column=1,sticky="NSEW")
 
 # ブラッグピーク位置を入力
@@ -1104,10 +1153,80 @@ acl9.grid(row=2, column=0,sticky="NSEW")
 acl10 = tk.Label(tab_001b,text='')
 acl10.grid(row=2, column=1,columnspan=7,sticky="NSEW")
 
+# collimator information
+# ファイル選択のフレームの作成と設置
+frame6 = ttk.Labelframe(root,text= "collimator information")
+frame6.grid(row=5,column=0,sticky="NSEW")
+
+frame6.columnconfigure(0, weight=5)
+frame6.columnconfigure(1, weight=2)
+frame6.rowconfigure(0, weight=1)
+
+frame6a = ttk.Labelframe(frame6,text= "divergence")
+frame6a.grid(row=0,column=0,sticky="NSEW")
+
+frame6a.columnconfigure(0, weight=1)
+frame6a.columnconfigure(1, weight=1)
+frame6a.columnconfigure(2, weight=1)
+frame6a.columnconfigure(3, weight=1)
+frame6a.columnconfigure(4, weight=1)
+frame6a.rowconfigure(0, weight=1)
+frame6a.rowconfigure(1, weight=1)
+frame6a.rowconfigure(2, weight=1)
+
+label1 = tk.Label(frame6a,text='horiontal',width=16)
+label1.grid(row=1, column=0,sticky="NSEW")
+label2 = tk.Label(frame6a,text='vertical',width=16)
+label2.grid(row=2, column=0,sticky="NSEW")
+label3 = tk.Label(frame6a,text='guide')
+label3.grid(row=0, column=1,sticky="NSEW")
+label4 = tk.Label(frame6a,text='2nd col')
+label4.grid(row=0, column=2,sticky="NSEW")
+label5 = tk.Label(frame6a,text='3rd col')
+label5.grid(row=0, column=3,sticky="NSEW")
+label6 = tk.Label(frame6a,text='4th col')
+label6.grid(row=0, column=4,sticky="NSEW")
+
+div_1st_h = ttk.Entry(frame6a)
+div_1st_h.grid(row=1, column=1,sticky="NSEW")
+div_1st_v = ttk.Entry(frame6a)
+div_1st_v.grid(row=2, column=1,sticky="NSEW")
+div_2nd_h = ttk.Entry(frame6a)
+div_2nd_h.grid(row=1, column=2,sticky="NSEW")
+div_2nd_v = ttk.Entry(frame6a)
+div_2nd_v.grid(row=2, column=2,sticky="NSEW")
+div_3rd_h = ttk.Entry(frame6a)
+div_3rd_h.grid(row=1, column=3,sticky="NSEW")
+div_3rd_v = ttk.Entry(frame6a)
+div_3rd_v.grid(row=2, column=3,sticky="NSEW")
+div_4th_h = ttk.Entry(frame6a)
+div_4th_h.grid(row=1, column=4,sticky="NSEW")
+div_4th_v = ttk.Entry(frame6a)
+div_4th_v.grid(row=2, column=4,sticky="NSEW")
+
+frame6b = ttk.Labelframe(frame6,text= "mosaic")
+frame6b.grid(row=0,column=1,sticky="NSEW")
+
+frame6b.columnconfigure(0, weight=1)
+frame6b.columnconfigure(1, weight=1)
+frame6b.rowconfigure(0, weight=1)
+frame6b.rowconfigure(1, weight=1)
+
+label7 = tk.Label(frame6b,text='monochromator',width=20)
+label7.grid(row=0, column=0,sticky="NSEW")
+label8 = tk.Label(frame6b,text='analyzer',width=20)
+label8.grid(row=1, column=0,sticky="NSEW")
+
+mos_mono = ttk.Entry(frame6b)
+mos_mono.grid(row=0, column=1,sticky="NSEW")
+mos_ana = ttk.Entry(frame6b)
+mos_ana.grid(row=1, column=1,sticky="NSEW")
+
+
 # hardware limit
 # ファイル選択のフレームの作成と設置
 frame5 = ttk.Labelframe(root,text= "hardware limit")
-frame5.grid(row=5,column=0,sticky="NSEW")
+frame5.grid(row=6,column=0,sticky="NSEW")
 
 frame5.columnconfigure(0, weight=1)
 frame5.columnconfigure(1, weight=1)

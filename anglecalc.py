@@ -164,8 +164,8 @@ def angle_calc(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe):
         else:
             ini_path = os.path.join(os.path.dirname(__file__), 'config.ini')
         config.read(ini_path)
-        d_mono = float(config['settings']['d_mono'])
-        d_ana = float(config['settings']['d_ana'])
+        d_mono = float(config['instrument']['d_mono'])
+        d_ana = float(config['instrument']['d_ana'])
         #d = 3.355  # PGの場合
 
         # C1とA1の計算
