@@ -3,274 +3,295 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from numpy import pi, sin, cos, tan, sqrt, arcsin, arccos
 from numpy import arctan2  # atan2はarctan2としてインポートする必要があります
+import configparser
+import os
+import sys
 
+def calcreoslution(astar,bstar,cstar,bpe,hkl,hw,fixe):
 
-# Input parameters
-Ef = 3.635  # meV
-hw = 7  # meV
-Ei = hw + Ef
-a = 6.283  # Angstrom
-b = 6.283  # Angstrom
-c = 6.283  # Angstrom
-alpha = 90  # degree
-beta = 90  # degree
-gamma = 90  # degree
-u1 = 1
-u2 = 0
-u3 = 0
-v1 = 0
-v2 = 1
-v3 = 0
-k = 1
-h = 1
-D = 3.355  # Angstrom inverse, PG(002)
+    # INIファイルから設定を読み込む
+    config = configparser.ConfigParser()
+    # .exe化した場合に対応する
+    if getattr(sys, 'frozen', False):
+        # .exeの場合、sys.argv[0]が実行ファイルのパスになる
+        ini_path = os.path.join(os.path.dirname(sys.argv[0]), 'config.ini')
+    else:
+        # .pyの場合、__file__がスクリプトのパスになる
+        ini_path = os.path.join(os.path.dirname(__file__), 'config.ini')
 
-# Constants
-c_neutron = 2.072142  # meV/(Angstrom inverse)^2
-vec1 = 2*np.pi/a  # Angstrom inverse
-vec2 = 2*np.pi/b  # Angstrom inverse
-theta = 90  # degree
+    config.read(ini_path)
 
-# Calculations
-c1 = np.degrees(np.arcsin(np.pi / D * sqrt(c_neutron / Ei)))
-a1 = 2 * c1
+    # 設定を変数に代入
+    # instrumentセクションのview設定を読み込む
+    div_1st_h = float(config['instrument']['div_1st_h'])
+    div_1st_v = float(config['instrument']['div_1st_h'])
+    div_2nd_h = float(config['instrument']['div_1st_h'])
+    div_2nd_v = float(config['instrument']['div_1st_h'])
+    div_3rd_h = float(config['instrument']['div_1st_h'])
+    div_3rd_v = float(config['instrument']['div_1st_h'])
+    div_4th_h = float(config['instrument']['div_1st_h'])
+    div_4th_v = float(config['instrument']['div_1st_h'])
 
-c2 = 30
+    mos_mono_h = float(config['instrument']['mos_mono_h'])
+    mos_mono_v = float(config['instrument']['mos_mono_v'])
+    mos_ana_h = float(config['instrument']['mos_ana_h'])
+    mos_ana_v = float(config['instrument']['mos_ana_v'])
 
-a2 = 10 * 180 / pi  # Placeholder value as per the original MATLAB code
-c3 = np.degrees(np.arcsin(np.pi / D * sqrt(c_neutron / Ef)))
-a3 = 2 * c3
+    mos_sam_h = float(config['sample']['mos_sam_h'])
+    mos_sam_v = float(config['sample']['mos_sam_v'])
+    d_mono = float(config['instrument']['d_mono'])
+    d_ana = float(config['instrument']['d_ana'])
 
-eg = [c1, a1, c2, a2, c3, a3]
+    hkl_cal=hkl[0]*astar+hkl[1]*bstar+hkl[2]*cstar
+    #計算されたrlu
+    N_hkl_cal=np.linalg.norm(hkl_cal)
 
-# Resolution calculations
-ki = sqrt(Ei / c_neutron)
-kf = sqrt(Ef / c_neutron)
-Q = sqrt((k * vec1 + h * vec2 * cos(np.radians(theta))) ** 2 + (h * vec2 * sin(np.radians(theta))) ** 2)
+    if fixe==0: # ei fix
+        Ei = bpe
+        Ef = bpe - hw
+    elif fixe==1: # ef fix
+        Ei = bpe + hw
+        Ef = bpe
 
-thetaM = -c1 / 180 * pi
-thetaS = a2 / 2 / 180 * pi
-thetaA = -c3 / 180 * pi
-phi = np.arctan2(-kf * np.sin(2 * thetaS), ki - kf * np.cos(2 * thetaS))
+    ki=(Ei/2.072)**(1/2)
+    kf=(Ef/2.072)**(1/2)
 
-# Define constants for the resolution matrices
-# ここでαi とβi は、コリメータの水平方向と鉛直方向における発散角を表している。η とη′をモノクロメータとアナライザの水平方向と鉛直方向のモザイクのFWHM
+    phi = np.degrees(np.arccos((ki**2 + kf**2 - N_hkl_cal**2) / (2 * ki * kf)))
 
-alpha1 = 40 / 60 / 180 * pi
-alpha2 = 40 / 60 / 180 * pi
-alpha3 = 40 / 60 / 180 * pi
-alpha4 = 40 / 60 / 180 * pi
-beta1 = 120 / 60 / 180 * pi
-beta2 = 120 / 60 / 180 * pi
-beta3 = 120 / 60 / 180 * pi
-beta4 = 120 / 60 / 180 * pi
-etaM = 25 / 60 / 180 * pi
-etaA = 25 / 60 / 180 * pi
-etaS = 25 / 60 / 180 * pi
-etaMp = 25 / 60 / 180 * pi
-etaAp = 25 / 60 / 180 * pi
-etaSp = 25 / 60 / 180 * pi
+    Q = N_hkl_cal
 
-G = 8 * np.log(2) * np.diag([1 / alpha1 ** 2, 1 / alpha2 ** 2, 1 / beta1 ** 2, 1 / beta2 ** 2, 1 / alpha3 ** 2, 1 / alpha4 ** 2, 1 / beta3 ** 2, 1 / beta4 ** 2])
+    # C1とA1の計算
+    C1 = np.degrees(np.arcsin((2 * np.pi / d_mono) / (2 * np.sqrt(Ei / 2.072))))
+    A1 = 2 * C1
 
-F = 8 * np.log(2) * np.diag([1 / etaM ** 2, 1 / etaMp ** 2, 1 / etaA ** 2, 1 / etaAp ** 2])
+    # C3とA3の計算
+    C3 = np.degrees(np.arcsin((2 * np.pi / d_ana) / (2 * np.sqrt(Ef / 2.072))))
+    A3 = 2 * C3
 
-# Define matrices A, B, and C
-A = np.zeros((6, 8))
-C = np.zeros((4, 8))
-B = np.zeros((4, 6))
+    thetaM = -C1 / 180 * pi
+    thetaS = phi / 2 / 180 * pi
+    thetaA = -C3 / 180 * pi
 
-A[0, 0] = ki / (2 * tan(thetaM))
-A[0, 1] = -A[0, 0]
-A[3, 4] = kf / (2 * tan(thetaA))
-A[3, 5] = -A[3, 4]
-A[1, 1] = ki
-A[2, 3] = ki
-A[4, 4] = kf
-A[5, 6] = kf
+    # Define constants for the resolution matrices
+    # ここでαi とβi は、コリメータの水平方向と鉛直方向における発散角を表している。η とη′をモノクロメータとアナライザの水平方向と鉛直方向のモザイクのFWHM
 
-B[0, 0] = cos(phi)
-B[0, 1] = sin(phi)
-B[0, 3] = -cos(phi - 2 * thetaS)
-B[0, 4] = -sin(phi - 2 * thetaS)
-B[1, 0] = -B[0, 1]
-B[1, 1] = B[0, 0]
-B[1, 3] = -B[0, 4]
-B[1, 4] = B[0, 3]
-B[2, 2] = 1
-B[2, 5] = -1
-B[3, 0] = 2 * c_neutron * ki
-B[3, 3] = -2 * c_neutron * kf
-
-C[0, 0] = 1 / 2
-C[0, 1] = 1 / 2
-C[2, 4] = 1 / 2
-C[2, 5] = 1 / 2
-C[1, 2] = 1 / (2 * sin(thetaM))
-C[1, 3] = -C[1, 2]
-C[3, 6] = 1 / (2 * sin(thetaA))
-C[3, 7] = -C[3, 6]
-
-hofoc = 0
-sampmos = 1
-
-# 行列 C の転置（C' in MATLAB）
-C_T = C.T
-# 計算
-term = np.linalg.inv(G + C_T @ F @ C)  # G + C' * F * C の逆行列
-HF = A @ term @ A.T  # A * (G + C' * F * C)^(-1) * A'
-if hofoc == 1:
-    HF = np.linalg.inv(HF)
-    HF[4, 4] = (1 / (kf * alpha3)) ** 2
-    HF[4, 3] = 0
-    HF[3, 4] = 0
-    HF[3, 3] = (tan(thetaA) / (etaA * kf)) ** 2
-    HF = np.linalg.inv(HF)
-
-Minv = B @ HF @ B.T
-M = np.linalg.inv(Minv)
-
-# RM 行列の設定
-RM = np.zeros((4, 4))  # 4x4 のゼロ行列で初期化
-RM[0, 0] = M[0, 0]
-RM[1, 0] = M[1, 0]
-RM[0, 1] = M[0, 1]
-RM[1, 1] = M[1, 1]
-RM[0, 2] = M[0, 3]
-RM[1, 2] = M[1, 3]
-RM[2, 0] = M[3, 0]
-RM[2, 2] = M[3, 3]
-RM[2, 1] = M[3, 1]
-RM[1, 2] = M[1, 3]
-RM[0, 3] = M[0, 2]
-RM[3, 0] = M[2, 0]
-RM[3, 3] = M[2, 2]
-RM[3, 1] = M[2, 1]
-RM[1, 3] = M[1, 2]
-
-# サンプルモードが1の場合の処理
-sampmos = 1  # 例としてsampmos = 1
-
-if sampmos == 1:
-    # Minv の再計算
-    Minv = np.linalg.inv(RM)
+    alpha1 = div_1st_h / 60 / 180 * pi
+    alpha2 = div_2nd_h / 60 / 180 * pi
+    alpha3 = div_3rd_h / 60 / 180 * pi
+    alpha4 = div_4th_h / 60 / 180 * pi
+    beta1 = div_1st_v / 60 / 180 * pi
+    beta2 = div_2nd_v / 60 / 180 * pi
+    beta3 = div_3rd_v / 60 / 180 * pi
+    beta4 = div_4th_v / 60 / 180 * pi
     
-    # Minv の要素を修正
-    Minv[1, 1] += Q**2 * etaS**2 / (8 * np.log(2))
-    Minv[3, 3] += Q**2 * etaSp**2 / (8 * np.log(2))
-    
-    # RM の再計算
-    RM = np.linalg.inv(Minv)
+    etaM = mos_mono_h / 60 / 180 * pi
+    etaA = mos_ana_h / 60 / 180 * pi
+    etaS = mos_sam_h / 60 / 180 * pi
+    etaMp = mos_mono_v / 60 / 180 * pi
+    etaAp = mos_ana_v / 60 / 180 * pi
+    etaSp = mos_sam_v / 60 / 180 * pi
 
-# RMは(q//,q⊥,hw,qz)における空間分布
+    G = 8 * np.log(2) * np.diag([1 / alpha1 ** 2, 1 / alpha2 ** 2, 1 / beta1 ** 2, 1 / beta2 ** 2, 1 / alpha3 ** 2, 1 / alpha4 ** 2, 1 / beta3 ** 2, 1 / beta4 ** 2])
 
-# 楕円の式 (x=0 の場合、y=0 の場合)
-def fun_x0(y, z):
-    return RM[1, 1] * y**2 + RM[2, 2] * z**2 + 2 * RM[1, 2] * y * z - 2 * np.log(2)
+    F = 8 * np.log(2) * np.diag([1 / etaM ** 2, 1 / etaMp ** 2, 1 / etaA ** 2, 1 / etaAp ** 2])
 
-def fun_y0(x, z):
-    return RM[0, 0] * x**2 + RM[2, 2] * z**2 + 2 * RM[0, 2] * x * z - 2 * np.log(2)
+    # Define matrices A, B, and C
+    A = np.zeros((6, 8))
+    C = np.zeros((4, 8))
+    B = np.zeros((4, 6))
 
-# プロット範囲
-Xrange_lim = 0.1
-Yrange_lim = 0.1
-Zrange_lim = 0.5
-points = 500
-y = np.linspace(-Yrange_lim, Yrange_lim, points)
-z = np.linspace(-Zrange_lim, Zrange_lim, points)
-x = np.linspace(-Xrange_lim, Xrange_lim, points)
+    A[0, 0] = ki / (2 * tan(thetaM))
+    A[0, 1] = -A[0, 0]
+    A[3, 4] = kf / (2 * tan(thetaA))
+    A[3, 5] = -A[3, 4]
+    A[1, 1] = ki
+    A[2, 3] = ki
+    A[4, 4] = kf
+    A[5, 6] = kf
 
-# x=0 の場合の (y, z) 平面
-Y, Z = np.meshgrid(y, z)
-F_x0 = fun_x0(Y, Z)
+    B[0, 0] = cos(phi)
+    B[0, 1] = sin(phi)
+    B[0, 3] = -cos(phi - 2 * thetaS)
+    B[0, 4] = -sin(phi - 2 * thetaS)
+    B[1, 0] = -B[0, 1]
+    B[1, 1] = B[0, 0]
+    B[1, 3] = -B[0, 4]
+    B[1, 4] = B[0, 3]
+    B[2, 2] = 1
+    B[2, 5] = -1
+    B[3, 0] = 2 * 2.072142 * ki
+    B[3, 3] = -2 * 2.072142 * kf
 
-# y=0 の場合の (x, z) 平面
-X, Z = np.meshgrid(x, z)
-F_y0 = fun_y0(X, Z)
+    C[0, 0] = 1 / 2
+    C[0, 1] = 1 / 2
+    C[2, 4] = 1 / 2
+    C[2, 5] = 1 / 2
+    C[1, 2] = 1 / (2 * sin(thetaM))
+    C[1, 3] = -C[1, 2]
+    C[3, 6] = 1 / (2 * sin(thetaA))
+    C[3, 7] = -C[3, 6]
 
-# 投影図の楕円の係数を計算する関数
-def ellipse_coefficients(RM, log2, plane="xz"):
-    if plane == "xz":
-        A = RM[0, 0]
-        C = RM[2, 2]
-        B = 2 * RM[0, 2]
-        D = 0  # xの線形項
-        E = 0  # zの線形項
-    elif plane == "yz":
-        A = RM[1, 1]
-        C = RM[2, 2]
-        B = 2 * RM[1, 2]
-        D = 0  # yの線形項
-        E = 0  # zの線形項
+    hofoc = 0
+    sampmos = 1
 
-    F = -2 * log2
+    # 行列 C の転置（C' in MATLAB）
+    C_T = C.T
+    # 計算
+    term = np.linalg.inv(G + C_T @ F @ C)  # G + C' * F * C の逆行列
+    HF = A @ term @ A.T  # A * (G + C' * F * C)^(-1) * A'
+    if hofoc == 1:
+        HF = np.linalg.inv(HF)
+        HF[4, 4] = (1 / (kf * alpha3)) ** 2
+        HF[4, 3] = 0
+        HF[3, 4] = 0
+        HF[3, 3] = (tan(thetaA) / (etaA * kf)) ** 2
+        HF = np.linalg.inv(HF)
 
-    # 消去された軸（影響を除外）を考慮
-    if plane == "xz":
-        correction = RM[1, 1]  # y軸の効果を除外
-        if correction != 0:
-            A -= (RM[0, 1]**2) / correction
-            C -= (RM[1, 2]**2) / correction
-            B -= 2 * (RM[0, 1] * RM[1, 2]) / correction
-    elif plane == "yz":
-        correction = RM[0, 0]  # x軸の効果を除外
-        if correction != 0:
-            A -= (RM[0, 1]**2) / correction
-            C -= (RM[0, 2]**2) / correction
-            B -= 2 * (RM[0, 1] * RM[0, 2]) / correction
+    Minv = B @ HF @ B.T
+    M = np.linalg.inv(Minv)
 
-    return A, B, C, D, E, F
+    # RM 行列の設定
+    RM = np.zeros((4, 4))  # 4x4 のゼロ行列で初期化
+    RM[0, 0] = M[0, 0]
+    RM[1, 0] = M[1, 0]
+    RM[0, 1] = M[0, 1]
+    RM[1, 1] = M[1, 1]
+    RM[0, 2] = M[0, 3]
+    RM[1, 2] = M[1, 3]
+    RM[2, 0] = M[3, 0]
+    RM[2, 2] = M[3, 3]
+    RM[2, 1] = M[3, 1]
+    RM[1, 2] = M[1, 3]
+    RM[0, 3] = M[0, 2]
+    RM[3, 0] = M[2, 0]
+    RM[3, 3] = M[2, 2]
+    RM[3, 1] = M[2, 1]
+    RM[1, 3] = M[1, 2]
 
-# 楕円をプロットする関数
-def plot_ellipse(A, B, C, D, E, F, Xrange_lim, Zrange_lim, label, color,shift_y=0):
-    x = np.linspace(-Xrange_lim, Xrange_lim, 500)
-    z = np.linspace(-Zrange_lim, Zrange_lim, 500)
+    # サンプルモードが1の場合の処理
+    sampmos = 1  # 例としてsampmos = 1
+
+    if sampmos == 1:
+        # Minv の再計算
+        Minv = np.linalg.inv(RM)
+        
+        # Minv の要素を修正
+        Minv[1, 1] += Q**2 * etaS**2 / (8 * np.log(2))
+        Minv[3, 3] += Q**2 * etaSp**2 / (8 * np.log(2))
+        
+        # RM の再計算
+        RM = np.linalg.inv(Minv)
+
+    # RMは(q//,q⊥,hw,qz)における空間分布
+
+    # 楕円の式 (x=0 の場合、y=0 の場合)
+    def fun_x0(y, z):
+        return RM[1, 1] * y**2 + RM[2, 2] * z**2 + 2 * RM[1, 2] * y * z - 2 * np.log(2)
+
+    def fun_y0(x, z):
+        return RM[0, 0] * x**2 + RM[2, 2] * z**2 + 2 * RM[0, 2] * x * z - 2 * np.log(2)
+
+    # プロット範囲
+    Xrange_lim = 0.1
+    Yrange_lim = 0.1
+    Zrange_lim = 0.5
+    points = 500
+    y = np.linspace(-Yrange_lim, Yrange_lim, points)
+    z = np.linspace(-Zrange_lim, Zrange_lim, points)
+    x = np.linspace(-Xrange_lim, Xrange_lim, points)
+
+    # x=0 の場合の (y, z) 平面
+    Y, Z = np.meshgrid(y, z)
+    F_x0 = fun_x0(Y, Z)
+
+    # y=0 の場合の (x, z) 平面
     X, Z = np.meshgrid(x, z)
+    F_y0 = fun_y0(X, Z)
 
-    # 楕円の式
-    ellipse = A * X**2 + B * X * Z + C * Z**2 + D * X + E * Z + F
+    # 投影図の楕円の係数を計算する関数
+    def ellipse_coefficients(RM, log2, plane="xz"):
+        if plane == "xz":
+            A = RM[0, 0]
+            C = RM[2, 2]
+            B = 2 * RM[0, 2]
+            D = 0  # xの線形項
+            E = 0  # zの線形項
+        elif plane == "yz":
+            A = RM[1, 1]
+            C = RM[2, 2]
+            B = 2 * RM[1, 2]
+            D = 0  # yの線形項
+            E = 0  # zの線形項
+
+        F = -2 * log2
+
+        # 消去された軸（影響を除外）を考慮
+        if plane == "xz":
+            correction = RM[1, 1]  # y軸の効果を除外
+            if correction != 0:
+                A -= (RM[0, 1]**2) / correction
+                C -= (RM[1, 2]**2) / correction
+                B -= 2 * (RM[0, 1] * RM[1, 2]) / correction
+        elif plane == "yz":
+            correction = RM[0, 0]  # x軸の効果を除外
+            if correction != 0:
+                A -= (RM[0, 1]**2) / correction
+                C -= (RM[0, 2]**2) / correction
+                B -= 2 * (RM[0, 1] * RM[0, 2]) / correction
+
+        return A, B, C, D, E, F
+
+    # 楕円をプロットする関数
+    def plot_ellipse(A, B, C, D, E, F, Xrange_lim, Zrange_lim, label, color,shift_y=0):
+        x = np.linspace(-Xrange_lim, Xrange_lim, 500)
+        z = np.linspace(-Zrange_lim, Zrange_lim, 500)
+        X, Z = np.meshgrid(x, z)
+
+        # 楕円の式
+        ellipse = A * X**2 + B * X * Z + C * Z**2 + D * X + E * Z + F
+        
+        # y方向にhwだけずらす
+        Z_shifted = Z + shift_y
+
+        # 等高線をプロット（楕円の曲線部分）
+        plt.contour(X, Z_shifted, ellipse, levels=[0], colors=color, label=label)
+
+    log2 = 2 * np.log(2)
+
+    # xz平面の楕円の係数
+    A_xz, B_xz, C_xz, D_xz, E_xz, F_xz = ellipse_coefficients(RM, log2, plane="xz")
+
+    # yz平面の楕円の係数
+    A_yz, B_yz, C_yz, D_yz, E_yz, F_yz = ellipse_coefficients(RM, log2, plane="yz")
+
+    # グラフの描画
+    plt.figure(figsize=(8, 8))
+    """
+    # x=0 の場合（点線で表示）
+    contour_x0 = plt.contour(Y, Z, F_x0, levels=[0], colors="blue", linestyles="--", label="x = 0")
+    plt.plot([], [], color="blue", label='$Q_{y}$ ($\AA^{-1}$)')  # 凡例用
+
+    # y=0 の場合（点線で表示）
+    contour_y0 = plt.contour(X, Z, F_y0, levels=[0], colors="red", linestyles="--", label="y = 0")
+    plt.plot([], [], color="red", label='$Q_{x}$ ($\AA^{-1}$)')  # 凡例用
+    """
+    # xz平面とyz平面の楕円を描画
+    plot_ellipse(A_yz, B_yz, C_yz, D_yz, E_yz, F_yz, Xrange_lim, Zrange_lim, label="Projection onto yz-plane", color="blue", shift_y=hw)
+    plot_ellipse(A_xz, B_xz, C_xz, D_xz, E_xz, F_xz, Xrange_lim, Zrange_lim, label="Projection onto xz-plane", color="red", shift_y=hw)
+
+    # 軸やラベルの設定
+    plt.axhline(0, color="black", linestyle="--", linewidth=0.5)
+    plt.axvline(0, color="black", linestyle="--", linewidth=0.5)
+    plt.xlabel("$Q$ ($\AA^{-1}$)")
+    plt.ylabel("ℏω (meV)")
+    plt.title("Projection of Ellipsoid onto xz and yz Planes")
+    plt.legend(loc="upper right")
+
+    # 軸の表示範囲を明示的に設定
+    plt.xlim([-Xrange_lim, Xrange_lim])
+    plt.ylim([hw-Zrange_lim, hw+Zrange_lim])
+    plt.grid(True)
+
+    # プロットの表示
+    plt.show()
     
-    # y方向にhwだけずらす
-    Z_shifted = Z + shift_y
-
-    # 等高線をプロット（楕円の曲線部分）
-    plt.contour(X, Z_shifted, ellipse, levels=[0], colors=color, label=label)
-
-log2 = 2 * np.log(2)
-
-# xz平面の楕円の係数
-A_xz, B_xz, C_xz, D_xz, E_xz, F_xz = ellipse_coefficients(RM, log2, plane="xz")
-
-# yz平面の楕円の係数
-A_yz, B_yz, C_yz, D_yz, E_yz, F_yz = ellipse_coefficients(RM, log2, plane="yz")
-
-# グラフの描画
-plt.figure(figsize=(8, 8))
-"""
-# x=0 の場合（点線で表示）
-contour_x0 = plt.contour(Y, Z, F_x0, levels=[0], colors="blue", linestyles="--", label="x = 0")
-plt.plot([], [], color="blue", label='$Q_{y}$ ($\AA^{-1}$)')  # 凡例用
-
-# y=0 の場合（点線で表示）
-contour_y0 = plt.contour(X, Z, F_y0, levels=[0], colors="red", linestyles="--", label="y = 0")
-plt.plot([], [], color="red", label='$Q_{x}$ ($\AA^{-1}$)')  # 凡例用
-"""
-# xz平面とyz平面の楕円を描画
-plot_ellipse(A_yz, B_yz, C_yz, D_yz, E_yz, F_yz, Xrange_lim, Zrange_lim, label="Projection onto yz-plane", color="blue", shift_y=hw)
-plot_ellipse(A_xz, B_xz, C_xz, D_xz, E_xz, F_xz, Xrange_lim, Zrange_lim, label="Projection onto xz-plane", color="red", shift_y=hw)
-
-# 軸やラベルの設定
-plt.axhline(0, color="black", linestyle="--", linewidth=0.5)
-plt.axvline(0, color="black", linestyle="--", linewidth=0.5)
-plt.xlabel("x or y")
-plt.ylabel("z")
-plt.title("Projection of Ellipsoid onto xz and yz Planes")
-plt.legend(loc="upper right")
-
-# 軸の表示範囲を明示的に設定
-plt.xlim([-Xrange_lim, Xrange_lim])
-plt.ylim([hw-Zrange_lim, hw+Zrange_lim])
-plt.grid(True)
-
-# プロットの表示
-plt.show()

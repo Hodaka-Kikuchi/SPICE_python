@@ -162,6 +162,11 @@ def load_values_from_ini():
     lc_gamma.delete(0, tk.END)  # 既存の値をクリア
     lc_gamma.insert(0, config['sample'].get('gamma', '120'))
     
+    mos_sam_h.delete(0, tk.END)  # 既存の値をクリア
+    mos_sam_h.insert(0, config['sample'].get('mos_sam_h', '20'))
+    mos_sam_v.delete(0, tk.END)  # 既存の値をクリア
+    mos_sam_v.insert(0, config['sample'].get('mos_sam_v', '200'))
+    
     # ラジオボタンの初期状態を読み込む
     eief_value = int(config['instrument'].get('eief', '1'))  # 1がデフォルト
 
@@ -186,10 +191,18 @@ def load_values_from_ini():
     div_4th_v.delete(0, tk.END)  # 既存の値をクリア
     div_4th_v.insert(0, config['instrument'].get('div_4th_v', '200'))
     
-    mos_mono.delete(0, tk.END)  # 既存の値をクリア
-    mos_mono.insert(0, config['instrument'].get('mos_mono', '50'))
-    mos_ana.delete(0, tk.END)  # 既存の値をクリア
-    mos_ana.insert(0, config['instrument'].get('mos_ana', '50'))
+    mos_mono_h.delete(0, tk.END)  # 既存の値をクリア
+    mos_mono_h.insert(0, config['instrument'].get('mos_mono_h', '50'))
+    mos_mono_v.delete(0, tk.END)  # 既存の値をクリア
+    mos_mono_v.insert(0, config['instrument'].get('mos_mono_v', '50'))
+    mos_sam_h.delete(0, tk.END)  # 既存の値をクリア
+    mos_sam_h.insert(0, config['instrument'].get('mos_sam_h', '50'))
+    mos_sam_v.delete(0, tk.END)  # 既存の値をクリア
+    mos_sam_v.insert(0, config['instrument'].get('mos_sam_v', '50'))
+    mos_ana_h.delete(0, tk.END)  # 既存の値をクリア
+    mos_ana_h.insert(0, config['instrument'].get('mos_ana_h', '50'))
+    mos_ana_v.delete(0, tk.END)  # 既存の値をクリア
+    mos_ana_v.insert(0, config['instrument'].get('mos_ana_v', '50'))
     
     # hardware limit
     sv1_h.delete(0, tk.END)  # 既存の値をクリア
@@ -273,7 +286,9 @@ def save_values_to_ini():
         'l1': sv1_l.get(),
         'h2': sv2_h.get(),
         'k2': sv2_k.get(),
-        'l2': sv2_l.get()
+        'l2': sv2_l.get(),
+        'mos_sam_h': mos_sam_h.get(),
+        'mos_sam_v': mos_sam_v.get(),
     })
 
     # 'instrument'セクションを更新
@@ -287,8 +302,10 @@ def save_values_to_ini():
         'div_3rd_v': div_3rd_v.get(),
         'div_4th_h': div_4th_h.get(),
         'div_4th_v': div_4th_v.get(),
-        'mos_mono': mos_mono.get(),
-        'mos_ana': mos_ana.get(),
+        'mos_mono_h': mos_mono_h.get(),
+        'mos_mono_v': mos_mono_v.get(),
+        'mos_ana_h': mos_ana_h.get(),
+        'mos_ana_v': mos_ana_v.get(),
         'maxC1': hwl2f.get(),
         'minC1': hwl2t.get(),
         'maxA1': hwl3f.get(),
@@ -319,6 +336,7 @@ from anglecalc2 import angle_calc2    #
 from anglecalc3 import angle_calc3    #
 from specfigscan import plot_spectrometer #
 from fittingLC import fit_lattice_constants
+from QEresolution import calcreoslution
 
 from specfigscan_gif import plot_spectrometer_with_gif #画像をgif保存したいとき
 
@@ -1048,6 +1066,16 @@ def calculate_angle():
     # プロット関数を呼び出し
     #plot_spectrometer_with_gif(A_sets,QE_sets)
     plot_spectrometer(A_sets,QE_sets)
+    
+    # RLtableを取得し、辞書から必要な変数を取り出す
+    RLtable = on_Rlcalc()
+    astar = RLtable['astar']
+    bstar = RLtable['bstar']
+    cstar = RLtable['cstar']
+    bpe = float(Energy.get())
+    hkl = np.array([h,k,l])
+    fixe=float(eief.get())
+    calcreoslution(astar,bstar,cstar,bpe,hkl,hw,fixe)
 
 acle = tk.Label(tab_001a,text='ℏω')
 acle.grid(row=0, column=0,sticky="NSEW")
@@ -1159,7 +1187,7 @@ frame6 = ttk.Labelframe(root,text= "collimator information")
 frame6.grid(row=5,column=0,sticky="NSEW")
 
 frame6.columnconfigure(0, weight=5)
-frame6.columnconfigure(1, weight=2)
+frame6.columnconfigure(1, weight=3)
 frame6.rowconfigure(0, weight=1)
 
 frame6a = ttk.Labelframe(frame6,text= "divergence")
@@ -1209,19 +1237,33 @@ frame6b.grid(row=0,column=1,sticky="NSEW")
 
 frame6b.columnconfigure(0, weight=1)
 frame6b.columnconfigure(1, weight=1)
+frame6b.columnconfigure(2, weight=1)
+frame6b.columnconfigure(3, weight=1)
 frame6b.rowconfigure(0, weight=1)
 frame6b.rowconfigure(1, weight=1)
+frame6b.rowconfigure(2, weight=1)
 
-label7 = tk.Label(frame6b,text='monochromator',width=20)
-label7.grid(row=0, column=0,sticky="NSEW")
-label8 = tk.Label(frame6b,text='analyzer',width=20)
-label8.grid(row=1, column=0,sticky="NSEW")
+label7 = tk.Label(frame6b,text='monochromator')
+label7.grid(row=0, column=1,sticky="NSEW")
+label8 = tk.Label(frame6b,text='sample')
+label8.grid(row=0, column=2,sticky="NSEW")
+label8 = tk.Label(frame6b,text='analyzer')
+label8.grid(row=0, column=3,sticky="NSEW")
 
-mos_mono = ttk.Entry(frame6b)
-mos_mono.grid(row=0, column=1,sticky="NSEW")
-mos_ana = ttk.Entry(frame6b)
-mos_ana.grid(row=1, column=1,sticky="NSEW")
+mos_mono_h = ttk.Entry(frame6b)
+mos_mono_h.grid(row=1, column=1,sticky="NSEW")
+mos_mono_v = ttk.Entry(frame6b)
+mos_mono_v.grid(row=2, column=1,sticky="NSEW")
 
+mos_sam_h = ttk.Entry(frame6b)
+mos_sam_h.grid(row=1, column=2,sticky="NSEW")
+mos_sam_v = ttk.Entry(frame6b)
+mos_sam_v.grid(row=2, column=2,sticky="NSEW")
+
+mos_ana_h = ttk.Entry(frame6b)
+mos_ana_h.grid(row=1, column=3,sticky="NSEW")
+mos_ana_v = ttk.Entry(frame6b)
+mos_ana_v.grid(row=2, column=3,sticky="NSEW")
 
 # hardware limit
 # ファイル選択のフレームの作成と設置
