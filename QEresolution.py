@@ -183,23 +183,22 @@ def calcreoslution(astar,bstar,cstar,bpe,hkl,hw,fixe):
         RM = np.linalg.inv(Minv)
 
     # RMは(q//,q⊥,hw,qz)における空間分布
-
+    """
     # 楕円の式 (x=0 の場合、y=0 の場合)
     def fun_x0(y, z):
         return RM[1, 1] * y**2 + RM[2, 2] * z**2 + 2 * RM[1, 2] * y * z - 2 * np.log(2)
 
     def fun_y0(x, z):
         return RM[0, 0] * x**2 + RM[2, 2] * z**2 + 2 * RM[0, 2] * x * z - 2 * np.log(2)
-
-    # プロット範囲
+    
     Xrange_lim = 0.1
     Yrange_lim = 0.1
     Zrange_lim = 0.5
-    points = 500
     y = np.linspace(-Yrange_lim, Yrange_lim, points)
     z = np.linspace(-Zrange_lim, Zrange_lim, points)
     x = np.linspace(-Xrange_lim, Xrange_lim, points)
-
+    points = 500
+    
     # x=0 の場合の (y, z) 平面
     Y, Z = np.meshgrid(y, z)
     F_x0 = fun_x0(Y, Z)
@@ -207,7 +206,15 @@ def calcreoslution(astar,bstar,cstar,bpe,hkl,hw,fixe):
     # y=0 の場合の (x, z) 平面
     X, Z = np.meshgrid(x, z)
     F_y0 = fun_y0(X, Z)
-
+    """
+    
+    # プロット範囲
+    #Xrange_lim = 0.1
+    #Zrange_lim = 0.5
+    
+    Xrange_lim=Q*5/100
+    Zrange_lim=Ei*10/100
+    
     # 投影図の楕円の係数を計算する関数
     def ellipse_coefficients(RM, log2, plane="xz"):
         if plane == "xz":
@@ -276,16 +283,15 @@ def calcreoslution(astar,bstar,cstar,bpe,hkl,hw,fixe):
     plt.plot([], [], color="red", label='$Q_{x}$ ($\AA^{-1}$)')  # 凡例用
     """
     # xz平面とyz平面の楕円を描画
-    plot_ellipse(A_yz, B_yz, C_yz, D_yz, E_yz, F_yz, Xrange_lim, Zrange_lim, label="Projection onto yz-plane", color="blue", shift_y=hw)
-    plot_ellipse(A_xz, B_xz, C_xz, D_xz, E_xz, F_xz, Xrange_lim, Zrange_lim, label="Projection onto xz-plane", color="red", shift_y=hw)
+    plot_ellipse(A_yz, B_yz, C_yz, D_yz, E_yz, F_yz, Xrange_lim, Zrange_lim, label = "", color="blue", shift_y=hw)
+    plot_ellipse(A_xz, B_xz, C_xz, D_xz, E_xz, F_xz, Xrange_lim, Zrange_lim, label = "", color="red", shift_y=hw)
 
     # 軸やラベルの設定
     plt.axhline(0, color="black", linestyle="--", linewidth=0.5)
     plt.axvline(0, color="black", linestyle="--", linewidth=0.5)
     plt.xlabel("$Q$ ($\AA^{-1}$)")
     plt.ylabel("ℏω (meV)")
-    plt.title("Projection of Ellipsoid onto xz and yz Planes")
-    plt.legend(loc="upper right")
+    plt.title("red circle : Qx, blue circle : Qy")
 
     # 軸の表示範囲を明示的に設定
     plt.xlim([-Xrange_lim, Xrange_lim])

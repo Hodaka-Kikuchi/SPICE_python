@@ -172,7 +172,8 @@ def load_values_from_ini():
 
     # eiefの初期値を設定
     eief.set(eief_value)
-    
+    # ラベルの自動更新
+    update_label()
     # collimator & mosaic
     div_1st_h.delete(0, tk.END)  # 既存の値をクリア
     div_1st_h.insert(0, config['instrument'].get('div_1st_h', '20'))
