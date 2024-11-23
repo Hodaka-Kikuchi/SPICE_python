@@ -337,7 +337,7 @@ from anglecalc2 import angle_calc2    #
 from anglecalc3 import angle_calc3    #
 from specfigscan import plot_spectrometer #
 from fittingLC import fit_lattice_constants
-from QEresolution import calcreoslution
+from QEresolution import calcresolution
 
 from specfigscan_gif import plot_spectrometer_with_gif #画像をgif保存したいとき
 
@@ -1076,7 +1076,9 @@ def calculate_angle():
     bpe = float(Energy.get())
     hkl = np.array([h,k,l])
     fixe=float(eief.get())
-    calcreoslution(astar,bstar,cstar,bpe,hkl,hw,fixe)
+    calcresolution(astar,bstar,cstar,bpe,hkl,hw,fixe)
+    
+    plt.show()
 
 acle = tk.Label(tab_001a,text='ℏω')
 acle.grid(row=0, column=0,sticky="NSEW")

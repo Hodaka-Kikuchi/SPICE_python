@@ -7,7 +7,7 @@ import configparser
 import os
 import sys
 
-def calcreoslution(astar,bstar,cstar,bpe,hkl,hw,fixe):
+def calcresolution(astar,bstar,cstar,bpe,hkl,hw,fixe):
 
     # INIファイルから設定を読み込む
     config = configparser.ConfigParser()
@@ -216,6 +216,7 @@ def calcreoslution(astar,bstar,cstar,bpe,hkl,hw,fixe):
     Zrange_lim=Ei*10/100
     
     # 投影図の楕円の係数を計算する関数
+    # fun3=@(x,y,z) RM(1,1).*x.^2+RM(2,2).*y.^2+RM(3,3).*z.^2+2*RM(1,2).*x.*y+2*RM(1,3).*x.*z+2*RM(2,3).*y.*z-2*log(2);
     def ellipse_coefficients(RM, log2, plane="xz"):
         if plane == "xz":
             A = RM[0, 0]
@@ -272,7 +273,7 @@ def calcreoslution(astar,bstar,cstar,bpe,hkl,hw,fixe):
     A_yz, B_yz, C_yz, D_yz, E_yz, F_yz = ellipse_coefficients(RM, log2, plane="yz")
 
     # グラフの描画
-    plt.figure(figsize=(8, 8))
+    plt.figure(figsize=(8, 5))
     """
     # x=0 の場合（点線で表示）
     contour_x0 = plt.contour(Y, Z, F_x0, levels=[0], colors="blue", linestyles="--", label="x = 0")
@@ -299,5 +300,5 @@ def calcreoslution(astar,bstar,cstar,bpe,hkl,hw,fixe):
     plt.grid(True)
 
     # プロットの表示
-    plt.show()
+    #plt.show()
     

@@ -134,4 +134,4 @@ def plot_spectrometer(A_sets,QE_sets, initial_index=0):
     # キーイベントを設定
     fig.canvas.mpl_connect('key_press_event', on_key)
 
-    plt.show()
+    #plt.show()
