@@ -785,7 +785,7 @@ rdo_sense1.grid(row=0, column=1, sticky="NSEW")
 """
 
 #ボタン1つで両方の計算を実行
-UBcalculate_button = tk.Button(frame3, text="UB display", command=calculate_all)
+UBcalculate_button = ttk.Button(frame3, text="UB display", command=calculate_all)
 UBcalculate_button.grid(row=1, column=1,sticky="NSEW")
 
 # ブラッグピーク位置を入力
@@ -868,9 +868,9 @@ bp_nu.grid(row=1, column=7,sticky="NSEW")
 bp_nu.insert(0,'0')
 
 
-# select scan type
+# select feature
 # ファイル選択のフレームの作成と設置
-frame6 = ttk.Labelframe(root,text= "select scan type")
+frame6 = ttk.Labelframe(root,text= "select feature")
 frame6.grid(row=4,column=0,sticky="NSEW")
 
 # 計算する位置を入力
@@ -920,6 +920,7 @@ tab_001a.columnconfigure(1, weight=1)
 tab_001a.columnconfigure(2, weight=1)
 tab_001a.columnconfigure(3, weight=1)
 tab_001a.columnconfigure(4, weight=1)
+tab_001a.columnconfigure(5, weight=1)
 tab_001a.rowconfigure(0, weight=1)
 tab_001a.rowconfigure(1, weight=1)
 
@@ -1064,19 +1065,21 @@ def calculate_angle():
     l = round(float(acbl.get()), 4)  # 'l'
     QE_sets.append([hw, h, k, l])
 
-    # プロット関数を呼び出し
-    #plot_spectrometer_with_gif(A_sets,QE_sets)
-    plot_spectrometer(A_sets,QE_sets)
+    if fig_spec.get()==1:
+        # プロット関数を呼び出し
+        #plot_spectrometer_with_gif(A_sets,QE_sets)
+        plot_spectrometer(A_sets,QE_sets)
     
-    # RLtableを取得し、辞書から必要な変数を取り出す
-    RLtable = on_Rlcalc()
-    astar = RLtable['astar']
-    bstar = RLtable['bstar']
-    cstar = RLtable['cstar']
-    bpe = float(Energy.get())
-    hkl = np.array([h,k,l])
-    fixe=float(eief.get())
-    calcresolution(astar,bstar,cstar,bpe,hkl,hw,fixe)
+    if fig_reso.get()==1:
+        # RLtableを取得し、辞書から必要な変数を取り出す
+        RLtable = on_Rlcalc()
+        astar = RLtable['astar']
+        bstar = RLtable['bstar']
+        cstar = RLtable['cstar']
+        bpe = float(Energy.get())
+        hkl = np.array([h,k,l])
+        fixe=float(eief.get())
+        calcresolution(astar,bstar,cstar,bpe,hkl,hw,fixe)
     
     plt.show()
 
@@ -1105,8 +1108,25 @@ acbl.grid(row=1, column=3,sticky="NSEW")
 acbl.insert(0,'0')
 
 #ボタン1つで両方の計算を実行
-Angle_calculate_button = tk.Button(tab_001a, text="angle calculation", command=calculate_angle,width=16)
+Angle_calculate_button = ttk.Button(tab_001a, text="calc", command=calculate_angle,width=16)
 Angle_calculate_button.grid(row=1, column=4,sticky="NSEW")
+
+# 分光器図と分解能を表示するかどうかのチェックボックス
+# チェック有無変数
+fig_spec = tk.IntVar()
+# value=0にチェックを入れる
+fig_spec.set(1)
+
+show_fig_spec = tk.Checkbutton(tab_001a, variable=fig_spec, text='spectromter',width=16)
+show_fig_spec.grid(row=0, column=5,sticky="NSEW")
+
+# チェック有無変数
+fig_reso = tk.IntVar()
+# value=0にチェックを入れる
+fig_reso.set(1)
+
+show_fig_reso = tk.Checkbutton(tab_001a, variable=fig_reso, text='resolution')
+show_fig_reso.grid(row=1, column=5,sticky="NSEW")
 
 tab_001b = ttk.Labelframe(tab_001,text= "calculation results")
 tab_001b.grid(row=1,column=0,sticky="NSEW")
@@ -1246,7 +1266,7 @@ frame6b.rowconfigure(0, weight=1)
 frame6b.rowconfigure(1, weight=1)
 frame6b.rowconfigure(2, weight=1)
 
-label7 = tk.Label(frame6b,text='monochromator')
+label7 = tk.Label(frame6b,text='monochro')
 label7.grid(row=0, column=1,sticky="NSEW")
 label8 = tk.Label(frame6b,text='sample')
 label8.grid(row=0, column=2,sticky="NSEW")
@@ -1379,6 +1399,7 @@ tab_002a.rowconfigure(0, weight=1)
 tab_002a.rowconfigure(1, weight=1)
 tab_002a.rowconfigure(2, weight=1)
 tab_002a.rowconfigure(3, weight=1)
+tab_002a.rowconfigure(4, weight=1)
 
 cqslt = tk.Label(tab_002a,text='ℏω')
 cqslt.grid(row=0, column=1,sticky="NSEW")
@@ -1482,15 +1503,46 @@ def constQscan_show_table():
         l = round(results['l'], 4)  # 'A3'
         QE_sets.append([hw, h, k,l])
 
-    # プロット関数を呼び出し
-    #plot_spectrometer_with_gif(A_sets,QE_sets)
-    plot_spectrometer(A_sets,QE_sets)
+    if fig_spec_cQ.get()==1:
+        # プロット関数を呼び出し
+        #plot_spectrometer_with_gif(A_sets,QE_sets)
+        plot_spectrometer(A_sets,QE_sets)
+    """
+    if fig_reso_cQ.get()==1:
+        # RLtableを取得し、辞書から必要な変数を取り出す
+        RLtable = on_Rlcalc()
+        astar = RLtable['astar']
+        bstar = RLtable['bstar']
+        cstar = RLtable['cstar']
+        bpe = float(Energy.get())
+        hkl = np.array([h,k,l])
+        fixe=float(eief.get())
+        calcresolution(astar,bstar,cstar,bpe,hkl,hw,fixe)
+    """
+    plt.show()
     
     return angletable2
 
 # ボタンの作成
-button = tk.Button(tab_002a, text="Show", command=constQscan_show_table,width=10)
-button.grid(row=2, column=2,columnspan=3, sticky="NSEW")
+button = ttk.Button(tab_002a, text="clac", command=constQscan_show_table)
+button.grid(row=4, column=1,columnspan=2, sticky="NSEW")
+
+# 分光器図と分解能を表示するかどうかのチェックボックス
+# チェック有無変数
+fig_spec_cQ = tk.IntVar()
+# value=0にチェックを入れる
+fig_spec_cQ.set(1)
+
+show_fig_spec_cQ = tk.Checkbutton(tab_002a, variable=fig_spec_cQ, text='spec')
+show_fig_spec_cQ.grid(row=4, column=3,sticky="NSEW")
+
+# チェック有無変数
+fig_reso_cQ = tk.IntVar()
+# value=0にチェックを入れる
+fig_reso_cQ.set(1)
+
+show_fig_reso_cQ = tk.Checkbutton(tab_002a, variable=fig_reso_cQ, text='reso')
+show_fig_reso_cQ.grid(row=4, column=4,sticky="NSEW")
 
 tab_002b = ttk.Labelframe(tab_002,text= "constant E scan")
 tab_002b.grid(row=0,column=1,sticky="NSEW")
@@ -1503,6 +1555,7 @@ tab_002b.rowconfigure(0, weight=1)
 tab_002b.rowconfigure(1, weight=1)
 tab_002b.rowconfigure(2, weight=1)
 tab_002b.rowconfigure(3, weight=1)
+tab_002b.rowconfigure(4, weight=1)
 
 cesel= tk.Label(tab_002b,text='ℏω')
 cesel.grid(row=0, column=4,sticky="NSEW")
@@ -1625,15 +1678,47 @@ def conostEscan_show_table():
         l = round(results['l'], 4)  # 'A3'
         QE_sets.append([hw, h, k,l])
 
-    # プロット関数を呼び出し
-    #plot_spectrometer_with_gif(A_sets,QE_sets)
-    plot_spectrometer(A_sets,QE_sets)
+    if fig_spec_cE.get()==1:
+        # プロット関数を呼び出し
+        #plot_spectrometer_with_gif(A_sets,QE_sets)
+        plot_spectrometer(A_sets,QE_sets)
+    
+    """
+    if fig_spec_cE.get()==1:
+        # RLtableを取得し、辞書から必要な変数を取り出す
+        RLtable = on_Rlcalc()
+        astar = RLtable['astar']
+        bstar = RLtable['bstar']
+        cstar = RLtable['cstar']
+        bpe = float(Energy.get())
+        hkl = np.array([h,k,l])
+        fixe=float(eief.get())
+        calcresolution(astar,bstar,cstar,bpe,hkl,hw,fixe)
+    """
+    plt.show()
     
     return angletable3
 
 # ボタンの作成
-button = tk.Button(tab_002b, text="Show", command=conostEscan_show_table,width=10)
-button.grid(row=2, column=4, sticky="NSEW")
+button = ttk.Button(tab_002b, text="calc", command=conostEscan_show_table)
+button.grid(row=4, column=1,columnspan=2, sticky="NSEW")
+
+# 分光器図と分解能を表示するかどうかのチェックボックス
+# チェック有無変数
+fig_spec_cE = tk.IntVar()
+# value=0にチェックを入れる
+fig_spec_cE.set(1)
+
+show_fig_spec_cE = tk.Checkbutton(tab_002b, variable=fig_spec_cE, text='spec')
+show_fig_spec_cE.grid(row=4, column=3,sticky="NSEW")
+
+# チェック有無変数
+fig_reso_cE = tk.IntVar()
+# value=0にチェックを入れる
+fig_reso_cE.set(1)
+
+show_fig_reso_cE = tk.Checkbutton(tab_002b, variable=fig_reso_cE, text='reso')
+show_fig_reso_cE.grid(row=4, column=4,sticky="NSEW")
 
 # グリッドの重みを設定
 tab_003.columnconfigure(0, weight=1)
@@ -1781,7 +1866,7 @@ def fitting_process():
         fit_resme.configure(text=f"{str(e)}", fg="red")
 
 # フィッティング開始ボタン
-fit_button = tk.Button(tab_003a, text="Fit", command=fitting_process,width=16)
+fit_button = ttk.Button(tab_003a, text="Fit", command=fitting_process,width=16)
 fit_button.grid(row=1, column=5, sticky="NSEW")
 
 # fitting結果の表示
@@ -1834,7 +1919,7 @@ def reflection():
     lc_gamma.insert(0, fit_ga)
 
 # fitting結果を反映させるボタン
-ref_button = tk.Button(tab_003b, text="set paramter", command=reflection,width=16)
+ref_button = ttk.Button(tab_003b, text="set paramter", command=reflection,width=16)
 ref_button.grid(row=1, column=6, sticky="NSEW")
 
 fit_reswa = tk.Label(tab_003b,text='warning : ')
