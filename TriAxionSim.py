@@ -921,6 +921,7 @@ tab_001a.columnconfigure(2, weight=1)
 tab_001a.columnconfigure(3, weight=1)
 tab_001a.columnconfigure(4, weight=1)
 tab_001a.columnconfigure(5, weight=1)
+tab_001a.columnconfigure(6, weight=1)
 tab_001a.rowconfigure(0, weight=1)
 tab_001a.rowconfigure(1, weight=1)
 
@@ -1070,6 +1071,9 @@ def calculate_angle():
         #plot_spectrometer_with_gif(A_sets,QE_sets)
         plot_spectrometer(A_sets,QE_sets)
     
+    Hfocus = calc_hf.get()
+    num_ana = float(acna.get())
+    
     if fig_reso.get()==1:
         # RLtableを取得し、辞書から必要な変数を取り出す
         RLtable = on_Rlcalc()
@@ -1079,7 +1083,25 @@ def calculate_angle():
         bpe = float(Energy.get())
         hkl = np.array([h,k,l])
         fixe=float(eief.get())
-        calcresolution(astar,bstar,cstar,bpe,hkl,hw,fixe)
+        
+        # Entry ウィジェットの値を辞書にまとめる
+        entry_values = {
+            "div_1st_h": div_1st_h.get(),
+            "div_1st_v": div_1st_v.get(),
+            "div_2nd_h": div_2nd_h.get(),
+            "div_2nd_v": div_2nd_v.get(),
+            "div_3rd_h": div_3rd_h.get(),
+            "div_3rd_v": div_3rd_v.get(),
+            "div_4th_h": div_4th_h.get(),
+            "div_4th_v": div_4th_v.get(),
+            "mos_mono_h": mos_mono_h.get(),
+            "mos_mono_v": mos_mono_v.get(),
+            "mos_sam_h": mos_sam_h.get(),
+            "mos_sam_v": mos_sam_v.get(),
+            "mos_ana_h": mos_ana_h.get(),
+            "mos_ana_v": mos_ana_v.get(),
+        }
+        calcresolution(astar,bstar,cstar,bpe,hkl,hw,fixe,Hfocus,num_ana,entry_values)
     
     plt.show()
 
@@ -1107,9 +1129,16 @@ acbl = ttk.Entry(tab_001a)
 acbl.grid(row=1, column=3,sticky="NSEW")
 acbl.insert(0,'0')
 
+aclna = tk.Label(tab_001a,text='blade num')
+aclna.grid(row=0, column=4,sticky="NSEW")
+acna = ttk.Entry(tab_001a)
+acna.grid(row=1, column=4,sticky="NSEW")
+acna.insert(0,'7')
+
+
 #ボタン1つで両方の計算を実行
 Angle_calculate_button = ttk.Button(tab_001a, text="calc", command=calculate_angle,width=16)
-Angle_calculate_button.grid(row=1, column=4,sticky="NSEW")
+Angle_calculate_button.grid(row=1, column=5,sticky="NSEW")
 
 # 分光器図と分解能を表示するかどうかのチェックボックス
 # チェック有無変数
@@ -1117,16 +1146,24 @@ fig_spec = tk.IntVar()
 # value=0にチェックを入れる
 fig_spec.set(1)
 
-show_fig_spec = tk.Checkbutton(tab_001a, variable=fig_spec, text='spectromter',width=16)
-show_fig_spec.grid(row=0, column=5,sticky="NSEW")
+show_fig_spec = tk.Checkbutton(tab_001a, variable=fig_spec, text='spec',width=10)
+show_fig_spec.grid(row=0, column=6,sticky="NSEW")
 
 # チェック有無変数
 fig_reso = tk.IntVar()
 # value=0にチェックを入れる
 fig_reso.set(1)
 
-show_fig_reso = tk.Checkbutton(tab_001a, variable=fig_reso, text='resolution')
-show_fig_reso.grid(row=1, column=5,sticky="NSEW")
+show_fig_reso = tk.Checkbutton(tab_001a, variable=fig_reso, text='reso')
+show_fig_reso.grid(row=1, column=6,sticky="NSEW")
+
+# チェック有無変数
+calc_hf = tk.IntVar()
+# value=0にチェックを入れる
+calc_hf.set(1)
+
+calc_HF = tk.Checkbutton(tab_001a, variable=calc_hf, text='HF')
+calc_HF.grid(row=0, column=5,sticky="NSEW")
 
 tab_001b = ttk.Labelframe(tab_001,text= "calculation results")
 tab_001b.grid(row=1,column=0,sticky="NSEW")
