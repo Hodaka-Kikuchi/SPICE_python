@@ -921,7 +921,6 @@ tab_001a.columnconfigure(2, weight=1)
 tab_001a.columnconfigure(3, weight=1)
 tab_001a.columnconfigure(4, weight=1)
 tab_001a.columnconfigure(5, weight=1)
-tab_001a.columnconfigure(6, weight=1)
 tab_001a.rowconfigure(0, weight=1)
 tab_001a.rowconfigure(1, weight=1)
 
@@ -1129,16 +1128,9 @@ acbl = ttk.Entry(tab_001a)
 acbl.grid(row=1, column=3,sticky="NSEW")
 acbl.insert(0,'0')
 
-aclna = tk.Label(tab_001a,text='blade num')
-aclna.grid(row=0, column=4,sticky="NSEW")
-acna = ttk.Entry(tab_001a)
-acna.grid(row=1, column=4,sticky="NSEW")
-acna.insert(0,'7')
-
-
 #ボタン1つで両方の計算を実行
 Angle_calculate_button = ttk.Button(tab_001a, text="calc", command=calculate_angle,width=16)
-Angle_calculate_button.grid(row=1, column=5,sticky="NSEW")
+Angle_calculate_button.grid(row=1, column=4,sticky="NSEW")
 
 # 分光器図と分解能を表示するかどうかのチェックボックス
 # チェック有無変数
@@ -1147,7 +1139,7 @@ fig_spec = tk.IntVar()
 fig_spec.set(1)
 
 show_fig_spec = tk.Checkbutton(tab_001a, variable=fig_spec, text='spec',width=10)
-show_fig_spec.grid(row=0, column=6,sticky="NSEW")
+show_fig_spec.grid(row=0, column=5,sticky="NSEW")
 
 # チェック有無変数
 fig_reso = tk.IntVar()
@@ -1155,15 +1147,7 @@ fig_reso = tk.IntVar()
 fig_reso.set(1)
 
 show_fig_reso = tk.Checkbutton(tab_001a, variable=fig_reso, text='reso')
-show_fig_reso.grid(row=1, column=6,sticky="NSEW")
-
-# チェック有無変数
-calc_hf = tk.IntVar()
-# value=0にチェックを入れる
-calc_hf.set(1)
-
-calc_HF = tk.Checkbutton(tab_001a, variable=calc_hf, text='HF')
-calc_HF.grid(row=0, column=5,sticky="NSEW")
+show_fig_reso.grid(row=1, column=5,sticky="NSEW")
 
 tab_001b = ttk.Labelframe(tab_001,text= "calculation results")
 tab_001b.grid(row=1,column=0,sticky="NSEW")
@@ -1243,11 +1227,12 @@ acl10.grid(row=2, column=1,columnspan=7,sticky="NSEW")
 
 # collimator information
 # ファイル選択のフレームの作成と設置
-frame6 = ttk.Labelframe(root,text= "collimator information")
+frame6 = ttk.Labelframe(root,text= "instrumental condition")
 frame6.grid(row=5,column=0,sticky="NSEW")
 
 frame6.columnconfigure(0, weight=5)
-frame6.columnconfigure(1, weight=3)
+frame6.columnconfigure(1, weight=4)
+frame6.columnconfigure(2, weight=1)
 frame6.rowconfigure(0, weight=1)
 
 frame6a = ttk.Labelframe(frame6,text= "divergence")
@@ -1262,9 +1247,9 @@ frame6a.rowconfigure(0, weight=1)
 frame6a.rowconfigure(1, weight=1)
 frame6a.rowconfigure(2, weight=1)
 
-label1 = tk.Label(frame6a,text='horiontal',width=16)
+label1 = tk.Label(frame6a,text='H',width = 12)
 label1.grid(row=1, column=0,sticky="NSEW")
-label2 = tk.Label(frame6a,text='vertical',width=16)
+label2 = tk.Label(frame6a,text='V',width = 12)
 label2.grid(row=2, column=0,sticky="NSEW")
 label3 = tk.Label(frame6a,text='guide')
 label3.grid(row=0, column=1,sticky="NSEW")
@@ -1303,6 +1288,10 @@ frame6b.rowconfigure(0, weight=1)
 frame6b.rowconfigure(1, weight=1)
 frame6b.rowconfigure(2, weight=1)
 
+label1 = tk.Label(frame6b,text='H',width = 12)
+label1.grid(row=1, column=0,sticky="NSEW")
+label2 = tk.Label(frame6b,text='V',width = 12)
+label2.grid(row=2, column=0,sticky="NSEW")
 label7 = tk.Label(frame6b,text='monochro')
 label7.grid(row=0, column=1,sticky="NSEW")
 label8 = tk.Label(frame6b,text='sample')
@@ -1324,6 +1313,27 @@ mos_ana_h = ttk.Entry(frame6b)
 mos_ana_h.grid(row=1, column=3,sticky="NSEW")
 mos_ana_v = ttk.Entry(frame6b)
 mos_ana_v.grid(row=2, column=3,sticky="NSEW")
+
+frame6c = ttk.Labelframe(frame6,text= "focusing")
+frame6c.grid(row=0,column=2,sticky="NSEW")
+frame6c.columnconfigure(0, weight=1)
+frame6c.rowconfigure(0, weight=1)
+frame6c.rowconfigure(1, weight=1)
+frame6c.rowconfigure(2, weight=1)
+
+#チェック有無変数
+calc_hf = tk.IntVar()
+# value=0にチェックを入れる
+calc_hf.set(1)
+
+calc_HF = tk.Checkbutton(frame6c, variable=calc_hf, text='on')
+calc_HF.grid(row=0, column=0,sticky="NSEW")
+
+aclna = tk.Label(frame6c,text='blade num')
+aclna.grid(row=1, column=0,sticky="NSEW")
+acna = ttk.Entry(frame6c)
+acna.grid(row=2, column=0,sticky="NSEW")
+acna.insert(0,'7')
 
 # hardware limit
 # ファイル選択のフレームの作成と設置
