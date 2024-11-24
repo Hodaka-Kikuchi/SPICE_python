@@ -162,6 +162,19 @@ def load_values_from_ini():
     lc_gamma.delete(0, tk.END)  # 既存の値をクリア
     lc_gamma.insert(0, config['sample'].get('gamma', '120'))
     
+    sv1_h.delete(0, tk.END)  # 既存の値をクリア
+    sv1_h.insert(0, config['sample'].get('h1', '1'))
+    sv1_k.delete(0, tk.END)  # 既存の値をクリア
+    sv1_k.insert(0, config['sample'].get('k1', '0'))
+    sv1_l.delete(0, tk.END)  # 既存の値をクリア
+    sv1_l.insert(0, config['sample'].get('l1', '0'))
+    sv2_h.delete(0, tk.END)  # 既存の値をクリア
+    sv2_h.insert(0, config['sample'].get('h2', '0'))
+    sv2_k.delete(0, tk.END)  # 既存の値をクリア
+    sv2_k.insert(0, config['sample'].get('k2', '1'))
+    sv2_l.delete(0, tk.END)  # 既存の値をクリア
+    sv2_l.insert(0, config['sample'].get('l2', '0'))
+    
     # ラジオボタンの初期状態を読み込む
     eief_value = int(config['instrument'].get('eief', '1'))  # 1がデフォルト
 
@@ -201,19 +214,6 @@ def load_values_from_ini():
     mos_ana_v.insert(0, config['instrument'].get('mos_ana_v', '50'))
     
     # hardware limit
-    sv1_h.delete(0, tk.END)  # 既存の値をクリア
-    sv1_h.insert(0, config['instrument'].get('h1', '1'))
-    sv1_k.delete(0, tk.END)  # 既存の値をクリア
-    sv1_k.insert(0, config['instrument'].get('k1', '0'))
-    sv1_l.delete(0, tk.END)  # 既存の値をクリア
-    sv1_l.insert(0, config['instrument'].get('l1', '0'))
-    sv2_h.delete(0, tk.END)  # 既存の値をクリア
-    sv2_h.insert(0, config['instrument'].get('h2', '0'))
-    sv2_k.delete(0, tk.END)  # 既存の値をクリア
-    sv2_k.insert(0, config['instrument'].get('k2', '1'))
-    sv2_l.delete(0, tk.END)  # 既存の値をクリア
-    sv2_l.insert(0, config['instrument'].get('l2', '0'))
-    
     hwl2f.delete(0, tk.END)  # 既存の値をクリア
     hwl2f.insert(0, config['instrument'].get('maxC1', '19.9305'))
     hwl2t.delete(0, tk.END)  # 既存の値をクリア
