@@ -162,11 +162,6 @@ def load_values_from_ini():
     lc_gamma.delete(0, tk.END)  # 既存の値をクリア
     lc_gamma.insert(0, config['sample'].get('gamma', '120'))
     
-    mos_sam_h.delete(0, tk.END)  # 既存の値をクリア
-    mos_sam_h.insert(0, config['sample'].get('mos_sam_h', '20'))
-    mos_sam_v.delete(0, tk.END)  # 既存の値をクリア
-    mos_sam_v.insert(0, config['sample'].get('mos_sam_v', '200'))
-    
     # ラジオボタンの初期状態を読み込む
     eief_value = int(config['instrument'].get('eief', '1'))  # 1がデフォルト
 
@@ -191,15 +186,15 @@ def load_values_from_ini():
     div_4th_h.insert(0, config['instrument'].get('div_4th_h', '120'))
     div_4th_v.delete(0, tk.END)  # 既存の値をクリア
     div_4th_v.insert(0, config['instrument'].get('div_4th_v', '200'))
+    mos_sam_h.delete(0, tk.END)  # 既存の値をクリア
+    mos_sam_h.insert(0, config['sample'].get('mos_sam_h', '50'))
+    mos_sam_v.delete(0, tk.END)  # 既存の値をクリア
+    mos_sam_v.insert(0, config['sample'].get('mos_sam_v', '50'))
     
     mos_mono_h.delete(0, tk.END)  # 既存の値をクリア
     mos_mono_h.insert(0, config['instrument'].get('mos_mono_h', '50'))
     mos_mono_v.delete(0, tk.END)  # 既存の値をクリア
     mos_mono_v.insert(0, config['instrument'].get('mos_mono_v', '50'))
-    mos_sam_h.delete(0, tk.END)  # 既存の値をクリア
-    mos_sam_h.insert(0, config['instrument'].get('mos_sam_h', '50'))
-    mos_sam_v.delete(0, tk.END)  # 既存の値をクリア
-    mos_sam_v.insert(0, config['instrument'].get('mos_sam_v', '50'))
     mos_ana_h.delete(0, tk.END)  # 既存の値をクリア
     mos_ana_h.insert(0, config['instrument'].get('mos_ana_h', '50'))
     mos_ana_v.delete(0, tk.END)  # 既存の値をクリア
