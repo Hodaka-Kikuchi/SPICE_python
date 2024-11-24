@@ -76,9 +76,9 @@ def calcresolution(A_sets,bpe,fixe,hw,Hfocus,num_ana,entry_values):
     
     # system設定に基づいてy軸の設定を変更
     if view_mode == 'left':
-        EM = 1
-    elif view_mode == 'right':
         EM = -1
+    elif view_mode == 'right':
+        EM = 1
 
     if fixe==0: # ei fix
         Ei = bpe
@@ -98,9 +98,9 @@ def calcresolution(A_sets,bpe,fixe,hw,Hfocus,num_ana,entry_values):
     # C3とA3の計算
     C3 = A3/2
 
-    thetaM = C1 / 180 * pi * EM
+    thetaM = -C1 / 180 * pi * EM
     thetaS = A2 / 2 / 180 * pi
-    thetaA = C3 / 180 * pi * EM
+    thetaA = -C3 / 180 * pi * EM
 
     # Define constants for the resolution matrices
     # ここでαi とβi は、コリメータの水平方向と鉛直方向における発散角を表している。η とη′をモノクロメータとアナライザの水平方向と鉛直方向のモザイクのFWHM
