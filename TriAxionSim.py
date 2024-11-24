@@ -1743,7 +1743,7 @@ def conostEscan_show_table():
     Hfocus = calc_hf.get()
     num_ana = float(acna.get())
     
-    if fig_reso_cQ.get()==1:
+    if fig_reso_cE.get()==1:
         bpe = float(Energy.get())
         fixe=float(eief.get())
         
