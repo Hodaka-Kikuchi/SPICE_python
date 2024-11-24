@@ -1074,13 +1074,7 @@ def calculate_angle():
     num_ana = float(acna.get())
     
     if fig_reso.get()==1:
-        # RLtableを取得し、辞書から必要な変数を取り出す
-        RLtable = on_Rlcalc()
-        astar = RLtable['astar']
-        bstar = RLtable['bstar']
-        cstar = RLtable['cstar']
         bpe = float(Energy.get())
-        hkl = np.array([h,k,l])
         fixe=float(eief.get())
         
         # Entry ウィジェットの値を辞書にまとめる
@@ -1100,7 +1094,7 @@ def calculate_angle():
             "mos_ana_h": mos_ana_h.get(),
             "mos_ana_v": mos_ana_v.get(),
         }
-        calcresolution(astar,bstar,cstar,bpe,hkl,hw,fixe,Hfocus,num_ana,entry_values)
+        calcresolution(A_sets,bpe,fixe,hw,Hfocus,num_ana,entry_values)
     
     plt.show()
 

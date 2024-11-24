@@ -7,7 +7,7 @@ import configparser
 import os
 import sys
 
-def calcresolution(astar,bstar,cstar,bpe,hkl,hw,fixe,Hfocus,num_ana,entry_values):
+def calcresolution(A_sets,bpe,fixe,hw,Hfocus,num_ana,entry_values):
 
     # INIファイルから設定を読み込む
     config = configparser.ConfigParser()
@@ -44,10 +44,11 @@ def calcresolution(astar,bstar,cstar,bpe,hkl,hw,fixe,Hfocus,num_ana,entry_values
 
     mos_sam_h = float(config['sample']['mos_sam_h'])
     mos_sam_v = float(config['sample']['mos_sam_v'])
-    """
     
     d_mono = float(config['instrument']['d_mono'])
     d_ana = float(config['instrument']['d_ana'])
+    """
+    view_mode = config['settings']['system']
     
     # divergenceの読み出し
     div_1st_h = float(entry_values.get("div_1st_h"))
@@ -68,10 +69,16 @@ def calcresolution(astar,bstar,cstar,bpe,hkl,hw,fixe,Hfocus,num_ana,entry_values
     
     sample_to_analyzer = float(config['settings']['sample_to_analyzer'])
     analyzer_width = float(config['settings']['analyzer_width'])
-
-    hkl_cal=hkl[0]*astar+hkl[1]*bstar+hkl[2]*cstar
-    #計算されたrlu
-    N_hkl_cal=np.linalg.norm(hkl_cal)
+    
+    A1, A2, A3 = A_sets[0]
+    
+    A2 = -A2 # 分光器の図を書くためにA2はマイナスにして値を渡しているため
+    
+    # system設定に基づいてy軸の設定を変更
+    if view_mode == 'left':
+        EM = 1
+    elif view_mode == 'right':
+        EM = -1
 
     if fixe==0: # ei fix
         Ei = bpe
@@ -83,21 +90,17 @@ def calcresolution(astar,bstar,cstar,bpe,hkl,hw,fixe,Hfocus,num_ana,entry_values
     ki=(Ei/2.072)**(1/2)
     kf=(Ef/2.072)**(1/2)
 
-    phi = np.degrees(np.arccos((ki**2 + kf**2 - N_hkl_cal**2) / (2 * ki * kf)))
-
-    Q = N_hkl_cal
+    Q = np.sqrt(ki**2 + kf**2 - 2 * ki * kf * np.cos(np.radians(A2))) 
 
     # C1とA1の計算
-    C1 = np.degrees(np.arcsin((2 * np.pi / d_mono) / (2 * np.sqrt(Ei / 2.072))))
-    A1 = 2 * C1
+    C1 = A1/2
 
     # C3とA3の計算
-    C3 = np.degrees(np.arcsin((2 * np.pi / d_ana) / (2 * np.sqrt(Ef / 2.072))))
-    A3 = 2 * C3
+    C3 = A3/2
 
-    thetaM = -C1 / 180 * pi
-    thetaS = phi / 2 / 180 * pi
-    thetaA = -C3 / 180 * pi
+    thetaM = C1 / 180 * pi * EM
+    thetaS = A2 / 2 / 180 * pi
+    thetaA = C3 / 180 * pi * EM
 
     # Define constants for the resolution matrices
     # ここでαi とβi は、コリメータの水平方向と鉛直方向における発散角を表している。η とη′をモノクロメータとアナライザの水平方向と鉛直方向のモザイクのFWHM
@@ -145,10 +148,10 @@ def calcresolution(astar,bstar,cstar,bpe,hkl,hw,fixe,Hfocus,num_ana,entry_values
     A[5, 6] = kf
 
     # 2.072142=h^2/m
-    B[0, 0] = cos(phi)
-    B[0, 1] = sin(phi)
-    B[0, 3] = -cos(phi - 2 * thetaS)
-    B[0, 4] = -sin(phi - 2 * thetaS)
+    B[0, 0] = cos(A2)
+    B[0, 1] = sin(A2)
+    B[0, 3] = -cos(A2 - 2 * thetaS)
+    B[0, 4] = -sin(A2 - 2 * thetaS)
     B[1, 0] = -B[0, 1]
     B[1, 1] = B[0, 0]
     B[1, 3] = -B[0, 4]
@@ -284,7 +287,7 @@ def calcresolution(astar,bstar,cstar,bpe,hkl,hw,fixe,Hfocus,num_ana,entry_values
         return A, B, C, D, E, F
 
     # 楕円をプロットする関数
-    def plot_ellipse(A, B, C, D, E, F, Xrange_lim, Zrange_lim, label, color,shift_y=0):
+    def plot_ellipse(A, B, C, D, E, F, Xrange_lim, Zrange_lim, label, color,shift_x=0,shift_y=0):
         x = np.linspace(-Xrange_lim, Xrange_lim, 500)
         z = np.linspace(-Zrange_lim, Zrange_lim, 500)
         X, Z = np.meshgrid(x, z)
@@ -293,10 +296,13 @@ def calcresolution(astar,bstar,cstar,bpe,hkl,hw,fixe,Hfocus,num_ana,entry_values
         ellipse = A * X**2 + B * X * Z + C * Z**2 + D * X + E * Z + F
         
         # y方向にhwだけずらす
+        X_shifted = X + shift_x
+        # y方向にhwだけずらす
         Z_shifted = Z + shift_y
 
         # 等高線をプロット（楕円の曲線部分）
-        plt.contour(X, Z_shifted, ellipse, levels=[0], colors=color, label=label)
+        plt.contour(X_shifted, Z_shifted, ellipse, levels=[0], colors=color, label=label)
+
 
     log2 = 2 * np.log(2)
 
@@ -318,18 +324,18 @@ def calcresolution(astar,bstar,cstar,bpe,hkl,hw,fixe,Hfocus,num_ana,entry_values
     plt.plot([], [], color="red", label='$Q_{x}$ ($\AA^{-1}$)')  # 凡例用
     """
     # xz平面とyz平面の楕円を描画
-    plot_ellipse(A_yz, B_yz, C_yz, D_yz, E_yz, F_yz, Xrange_lim, Zrange_lim, label = "", color="blue", shift_y=hw)
-    plot_ellipse(A_xz, B_xz, C_xz, D_xz, E_xz, F_xz, Xrange_lim, Zrange_lim, label = "", color="red", shift_y=hw)
+    plot_ellipse(A_yz, B_yz, C_yz, D_yz, E_yz, F_yz, Xrange_lim, Zrange_lim, label = "", color="blue",shift_x=Q, shift_y=hw)
+    plot_ellipse(A_xz, B_xz, C_xz, D_xz, E_xz, F_xz, Xrange_lim, Zrange_lim, label = "", color="red",shift_x=Q, shift_y=hw)
 
     # 軸やラベルの設定
     plt.axhline(0, color="black", linestyle="--", linewidth=0.5)
     plt.axvline(0, color="black", linestyle="--", linewidth=0.5)
     plt.xlabel("$Q$ ($\AA^{-1}$)")
     plt.ylabel("ℏω (meV)")
-    plt.title("red circle : Qx, blue circle : Qy")
+    plt.title("red circle : $Q_{\parallel}$, blue circle : $Q_{\perp}$")
 
     # 軸の表示範囲を明示的に設定
-    plt.xlim([-Xrange_lim, Xrange_lim])
+    plt.xlim([Q-Xrange_lim, Q+Xrange_lim])
     plt.ylim([hw-Zrange_lim, hw+Zrange_lim])
     plt.grid(True)
 
