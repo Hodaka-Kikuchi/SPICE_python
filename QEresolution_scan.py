@@ -196,12 +196,11 @@ def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,init
         HF = A @ term @ A.T  # A * (G + C' * F * C)^(-1) * A'
         if Hfocus == 1:
             HF = np.linalg.inv(HF)
-            HF[4, 4] = (1 / (kf * alpha3)) ** 2
+            HF[4, 4] = 12 / ((kf * af / 180 * pi) ** 2)
             HF[4, 3] = 0
             HF[3, 4] = 0
-            HF[3, 3] = (np.tan(np.radians(thetaA)) / (etaA * kf)) ** 2
+            HF[3, 3] = 12*(np.tan(np.radians(thetaA)) / (etaA * kf)) ** 2
             HF = np.linalg.inv(HF)
-
         Minv = B @ HF @ B.T
         M = np.linalg.inv(Minv)
 
@@ -240,10 +239,10 @@ def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,init
         #Xrange_lim = 0.1
         #Zrange_lim = 0.5
         if Hfocus==0:
-            Xrange_lim=Q_max*5/100
+            Xrange_lim=Q_max*3/100
         elif Hfocus==1:
-            Xrange_lim=Q_max*5*num_ana/100
-        Zrange_lim=Ei_max*10/100
+            Xrange_lim=Q_max*1.5*num_ana/100
+        Zrange_lim=Ei_max*8/100
         
         # Qx=Q//,Qy=Q⊥の定義
         
@@ -300,7 +299,7 @@ def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,init
             ax.contour(X_shifted, Z_shifted, ellipse, levels=[0], colors=color, label=label)
 
 
-        log2 = 2 * np.log(2)
+        log2 = np.log(2)
 
         # xz平面の楕円の係数
         A_xz, B_xz, C_xz, D_xz, E_xz, F_xz = ellipse_coefficients(RM, log2, plane="xz")
