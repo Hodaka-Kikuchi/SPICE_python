@@ -144,6 +144,7 @@ def calcresolution(astar,bstar,cstar,bpe,hkl,hw,fixe,Hfocus,num_ana,entry_values
     A[4, 4] = kf
     A[5, 6] = kf
 
+    # 2.072142=h^2/m
     B[0, 0] = cos(phi)
     B[0, 1] = sin(phi)
     B[0, 3] = -cos(phi - 2 * thetaS)
@@ -245,6 +246,8 @@ def calcresolution(astar,bstar,cstar,bpe,hkl,hw,fixe,Hfocus,num_ana,entry_values
     elif Hfocus==1:
         Xrange_lim=Q*7*num_ana/100
     Zrange_lim=Ei*10/100
+    
+    # Qx=Q//,Qy=Q⊥の定義
     
     # 投影図の楕円の係数を計算する関数
     # fun3=@(x,y,z) RM(1,1).*x.^2+RM(2,2).*y.^2+RM(3,3).*z.^2+2*RM(1,2).*x.*y+2*RM(1,3).*x.*z+2*RM(2,3).*y.*z-2*log(2);
