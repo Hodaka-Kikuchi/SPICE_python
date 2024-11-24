@@ -223,7 +223,7 @@ def calcresolution(A_sets,QE_sets,bpe,fixe,hw,Hfocus,num_ana,entry_values):
     if Hfocus==0:
         Xrange_lim=Q*5/100
     elif Hfocus==1:
-        Xrange_lim=Q*7*num_ana/100
+        Xrange_lim=Q*5*num_ana/100
     Zrange_lim=Ei*10/100
     
     # Qx=Q//,Qy=Q⊥の定義

@@ -48,8 +48,16 @@ def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,init
     hw_max = np.max(QE_sets_array[:,0])
     if fixe==0: # ei fix
         Ei_max = bpe
+        Ef_max = bpe + hw_max
+        ki_max=(Ei_max/2.072)**(1/2)
+        kf_max=(Ef_max/2.072)**(1/2)
+        Q_max = np.sqrt(ki_max**2 + kf_max**2 - 2 * ki_max * kf_max * np.cos(np.radians(100))) 
     elif fixe==1: # ef fix
         Ei_max = bpe + hw_max
+        Ef_max = bpe
+        ki_max=(Ei_max/2.072)**(1/2)
+        kf_max=(Ef_max/2.072)**(1/2)
+        Q_max = np.sqrt(ki_max**2 + kf_max**2 - 2 * ki_max * kf_max * np.cos(np.radians(100))) 
     
     # プロット設定
     # グラフの描画
@@ -232,9 +240,9 @@ def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,init
         #Xrange_lim = 0.1
         #Zrange_lim = 0.5
         if Hfocus==0:
-            Xrange_lim=Q*5/100
+            Xrange_lim=Q_max*5/100
         elif Hfocus==1:
-            Xrange_lim=Q*7*num_ana/100
+            Xrange_lim=Q_max*5*num_ana/100
         Zrange_lim=Ei_max*10/100
         
         # Qx=Q//,Qy=Q⊥の定義

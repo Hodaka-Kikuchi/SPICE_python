@@ -1319,7 +1319,7 @@ frame6c.rowconfigure(2, weight=1)
 #チェック有無変数
 calc_hf = tk.IntVar()
 # value=0にチェックを入れる
-calc_hf.set(0)
+calc_hf.set(1)
 
 calc_HF = tk.Checkbutton(frame6c, variable=calc_hf, text='on')
 calc_HF.grid(row=0, column=0,sticky="NSEW")
