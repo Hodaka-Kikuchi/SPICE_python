@@ -103,7 +103,7 @@ def calcresolution(A_sets,QE_sets,bpe,fixe,hw,Hfocus,num_ana,entry_values):
     thetaS = A2 / 2
     thetaA = -C3 * EM
     
-    phi = np.degrees(np.arctan2(-kf * np.sin(np.radians(2 * thetaS)), ki - kf * np.cos(np.radians(2 * thetaS))))
+    phi = np.degrees(np.arctan2(-kf * np.sin(2 * thetaS), ki - kf * np.cos(2 * thetaS)))
 
     # Define constants for the resolution matrices
     # ここでαi とβi は、コリメータの水平方向と鉛直方向における発散角を表している。η とη′をモノクロメータとアナライザの水平方向と鉛直方向のモザイクのFWHM
@@ -183,7 +183,7 @@ def calcresolution(A_sets,QE_sets,bpe,fixe,hw,Hfocus,num_ana,entry_values):
         HF[4, 4] = (1 / (kf * alpha3)) ** 2
         HF[4, 3] = 0
         HF[3, 4] = 0
-        HF[3, 3] = (np.tan(np.radians(thetaA)) / (etaA * kf)) ** 2
+        HF[3, 3] = (tan(thetaA) / (etaA * kf)) ** 2
         HF = np.linalg.inv(HF)
     Minv = B @ HF @ B.T
     M = np.linalg.inv(Minv)

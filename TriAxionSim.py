@@ -338,6 +338,7 @@ from anglecalc3 import angle_calc3    #
 from specfigscan import plot_spectrometer #
 from fittingLC import fit_lattice_constants
 from QEresolution import calcresolution
+from QEresolution_scan import calcresolution_scan
 
 from specfigscan_gif import plot_spectrometer_with_gif #画像をgif保存したいとき
 
@@ -1094,7 +1095,7 @@ def calculate_angle():
             "mos_ana_h": mos_ana_h.get(),
             "mos_ana_v": mos_ana_v.get(),
         }
-        calcresolution(A_sets,bpe,fixe,hw,Hfocus,num_ana,entry_values)
+        calcresolution(A_sets,QE_sets,bpe,fixe,hw,Hfocus,num_ana,entry_values)
     
     plt.show()
 
@@ -1318,7 +1319,7 @@ frame6c.rowconfigure(2, weight=1)
 #チェック有無変数
 calc_hf = tk.IntVar()
 # value=0にチェックを入れる
-calc_hf.set(1)
+calc_hf.set(0)
 
 calc_HF = tk.Checkbutton(frame6c, variable=calc_hf, text='on')
 calc_HF.grid(row=0, column=0,sticky="NSEW")
@@ -1548,18 +1549,33 @@ def constQscan_show_table():
         # プロット関数を呼び出し
         #plot_spectrometer_with_gif(A_sets,QE_sets)
         plot_spectrometer(A_sets,QE_sets)
-    """
+
+    Hfocus = calc_hf.get()
+    num_ana = float(acna.get())
+    
     if fig_reso_cQ.get()==1:
-        # RLtableを取得し、辞書から必要な変数を取り出す
-        RLtable = on_Rlcalc()
-        astar = RLtable['astar']
-        bstar = RLtable['bstar']
-        cstar = RLtable['cstar']
         bpe = float(Energy.get())
-        hkl = np.array([h,k,l])
         fixe=float(eief.get())
-        calcresolution(astar,bstar,cstar,bpe,hkl,hw,fixe)
-    """
+        
+        # Entry ウィジェットの値を辞書にまとめる
+        entry_values = {
+            "div_1st_h": div_1st_h.get(),
+            "div_1st_v": div_1st_v.get(),
+            "div_2nd_h": div_2nd_h.get(),
+            "div_2nd_v": div_2nd_v.get(),
+            "div_3rd_h": div_3rd_h.get(),
+            "div_3rd_v": div_3rd_v.get(),
+            "div_4th_h": div_4th_h.get(),
+            "div_4th_v": div_4th_v.get(),
+            "mos_mono_h": mos_mono_h.get(),
+            "mos_mono_v": mos_mono_v.get(),
+            "mos_sam_h": mos_sam_h.get(),
+            "mos_sam_v": mos_sam_v.get(),
+            "mos_ana_h": mos_ana_h.get(),
+            "mos_ana_v": mos_ana_v.get(),
+        }
+        calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values)
+
     plt.show()
     
     return angletable2
@@ -1724,18 +1740,32 @@ def conostEscan_show_table():
         #plot_spectrometer_with_gif(A_sets,QE_sets)
         plot_spectrometer(A_sets,QE_sets)
     
-    """
-    if fig_spec_cE.get()==1:
-        # RLtableを取得し、辞書から必要な変数を取り出す
-        RLtable = on_Rlcalc()
-        astar = RLtable['astar']
-        bstar = RLtable['bstar']
-        cstar = RLtable['cstar']
+    Hfocus = calc_hf.get()
+    num_ana = float(acna.get())
+    
+    if fig_reso_cQ.get()==1:
         bpe = float(Energy.get())
-        hkl = np.array([h,k,l])
         fixe=float(eief.get())
-        calcresolution(astar,bstar,cstar,bpe,hkl,hw,fixe)
-    """
+        
+        # Entry ウィジェットの値を辞書にまとめる
+        entry_values = {
+            "div_1st_h": div_1st_h.get(),
+            "div_1st_v": div_1st_v.get(),
+            "div_2nd_h": div_2nd_h.get(),
+            "div_2nd_v": div_2nd_v.get(),
+            "div_3rd_h": div_3rd_h.get(),
+            "div_3rd_v": div_3rd_v.get(),
+            "div_4th_h": div_4th_h.get(),
+            "div_4th_v": div_4th_v.get(),
+            "mos_mono_h": mos_mono_h.get(),
+            "mos_mono_v": mos_mono_v.get(),
+            "mos_sam_h": mos_sam_h.get(),
+            "mos_sam_v": mos_sam_v.get(),
+            "mos_ana_h": mos_ana_h.get(),
+            "mos_ana_v": mos_ana_v.get(),
+        }
+        calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values)
+        
     plt.show()
     
     return angletable3
