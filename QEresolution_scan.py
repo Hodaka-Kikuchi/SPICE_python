@@ -61,7 +61,7 @@ def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,init
     
     # プロット設定
     # グラフの描画
-    fig, ax = plt.subplots(figsize=(8, 6))
+    fig, ax = plt.subplots(figsize=(8, 5))
     plt.subplots_adjust(left=0.15, bottom=0.25)  # 左の余白を削る
 
     # スライダー設定

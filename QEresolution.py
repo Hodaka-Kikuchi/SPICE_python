@@ -288,7 +288,7 @@ def calcresolution(A_sets,QE_sets,bpe,fixe,hw,Hfocus,num_ana,entry_values):
     A_yz, B_yz, C_yz, D_yz, E_yz, F_yz = ellipse_coefficients(RM, log2, plane="yz")
 
     # グラフの描画
-    fig, ax = plt.subplots(figsize=(8, 6))
+    fig, ax = plt.subplots(figsize=(8, 5))
     """
     # x=0 の場合（点線で表示）
     contour_x0 = plt.contour(Y, Z, F_x0, levels=[0], colors="blue", linestyles="--", label="x = 0")
