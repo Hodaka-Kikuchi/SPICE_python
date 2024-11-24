@@ -116,7 +116,7 @@ def calcresolution(A_sets,QE_sets,bpe,fixe,hw,Hfocus,num_ana,entry_values):
     elif Hfocus==1:
         L=sample_to_analyzer
         W=analyzer_width*num_ana
-        af=2 * np.degrees(np.arctan((W / 2) / L))
+        af=2*np.degrees(2 * np.arctan((W / 2) / L))
         alpha3 = (8*np.log(2)/12)**(1/2)*af / 180 * pi
     
     alpha4 = div_4th_h / 60 / 180 * pi
@@ -221,10 +221,48 @@ def calcresolution(A_sets,QE_sets,bpe,fixe,hw,Hfocus,num_ana,entry_values):
     #Xrange_lim = 0.1
     #Zrange_lim = 0.5
     if Hfocus==0:
-        Xrange_lim=Q*3/100
+        QE_sets_array = np.array(QE_sets)
+        hw_max = np.max(QE_sets_array[:,0])
+        L=sample_to_analyzer
+        W=analyzer_width
+        af=2 * np.degrees(np.arctan((W / 2) / L))
+        A_sets_array = np.array(A_sets)
+        A2_max = np.max(A_sets_array[:,1])
+        if fixe==0: # ei fix
+            Ei_max = bpe
+            Ef_max = bpe + hw_max
+            ki_max=(Ei_max/2.072)**(1/2)
+            kf_max=(Ef_max/2.072)**(1/2)
+            Q_max = np.abs(np.sqrt(ki_max**2 + kf_max**2 - 2 * ki_max * kf_max * np.cos(np.radians(A2_max-af/2))) - np.sqrt(ki_max**2 + kf_max**2 - 2 * ki_max * kf_max * np.cos(np.radians(A2_max+af/2))))
+        elif fixe==1: # ef fix
+            Ei_max = bpe + hw_max
+            Ef_max = bpe
+            ki_max=(Ei_max/2.072)**(1/2)
+            kf_max=(Ef_max/2.072)**(1/2)
+            Q_max = np.abs(np.sqrt(ki_max**2 + kf_max**2 - 2 * ki_max * kf_max * np.cos(np.radians(A2_max-af/2))) - np.sqrt(ki_max**2 + kf_max**2 - 2 * ki_max * kf_max * np.cos(np.radians(A2_max+af/2))))
+        Xrange_lim=Q_max*2
     elif Hfocus==1:
-        Xrange_lim=Q*1.5*num_ana/100
-    Zrange_lim=Ei*8/100
+        QE_sets_array = np.array(QE_sets)
+        hw_max = np.max(QE_sets_array[:,0])
+        L=sample_to_analyzer
+        W=analyzer_width*num_ana
+        af=2 * np.degrees(np.arctan((W / 2) / L))
+        A_sets_array = np.array(A_sets)
+        A2_max = np.max(A_sets_array[:,1])
+        if fixe==0: # ei fix
+            Ei_max = bpe
+            Ef_max = bpe + hw_max
+            ki_max=(Ei_max/2.072)**(1/2)
+            kf_max=(Ef_max/2.072)**(1/2)
+            Q_max = np.abs(np.sqrt(ki_max**2 + kf_max**2 - 2 * ki_max * kf_max * np.cos(np.radians(A2_max-af/2))) - np.sqrt(ki_max**2 + kf_max**2 - 2 * ki_max * kf_max * np.cos(np.radians(A2_max+af/2))))
+        elif fixe==1: # ef fix
+            Ei_max = bpe + hw_max
+            Ef_max = bpe
+            ki_max=(Ei_max/2.072)**(1/2)
+            kf_max=(Ef_max/2.072)**(1/2)
+            Q_max = np.abs(np.sqrt(ki_max**2 + kf_max**2 - 2 * ki_max * kf_max * np.cos(np.radians(A2_max-af/2))) - np.sqrt(ki_max**2 + kf_max**2 - 2 * ki_max * kf_max * np.cos(np.radians(A2_max+af/2)))) 
+        Xrange_lim=Q_max
+    Zrange_lim=Ei*5/100
     
     # Qx=Q//,Qy=Q⊥の定義
     

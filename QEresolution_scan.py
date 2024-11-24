@@ -44,21 +44,6 @@ def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,init
     sample_to_analyzer = float(config['settings']['sample_to_analyzer'])
     analyzer_width = float(config['settings']['analyzer_width'])
     
-    QE_sets_array = np.array(QE_sets)
-    hw_max = np.max(QE_sets_array[:,0])
-    if fixe==0: # ei fix
-        Ei_max = bpe
-        Ef_max = bpe + hw_max
-        ki_max=(Ei_max/2.072)**(1/2)
-        kf_max=(Ef_max/2.072)**(1/2)
-        Q_max = np.sqrt(ki_max**2 + kf_max**2 - 2 * ki_max * kf_max * np.cos(np.radians(100))) 
-    elif fixe==1: # ef fix
-        Ei_max = bpe + hw_max
-        Ef_max = bpe
-        ki_max=(Ei_max/2.072)**(1/2)
-        kf_max=(Ef_max/2.072)**(1/2)
-        Q_max = np.sqrt(ki_max**2 + kf_max**2 - 2 * ki_max * kf_max * np.cos(np.radians(100))) 
-    
     # プロット設定
     # グラフの描画
     fig, ax = plt.subplots(figsize=(8, 5))
@@ -239,10 +224,48 @@ def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,init
         #Xrange_lim = 0.1
         #Zrange_lim = 0.5
         if Hfocus==0:
-            Xrange_lim=Q_max*3/100
+            QE_sets_array = np.array(QE_sets)
+            hw_max = np.max(QE_sets_array[:,0])
+            L=sample_to_analyzer
+            W=analyzer_width
+            af=2 * np.degrees(np.arctan((W / 2) / L))
+            A_sets_array = np.array(A_sets)
+            A2_max = np.max(A_sets_array[:,1])
+            if fixe==0: # ei fix
+                Ei_max = bpe
+                Ef_max = bpe + hw_max
+                ki_max=(Ei_max/2.072)**(1/2)
+                kf_max=(Ef_max/2.072)**(1/2)
+                Q_max = np.abs(np.sqrt(ki_max**2 + kf_max**2 - 2 * ki_max * kf_max * np.cos(np.radians(A2_max-af/2))) - np.sqrt(ki_max**2 + kf_max**2 - 2 * ki_max * kf_max * np.cos(np.radians(A2_max+af/2))))
+            elif fixe==1: # ef fix
+                Ei_max = bpe + hw_max
+                Ef_max = bpe
+                ki_max=(Ei_max/2.072)**(1/2)
+                kf_max=(Ef_max/2.072)**(1/2)
+                Q_max = np.abs(np.sqrt(ki_max**2 + kf_max**2 - 2 * ki_max * kf_max * np.cos(np.radians(A2_max-af/2))) - np.sqrt(ki_max**2 + kf_max**2 - 2 * ki_max * kf_max * np.cos(np.radians(A2_max+af/2))))
+            Xrange_lim=Q_max*2
         elif Hfocus==1:
-            Xrange_lim=Q_max*1.5*num_ana/100
-        Zrange_lim=Ei_max*8/100
+            QE_sets_array = np.array(QE_sets)
+            hw_max = np.max(QE_sets_array[:,0])
+            L=sample_to_analyzer
+            W=analyzer_width*num_ana
+            af=2 * np.degrees(np.arctan((W / 2) / L))
+            A_sets_array = np.array(A_sets)
+            A2_max = np.max(A_sets_array[:,1])
+            if fixe==0: # ei fix
+                Ei_max = bpe
+                Ef_max = bpe + hw_max
+                ki_max=(Ei_max/2.072)**(1/2)
+                kf_max=(Ef_max/2.072)**(1/2)
+                Q_max = np.abs(np.sqrt(ki_max**2 + kf_max**2 - 2 * ki_max * kf_max * np.cos(np.radians(A2_max-af/2))) - np.sqrt(ki_max**2 + kf_max**2 - 2 * ki_max * kf_max * np.cos(np.radians(A2_max+af/2))))
+            elif fixe==1: # ef fix
+                Ei_max = bpe + hw_max
+                Ef_max = bpe
+                ki_max=(Ei_max/2.072)**(1/2)
+                kf_max=(Ef_max/2.072)**(1/2)
+                Q_max = np.abs(np.sqrt(ki_max**2 + kf_max**2 - 2 * ki_max * kf_max * np.cos(np.radians(A2_max-af/2))) - np.sqrt(ki_max**2 + kf_max**2 - 2 * ki_max * kf_max * np.cos(np.radians(A2_max+af/2)))) 
+            Xrange_lim=Q_max
+        Zrange_lim=Ei_max*5/100
         
         # Qx=Q//,Qy=Q⊥の定義
         

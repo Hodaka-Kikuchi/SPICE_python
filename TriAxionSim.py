@@ -1139,7 +1139,7 @@ fig_reso.set(1)
 show_fig_reso = tk.Checkbutton(tab_001a, variable=fig_reso, text='reso')
 show_fig_reso.grid(row=1, column=5,sticky="NSEW")
 
-tab_001b = ttk.Labelframe(tab_001,text= "calculation results")
+tab_001b = ttk.Labelframe(tab_001,text= "calculation results (unit : deg)")
 tab_001b.grid(row=1,column=0,sticky="NSEW")
 tab_001b.columnconfigure(0, weight=1)
 tab_001b.columnconfigure(1, weight=1)
@@ -1225,7 +1225,7 @@ frame6.columnconfigure(1, weight=4)
 frame6.columnconfigure(2, weight=1)
 frame6.rowconfigure(0, weight=1)
 
-frame6a = ttk.Labelframe(frame6,text= "divergence")
+frame6a = ttk.Labelframe(frame6,text= "divergence (unit : min)")
 frame6a.grid(row=0,column=0,sticky="NSEW")
 
 frame6a.columnconfigure(0, weight=1)
@@ -1267,7 +1267,7 @@ div_4th_h.grid(row=1, column=4,sticky="NSEW")
 div_4th_v = ttk.Entry(frame6a)
 div_4th_v.grid(row=2, column=4,sticky="NSEW")
 
-frame6b = ttk.Labelframe(frame6,text= "mosaic")
+frame6b = ttk.Labelframe(frame6,text= "mosaic (unit : min)")
 frame6b.grid(row=0,column=1,sticky="NSEW")
 
 frame6b.columnconfigure(0, weight=1)
@@ -1478,7 +1478,7 @@ cqse3.insert(0,'0')
 def constQscan_show_table():
     # 新しいウィンドウを作成
     result_window = tk.Toplevel()
-    result_window.title("Calculation Results")
+    result_window.title("calculation results (unit : deg)")
     
     # Treeviewの設定
     tree = ttk.Treeview(result_window, columns=("hw","h","k","l","C1", "A1", "C2", "A2", "C3", "A3", "mu", "nu"), show="headings")
@@ -1663,7 +1663,7 @@ ces10.insert(0,'1')
 def conostEscan_show_table():
     # 新しいウィンドウを作成
     result_window = tk.Toplevel()
-    result_window.title("Calculation Results")
+    result_window.title("calculation results (unit : deg)")
     
     # Treeviewの設定
     tree = ttk.Treeview(result_window, columns=("hw","h","k","l","C1", "A1", "C2", "A2", "C3", "A3", "mu", "nu"), show="headings")
