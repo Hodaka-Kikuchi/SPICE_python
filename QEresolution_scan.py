@@ -132,7 +132,7 @@ def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,init
         elif Hfocus==1:
             L=sample_to_analyzer
             W=analyzer_width*num_ana
-            af=np.degrees(2 * np.arctan((W / 2) / L))
+            af=2 * np.degrees(np.arctan((W / 2) / L))
             alpha3 = (8*np.log(2)/12)**(1/2)*af / 180 * pi
         
         alpha4 = div_4th_h / 60 / 180 * pi
