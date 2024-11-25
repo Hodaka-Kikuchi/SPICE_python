@@ -261,6 +261,20 @@ def load_values_from_ini():
     hwl9f.insert(0, config['instrument'].get('maxnu', '-5'))
     hwl9t.delete(0, tk.END)  # 既存の値をクリア
     hwl9t.insert(0, config['instrument'].get('minnu', '5'))
+    acna.delete(0, tk.END)  # 既存の値をクリア
+    acna.insert(0, config['instrument'].get('blade_num', '7'))
+    
+    #figure option
+    # チェックボックス
+    fig_spec_value = int(config['option'].get('fig_spec', '1'))  # 1がデフォルト
+    # fig_specの初期値を設定
+    fig_spec.set(fig_spec_value)
+    fig_reso_value = int(config['option'].get('fig_reso', '1'))  # 1がデフォルト
+    # fig_resoの初期値を設定
+    fig_reso.set(fig_reso_value)
+    calc_hf_value = int(config['option'].get('calc_hf', '1'))  # 1がデフォルト
+    # calc_hfの初期値を設定
+    calc_hf.set(calc_hf_value)
 
 def save_values_to_ini():
     """
@@ -344,8 +358,16 @@ def save_values_to_ini():
         'minmu': hwl8t.get(),
         'maxnu': hwl9f.get(),
         'minnu': hwl9t.get(),
+        'blade_num': acna.get(),
     })
-
+    
+    # 'sample'セクションを更新
+    config['option'].update({
+        'fig_spec': str(fig_spec.get()),
+        'fig_reso': str(fig_spec.get()),
+        'calc_hf': str(calc_hf.get()),
+    })
+    
     # INIファイルに書き込み
     with open(ini_path, 'w') as configfile:
         config.write(configfile)

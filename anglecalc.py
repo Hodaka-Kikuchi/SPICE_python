@@ -65,7 +65,8 @@ def angle_calc(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe):
         return best_result_bp
 
     # omegaの候補値
-    omega_values = [-180, -135, -90, -45, 0, 45, 90, 135]
+    #omega_values = [-180, -135, -90, -45, 0, 45, 90, 135]
+    omega_values = [-180, -90, 0, 90]
     
     # 最適化結果を格納している変数
     best_result_bp = optimize_with_fixed_omega_bp(Qv_bp, Qtheta_bp, omega_values)
