@@ -192,9 +192,9 @@ def load_values_from_ini():
     
     # ラジオボタンの初期状態を読み込む
     eief_value = int(config['instrument'].get('eief', '1'))  # 1がデフォルト
-
     # eiefの初期値を設定
     eief.set(eief_value)
+    
     # ラベルの自動更新
     update_label()
     # collimator & mosaic
@@ -935,7 +935,6 @@ tab_001a.columnconfigure(1, weight=1)
 tab_001a.columnconfigure(2, weight=1)
 tab_001a.columnconfigure(3, weight=1)
 tab_001a.columnconfigure(4, weight=1)
-tab_001a.columnconfigure(5, weight=1)
 tab_001a.rowconfigure(0, weight=1)
 tab_001a.rowconfigure(1, weight=1)
 
@@ -1141,23 +1140,6 @@ acbl.insert(0,'0')
 Angle_calculate_button = ttk.Button(tab_001a, text="calc", command=calculate_angle,width=16)
 Angle_calculate_button.grid(row=1, column=4,sticky="NSEW")
 
-# 分光器図と分解能を表示するかどうかのチェックボックス
-# チェック有無変数
-fig_spec = tk.IntVar()
-# value=0にチェックを入れる
-fig_spec.set(1)
-
-show_fig_spec = tk.Checkbutton(tab_001a, variable=fig_spec, text='spec',width=10)
-show_fig_spec.grid(row=0, column=5,sticky="NSEW")
-
-# チェック有無変数
-fig_reso = tk.IntVar()
-# value=0にチェックを入れる
-fig_reso.set(1)
-
-show_fig_reso = tk.Checkbutton(tab_001a, variable=fig_reso, text='reso')
-show_fig_reso.grid(row=1, column=5,sticky="NSEW")
-
 tab_001b = ttk.Labelframe(tab_001,text= "calculation results (unit : deg)")
 tab_001b.grid(row=1,column=0,sticky="NSEW")
 tab_001b.columnconfigure(0, weight=1)
@@ -1344,100 +1326,132 @@ acna = ttk.Entry(frame6c)
 acna.grid(row=2, column=0,sticky="NSEW")
 acna.insert(0,'7')
 
-# hardware limit
 # ファイル選択のフレームの作成と設置
-frame5 = ttk.Labelframe(root,text= "hardware limit")
+frame5 = ttk.Labelframe(root)
 frame5.grid(row=6,column=0,sticky="NSEW")
 
-frame5.columnconfigure(0, weight=1)
+frame5.columnconfigure(0, weight=9)
 frame5.columnconfigure(1, weight=1)
-frame5.columnconfigure(2, weight=1)
-frame5.columnconfigure(3, weight=1)
-frame5.columnconfigure(4, weight=1)
-frame5.columnconfigure(5, weight=1)
-frame5.columnconfigure(6, weight=1)
-frame5.columnconfigure(7, weight=1)
-frame5.columnconfigure(8, weight=1)
 frame5.rowconfigure(0, weight=1)
-frame5.rowconfigure(1, weight=1)
-frame5.rowconfigure(2, weight=1)
 
-hwll0 = tk.Label(frame5,text='from',width=15)
+# hardware limit
+# ファイル選択のフレームの作成と設置
+frame5a = ttk.Labelframe(frame5,text= "hardware limit")
+frame5a.grid(row=0,column=0,sticky="NSEW")
+
+frame5a.columnconfigure(0, weight=1)
+frame5a.columnconfigure(1, weight=1)
+frame5a.columnconfigure(2, weight=1)
+frame5a.columnconfigure(3, weight=1)
+frame5a.columnconfigure(4, weight=1)
+frame5a.columnconfigure(5, weight=1)
+frame5a.columnconfigure(6, weight=1)
+frame5a.columnconfigure(7, weight=1)
+frame5a.columnconfigure(8, weight=1)
+frame5a.rowconfigure(0, weight=1)
+frame5a.rowconfigure(1, weight=1)
+frame5a.rowconfigure(2, weight=1)
+
+hwll0 = tk.Label(frame5a,text='from',width=15)
 hwll0.grid(row=1, column=0,sticky="NSEW")
-hwll1 = tk.Label(frame5,text='to',width=15)
+hwll1 = tk.Label(frame5a,text='to',width=15)
 hwll1.grid(row=2, column=0,sticky="NSEW")
 
-hwll2 = tk.Label(frame5,text='C1')
+hwll2 = tk.Label(frame5a,text='C1')
 hwll2.grid(row=0, column=1,sticky="NSEW")
-hwl2f = ttk.Entry(frame5)
+hwl2f = ttk.Entry(frame5a)
 hwl2f.grid(row=1, column=1,sticky="NSEW")
 #hwl2f.insert(0,'19.9305')
-hwl2t = ttk.Entry(frame5)
+hwl2t = ttk.Entry(frame5a)
 hwl2t.grid(row=2, column=1,sticky="NSEW")
 #hwl2t.insert(0,'58.482')
 
-hwll3 = tk.Label(frame5,text='A1')
+hwll3 = tk.Label(frame5a,text='A1')
 hwll3.grid(row=0, column=2,sticky="NSEW")
-hwl3f = ttk.Entry(frame5)
+hwl3f = ttk.Entry(frame5a)
 hwl3f.grid(row=1, column=2,sticky="NSEW")
 #hwl3f.insert(0,'39.861')
-hwl3t = ttk.Entry(frame5)
+hwl3t = ttk.Entry(frame5a)
 hwl3t.grid(row=2, column=2,sticky="NSEW")
 #hwl3t.insert(0,'116.964')
 
-hwll4 = tk.Label(frame5,text='C2')
+hwll4 = tk.Label(frame5a,text='C2')
 hwll4.grid(row=0, column=3,sticky="NSEW")
-hwl4f = ttk.Entry(frame5)
+hwl4f = ttk.Entry(frame5a)
 hwl4f.grid(row=1, column=3,sticky="NSEW")
 #hwl4f.insert(0,'-180')
-hwl4t = ttk.Entry(frame5)
+hwl4t = ttk.Entry(frame5a)
 hwl4t.grid(row=2, column=3,sticky="NSEW")
 #hwl4t.insert(0,'180')
 
-hwll5 = tk.Label(frame5,text='A2')
+hwll5 = tk.Label(frame5a,text='A2')
 hwll5.grid(row=0, column=4,sticky="NSEW")
-hwl5f = ttk.Entry(frame5)
+hwl5f = ttk.Entry(frame5a)
 hwl5f.grid(row=1, column=4,sticky="NSEW")
 #hwl5f.insert(0,'6')
-hwl5t = ttk.Entry(frame5)
+hwl5t = ttk.Entry(frame5a)
 hwl5t.grid(row=2, column=4,sticky="NSEW")
 #hwl5t.insert(0,'120')
 
-hwll6 = tk.Label(frame5,text='C3')
+hwll6 = tk.Label(frame5a,text='C3')
 hwll6.grid(row=0, column=5,sticky="NSEW")
-hwl6f = ttk.Entry(frame5)
+hwl6f = ttk.Entry(frame5a)
 hwl6f.grid(row=1, column=5,sticky="NSEW")
 #hwl6f.insert(0,'19.9305')
-hwl6t = ttk.Entry(frame5)
+hwl6t = ttk.Entry(frame5a)
 hwl6t.grid(row=2, column=5,sticky="NSEW")
 #hwl6t.insert(0,'58.482')
 
-hwll7 = tk.Label(frame5,text='A3')
+hwll7 = tk.Label(frame5a,text='A3')
 hwll7.grid(row=0, column=6,sticky="NSEW")
-hwl7f = ttk.Entry(frame5)
+hwl7f = ttk.Entry(frame5a)
 hwl7f.grid(row=1, column=6,sticky="NSEW")
 #hwl7f.insert(0,'39.861')
-hwl7t = ttk.Entry(frame5)
+hwl7t = ttk.Entry(frame5a)
 hwl7t.grid(row=2, column=6,sticky="NSEW")
 #hwl7t.insert(0,'116.964')
 
-hwll8 = tk.Label(frame5,text='μ')
+hwll8 = tk.Label(frame5a,text='μ')
 hwll8.grid(row=0, column=7,sticky="NSEW")
-hwl8f = ttk.Entry(frame5)
+hwl8f = ttk.Entry(frame5a)
 hwl8f.grid(row=1, column=7,sticky="NSEW")
 #hwl8f.insert(0,'-5')
-hwl8t = ttk.Entry(frame5)
+hwl8t = ttk.Entry(frame5a)
 hwl8t.grid(row=2, column=7,sticky="NSEW")
 #hwl8t.insert(0,'5')
 
-hwll9 = tk.Label(frame5,text='ν')
+hwll9 = tk.Label(frame5a,text='ν')
 hwll9.grid(row=0, column=8,sticky="NSEW")
-hwl9f = ttk.Entry(frame5)
+hwl9f = ttk.Entry(frame5a)
 hwl9f.grid(row=1, column=8,sticky="NSEW")
 #hwl9f.insert(0,'-5')
-hwl9t = ttk.Entry(frame5)
+hwl9t = ttk.Entry(frame5a)
 hwl9t.grid(row=2, column=8,sticky="NSEW")
 #hwl9t.insert(0,'5')
+
+frame5b = ttk.Labelframe(frame5,text= "figure")
+frame5b.grid(row=0,column=1,sticky="NSEW")
+
+frame5b.columnconfigure(0, weight=1)
+frame5b.rowconfigure(0, weight=1)
+frame5b.rowconfigure(1, weight=1)
+
+# 分光器図と分解能を表示するかどうかのチェックボックス
+# チェック有無変数
+fig_spec = tk.IntVar()
+# value=0にチェックを入れる
+fig_spec.set(1)
+
+show_fig_spec = tk.Checkbutton(frame5b, variable=fig_spec, text='spec',width=14)
+show_fig_spec.grid(row=0, column=0,sticky="NSEW")
+
+# チェック有無変数
+fig_reso = tk.IntVar()
+# value=0にチェックを入れる
+fig_reso.set(1)
+
+show_fig_reso = tk.Checkbutton(frame5b, variable=fig_reso, text='reso')
+show_fig_reso.grid(row=1, column=0,sticky="NSEW")
 
 # グリッドの重みを設定
 tab_002.columnconfigure(0, weight=1)
@@ -1559,7 +1573,7 @@ def constQscan_show_table():
         l = round(results['l'], 4)  # 'A3'
         QE_sets.append([hw, h, k,l])
 
-    if fig_spec_cQ.get()==1:
+    if fig_spec.get()==1:
         # プロット関数を呼び出し
         #plot_spectrometer_with_gif(A_sets,QE_sets)
         plot_spectrometer(A_sets,QE_sets)
@@ -1567,7 +1581,7 @@ def constQscan_show_table():
     Hfocus = calc_hf.get()
     num_ana = float(acna.get())
     
-    if fig_reso_cQ.get()==1:
+    if fig_reso.get()==1:
         bpe = float(Energy.get())
         fixe=float(eief.get())
         
@@ -1595,25 +1609,8 @@ def constQscan_show_table():
     return angletable2
 
 # ボタンの作成
-button = ttk.Button(tab_002a, text="clac", command=constQscan_show_table)
-button.grid(row=4, column=1,columnspan=2, sticky="NSEW")
-
-# 分光器図と分解能を表示するかどうかのチェックボックス
-# チェック有無変数
-fig_spec_cQ = tk.IntVar()
-# value=0にチェックを入れる
-fig_spec_cQ.set(1)
-
-show_fig_spec_cQ = tk.Checkbutton(tab_002a, variable=fig_spec_cQ, text='spec')
-show_fig_spec_cQ.grid(row=4, column=3,sticky="NSEW")
-
-# チェック有無変数
-fig_reso_cQ = tk.IntVar()
-# value=0にチェックを入れる
-fig_reso_cQ.set(1)
-
-show_fig_reso_cQ = tk.Checkbutton(tab_002a, variable=fig_reso_cQ, text='reso')
-show_fig_reso_cQ.grid(row=4, column=4,sticky="NSEW")
+button = ttk.Button(tab_002a, text="calc", command=constQscan_show_table)
+button.grid(row=4, column=0,columnspan=5, sticky="NSEW")
 
 tab_002b = ttk.Labelframe(tab_002,text= "constant E scan")
 tab_002b.grid(row=0,column=1,sticky="NSEW")
@@ -1749,7 +1746,7 @@ def conostEscan_show_table():
         l = round(results['l'], 4)  # 'A3'
         QE_sets.append([hw, h, k,l])
 
-    if fig_spec_cE.get()==1:
+    if fig_spec.get()==1:
         # プロット関数を呼び出し
         #plot_spectrometer_with_gif(A_sets,QE_sets)
         plot_spectrometer(A_sets,QE_sets)
@@ -1757,7 +1754,7 @@ def conostEscan_show_table():
     Hfocus = calc_hf.get()
     num_ana = float(acna.get())
     
-    if fig_reso_cE.get()==1:
+    if fig_reso.get()==1:
         bpe = float(Energy.get())
         fixe=float(eief.get())
         
@@ -1786,24 +1783,7 @@ def conostEscan_show_table():
 
 # ボタンの作成
 button = ttk.Button(tab_002b, text="calc", command=conostEscan_show_table)
-button.grid(row=4, column=1,columnspan=2, sticky="NSEW")
-
-# 分光器図と分解能を表示するかどうかのチェックボックス
-# チェック有無変数
-fig_spec_cE = tk.IntVar()
-# value=0にチェックを入れる
-fig_spec_cE.set(1)
-
-show_fig_spec_cE = tk.Checkbutton(tab_002b, variable=fig_spec_cE, text='spec')
-show_fig_spec_cE.grid(row=4, column=3,sticky="NSEW")
-
-# チェック有無変数
-fig_reso_cE = tk.IntVar()
-# value=0にチェックを入れる
-fig_reso_cE.set(1)
-
-show_fig_reso_cE = tk.Checkbutton(tab_002b, variable=fig_reso_cE, text='reso')
-show_fig_reso_cE.grid(row=4, column=4,sticky="NSEW")
+button.grid(row=4, column=0,columnspan=5, sticky="NSEW")
 
 # グリッドの重みを設定
 tab_003.columnconfigure(0, weight=1)
@@ -2004,7 +1984,7 @@ def reflection():
     lc_gamma.insert(0, fit_ga)
 
 # fitting結果を反映させるボタン
-ref_button = ttk.Button(tab_003b, text="set paramter", command=reflection,width=16)
+ref_button = ttk.Button(tab_003b, text="set param", command=reflection,width=18)
 ref_button.grid(row=1, column=6, sticky="NSEW")
 
 fit_reswa = tk.Label(tab_003b,text='warning : ')
@@ -2019,7 +1999,7 @@ root.configure(menu=menubar)
 
 #fileメニュー(setting)
 filemenu = tk.Menu(menubar,tearoff=0)
-menubar.add_cascade(label="setting",menu=filemenu)
+menubar.add_cascade(label="ini.file",menu=filemenu)
 #fileメニューにini fileのload
 filemenu.add_command(label="load ini.file",command=load_values_from_ini)
 #fileメニューにexitを追加。ついでにexit funcも実装
@@ -2075,9 +2055,9 @@ def save_cE_table():
                 values = tuple(results.values())
                 writer.writerow(values)
 
-#fileメニュー(setting)
+#fileメニュー(save)
 filemenu2 = tk.Menu(menubar,tearoff=0)
-menubar.add_cascade(label="save",menu=filemenu2)
+menubar.add_cascade(label="output",menu=filemenu2)
 #fileメニューにexitを追加。ついでにexit funcも実装
 filemenu2.add_command(label="const Q scan",command=save_cQ_table)
 #fileメニューにexitを追加。ついでにexit funcも実装

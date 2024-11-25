@@ -230,7 +230,12 @@ def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,init
             W=analyzer_width
             af=2 * np.degrees(np.arctan((W / 2) / L))
             A_sets_array = np.array(A_sets)
-            A2_max = np.max(A_sets_array[:,1])
+            # NaN および Inf を除外して最大値を取得
+            valid_values = A_sets_array[:, 1][~np.isnan(A_sets_array[:, 1]) & ~np.isinf(A_sets_array[:, 1])]
+            if valid_values.size > 0:  # 有効な値が存在する場合
+                A2_max = np.max(valid_values)
+            else:  # 有効な値が存在しない場合
+                A2_max = 100  # デフォルト値
             if fixe==0: # ei fix
                 Ei_max = bpe
                 Ef_max = bpe + hw_max
@@ -251,7 +256,12 @@ def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,init
             W=analyzer_width*num_ana
             af=2 * np.degrees(np.arctan((W / 2) / L))
             A_sets_array = np.array(A_sets)
-            A2_max = np.max(A_sets_array[:,1])
+            # NaN および Inf を除外して最大値を取得
+            valid_values = A_sets_array[:, 1][~np.isnan(A_sets_array[:, 1]) & ~np.isinf(A_sets_array[:, 1])]
+            if valid_values.size > 0:  # 有効な値が存在する場合
+                A2_max = np.max(valid_values)
+            else:  # 有効な値が存在しない場合
+                A2_max = 100  # デフォルト値
             if fixe==0: # ei fix
                 Ei_max = bpe
                 Ef_max = bpe + hw_max

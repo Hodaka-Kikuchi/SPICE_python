@@ -129,63 +129,67 @@ def angle_calc3(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,hw_cal,h_ini,k_i
         ki_cal=(Ei/2.072)**(1/2)
         kf_cal=(Ef/2.072)**(1/2)
         
-        # phi_calの計算
-        phi_cal = np.degrees(np.arccos((ki_cal**2 + kf_cal**2 - Nhkl_cal**2) / (2 * ki_cal * kf_cal)))
-        
-        # phi_calが正常に計算された場合のみ、後続の計算を実行
-        theta_cal = np.degrees(np.arctan((ki_cal - kf_cal * np.cos(np.radians(phi_cal))) / (kf_cal * np.sin(np.radians(phi_cal)))))
-        Theta_cal_mat =  np.array([[np.cos(np.radians(theta_cal)), -np.sin(np.radians(theta_cal)), 0],[np.sin(np.radians(theta_cal)),  np.cos(np.radians(theta_cal)), 0],[0, 0, 1]])
-        QL_cal = np.array([0, ki_cal, 0]) - np.array([-kf_cal * np.sin(np.radians(phi_cal)), kf_cal * np.cos(np.radians(phi_cal)), 0])
-        Qtheta_cal = np.linalg.inv(Theta_cal_mat)@(QL_cal)
-        Qtheta_cal=Qtheta_cal.reshape(-1, 1)
-        Qtheta_cal[np.abs(Qtheta_cal) <= 1e-6] = 0 #超重要,他のものにも適応
-        Qv_cal = UBt@(np.array([h_tab[i], k_tab[i], l_tab[i]]))
-        Qv_cal=Qv_cal.reshape(-1, 1)
-        Qv_cal[np.abs(Qv_cal) <= 1e-6] = 0 #超重要,他のものにも適応
-        
-        # 最適化対象の関数
-        def objective(angles, Qv_cal, Qtheta_cal):
-            omega, mu, nu = angles
-            rotation_matrix = Omera_toration(omega) @ N_rotation(mu) @ M_rotation(nu)
-            transformed_vector = rotation_matrix @ Qv_cal
-            return np.linalg.norm(transformed_vector - Qtheta_cal)
+        try:
+            # phi_calの計算
+            phi_cal = np.degrees(np.arccos((ki_cal**2 + kf_cal**2 - Nhkl_cal**2) / (2 * ki_cal * kf_cal)))
+            
+            # phi_calが正常に計算された場合のみ、後続の計算を実行
+            theta_cal = np.degrees(np.arctan((ki_cal - kf_cal * np.cos(np.radians(phi_cal))) / (kf_cal * np.sin(np.radians(phi_cal)))))
+            Theta_cal_mat =  np.array([[np.cos(np.radians(theta_cal)), -np.sin(np.radians(theta_cal)), 0],[np.sin(np.radians(theta_cal)),  np.cos(np.radians(theta_cal)), 0],[0, 0, 1]])
+            QL_cal = np.array([0, ki_cal, 0]) - np.array([-kf_cal * np.sin(np.radians(phi_cal)), kf_cal * np.cos(np.radians(phi_cal)), 0])
+            Qtheta_cal = np.linalg.inv(Theta_cal_mat)@(QL_cal)
+            Qtheta_cal=Qtheta_cal.reshape(-1, 1)
+            Qtheta_cal[np.abs(Qtheta_cal) <= 1e-6] = 0 #超重要,他のものにも適応
+            Qv_cal = UBt@(np.array([h_tab[i], k_tab[i], l_tab[i]]))
+            Qv_cal=Qv_cal.reshape(-1, 1)
+            Qv_cal[np.abs(Qv_cal) <= 1e-6] = 0 #超重要,他のものにも適応
+            
+            # 最適化対象の関数
+            def objective(angles, Qv_cal, Qtheta_cal):
+                omega, mu, nu = angles
+                rotation_matrix = Omera_toration(omega) @ N_rotation(mu) @ M_rotation(nu)
+                transformed_vector = rotation_matrix @ Qv_cal
+                return np.linalg.norm(transformed_vector - Qtheta_cal)
 
-        # 最適化関数（omegaの各初期値で最適化を行い、最も低い誤差を選択）
-        def optimize_with_fixed_omega(Qv_cal, Qtheta_cal, omega_values):
-            best_result = None
-            best_fun = float('inf')  # 最小値を探す
+            # 最適化関数（omegaの各初期値で最適化を行い、最も低い誤差を選択）
+            def optimize_with_fixed_omega(Qv_cal, Qtheta_cal, omega_values):
+                best_result = None
+                best_fun = float('inf')  # 最小値を探す
 
-            for omega in omega_values:
-                initial_guess = [omega, 0, 0]  # omegaを固定し、mu, nuは初期値0で開始
-                # argsにQv_calとQtheta_calを渡す
-                result = minimize(
-                    objective,
-                    initial_guess,
-                    method='L-BFGS-B',
-                    bounds=[(-180, 180), (-90, 90), (-90, 90)],
-                    args=(Qv_cal, Qtheta_cal)  # argsにQv_calとQtheta_calを渡す
-                )
+                for omega in omega_values:
+                    initial_guess = [omega, 0, 0]  # omegaを固定し、mu, nuは初期値0で開始
+                    # argsにQv_calとQtheta_calを渡す
+                    result = minimize(
+                        objective,
+                        initial_guess,
+                        method='L-BFGS-B',
+                        bounds=[(-180, 180), (-90, 90), (-90, 90)],
+                        args=(Qv_cal, Qtheta_cal)  # argsにQv_calとQtheta_calを渡す
+                    )
 
-                # 最小の最適化結果を選ぶ
-                if result.fun < best_fun:
-                    best_result = result
-                    best_fun = result.fun
+                    # 最小の最適化結果を選ぶ
+                    if result.fun < best_fun:
+                        best_result = result
+                        best_fun = result.fun
 
-            return best_result
-        #最適化結果を格納している変数
-        best_result = optimize_with_fixed_omega(Qv_cal, Qtheta_cal, omega_values)
-        
-        omega = best_result.x[0]
-        mu = best_result.x[1]
-        nu = best_result.x[2]
-        
-        s_cal=omega+theta_cal
-        omega_inst=s_cal+offset
-        if omega_inst>180:
-            omega_inst = omega_inst-360
-        elif omega_inst<-180:
-            omega_inst = omega_inst+360
-        
+                return best_result
+            #最適化結果を格納している変数
+            best_result = optimize_with_fixed_omega(Qv_cal, Qtheta_cal, omega_values)
+            
+            omega = best_result.x[0]
+            mu = best_result.x[1]
+            nu = best_result.x[2]
+            
+            s_cal=omega+theta_cal
+            omega_inst=s_cal+offset
+            if omega_inst>180:
+                omega_inst = omega_inst-360
+            elif omega_inst<-180:
+                omega_inst = omega_inst+360
+                
+        except Exception:
+            omega_inst, mu, nu = np.nan, np.nan, np.nan
+            
         # アナライザとモノクロメータの面間隔
         # INIファイルの設定読み込み
         config = configparser.ConfigParser()
