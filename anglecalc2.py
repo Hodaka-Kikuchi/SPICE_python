@@ -22,6 +22,7 @@ def angle_calc2(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,hw_ini,hw_fin,hw
     # Qthetaの計算
     Qtheta_bp = np.linalg.inv(Theta_bp_mat)@QL_bp
     Qtheta_bp = Qtheta_bp.reshape(-1, 1)  # 列ベクトルに変
+    Qtheta_bp[np.abs(Qtheta_bp) <= 1e-6] = 0 #超重要,他のものにも適応
     # UBの更新
     # tiltの情報もここに入れてしまう。SPICEと同じ定義。
     N_bp=np.array([[1,0,0],[0,np.cos(np.radians(bpnu)),-np.sin(np.radians(bpnu))],[0,np.sin(np.radians(bpnu)),np.cos(np.radians(bpnu))]])
@@ -30,6 +31,7 @@ def angle_calc2(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,hw_ini,hw_fin,hw
     # Qv_pbの計算
     Qv_bp=UBt@(np.array([bp[0], bp[1], bp[2]]))
     Qv_bp = Qv_bp.reshape(-1, 1)  # 列ベクトルに変
+    Qv_bp[np.abs(Qv_bp) <= 1e-6] = 0 #超重要,他のものにも適応
     
     # fitting process
     def Omera_toration(omega):
@@ -93,8 +95,10 @@ def angle_calc2(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,hw_ini,hw_fin,hw
         QL_cal = np.array([0, ki_cal, 0]) - np.array([-kf_cal * np.sin(np.radians(phi_cal)), kf_cal * np.cos(np.radians(phi_cal)), 0])
         Qtheta_cal = np.linalg.inv(Theta_cal_mat)@(QL_cal)
         Qtheta_cal=Qtheta_cal.reshape(-1, 1)
+        Qtheta_cal[np.abs(Qtheta_cal) <= 1e-6] = 0 #超重要,他のものにも適応
         Qv_cal = UBt@(np.array([h_cal, k_cal, l_cal]))
         Qv_cal=Qv_cal.reshape(-1, 1)
+        Qv_cal[np.abs(Qv_cal) <= 1e-6] = 0 #超重要,他のものにも適応
         
         # fitting process
         def objective(angles):

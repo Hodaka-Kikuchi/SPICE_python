@@ -262,7 +262,7 @@ def calcresolution(A_sets,QE_sets,bpe,fixe,hw,Hfocus,num_ana,entry_values):
             kf_max=(Ef_max/2.072)**(1/2)
             Q_max = np.abs(np.sqrt(ki_max**2 + kf_max**2 - 2 * ki_max * kf_max * np.cos(np.radians(A2_max-af/2))) - np.sqrt(ki_max**2 + kf_max**2 - 2 * ki_max * kf_max * np.cos(np.radians(A2_max+af/2)))) 
         Xrange_lim=Q_max
-    Zrange_lim=Ei*5/100
+    Zrange_lim=Ei*10/100
     
     # Qx=Q//,Qy=Q⊥の定義
     

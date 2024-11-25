@@ -22,6 +22,7 @@ def angle_calc(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe):
     # Qthetaの計算
     Qtheta_bp = np.linalg.inv(Theta_bp_mat)@QL_bp
     Qtheta_bp = Qtheta_bp.reshape(-1, 1)  # 列ベクトルに変
+    Qtheta_bp[np.abs(Qtheta_bp) <= 1e-6] = 0 #超重要,他のものにも適応
     # UBの更新
     # tiltの情報もここに入れてしまう。SPICEと同じ定義。
     N_bp=np.array([[1,0,0],[0,np.cos(np.radians(bpnu)),-np.sin(np.radians(bpnu))],[0,np.sin(np.radians(bpnu)),np.cos(np.radians(bpnu))]])
@@ -30,6 +31,7 @@ def angle_calc(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe):
     # Qv_pbの計算
     Qv_bp=UBt@(np.array([bp[0], bp[1], bp[2]]))
     Qv_bp = Qv_bp.reshape(-1, 1)  # 列ベクトルに変
+    Qv_bp[np.abs(Qv_bp) <= 1e-6] = 0 #超重要,他のものにも適応
     
     # fitting process
     def Omera_toration(omega):
@@ -88,8 +90,10 @@ def angle_calc(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe):
         QL_cal = np.array([0, ki_cal, 0]) - np.array([-kf_cal * np.sin(np.radians(phi_cal)), kf_cal * np.cos(np.radians(phi_cal)), 0])
         Qtheta_cal = np.linalg.inv(Theta_cal_mat)@(QL_cal)
         Qtheta_cal=Qtheta_cal.reshape(-1, 1)
+        Qtheta_cal[np.abs(Qtheta_cal) <= 1e-6] = 0 #超重要,他のものにも適応
         Qv_cal = UBt@(np.array([cp[0], cp[1], cp[2]]))
         Qv_cal=Qv_cal.reshape(-1, 1)
+        Qv_cal[np.abs(Qv_cal) <= 1e-6] = 0 #超重要,他のものにも適応
         """
         R_cal = Qv_cal@(np.linalg.pinv(Qtheta_cal))
         #R_cal = Qtheta_cal@(np.linalg.pinv(Qv_cal))
@@ -137,6 +141,7 @@ def angle_calc(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe):
             rotation_matrix = Omera_toration(omega) @ N_rotation(mu) @ M_rotation(nu)
             transformed_vector = rotation_matrix @ Qv_cal
             return np.linalg.norm(transformed_vector - Qtheta_cal)
+        
 
         # 最適化によって omega, mu, nu を求める
         initial_guess = [0, 0, 0]  # 初期値（全ての角度をゼロから開始）
@@ -144,14 +149,13 @@ def angle_calc(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe):
         
         # 結果を表示
         omega, mu, nu = result.x
-        
         s_cal=omega+theta_cal
         omega_inst=s_cal+offset
         
         # 結果を表示(-180~180に規格化。)
         omega, mu, nu = [(angle + 180) % 360 - 180 for angle in result.x]
         """
-        if omega_inst<-180:
+        if omega_inst<#-180:
             omega_inst=omega_inst+360
         elif omega_inst>180:
             omega_inst=omega_inst-360

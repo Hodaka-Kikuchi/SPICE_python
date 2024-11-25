@@ -59,6 +59,10 @@ def RL_calc(a, b, c, alpha, beta, gamma):
         V0 / math.sin(math.radians(gamma_star))
     ])
     
+    astar[np.abs(astar) <= 1e-6] = 0 #超重要,他のものにも適応
+    bstar[np.abs(bstar) <= 1e-6] = 0 #超重要,他のものにも適応
+    cstar[np.abs(cstar) <= 1e-6] = 0 #超重要,他のものにも適応
+    
     # 結果を辞書としてまとめる
     result = {
         'astar': astar,
