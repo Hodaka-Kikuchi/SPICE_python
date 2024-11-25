@@ -30,9 +30,11 @@ def UB_calc(sv1, sv2, astar, bstar, cstar, alpha_star, beta_star, gamma_star, n_
         [0, n_b * np.sin(np.radians(gamma_star)), -n_c * np.sin(np.radians(beta_star)) * np.cos(np.radians(alpha))],
         [0, 0, 2 * math.pi / c]
     ])
+    B[np.abs(B) <= 1e-6] = 0 #超重要,他のものにも適応
     
     # UBマトリックス
     UB = U @ B
+    UB[np.abs(UB) <= 1e-6] = 0 #超重要,他のものにも適応
     
     # 結果を辞書としてまとめる
     result = {

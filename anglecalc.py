@@ -49,7 +49,8 @@ def angle_calc(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe):
 
     # 最適化によって omega, mu, nu を求める
     initial_guess0 = [0, bpmu, bpnu]  # 初期値（全ての角度をゼロから開始）
-    result0 = minimize(objective0, initial_guess0, method='BFGS')
+    #result0 = minimize(objective0, initial_guess0, method='BFGS')
+    result0 = minimize(objective0, initial_guess0, method='L-BFGS-B', bounds=[(-180, 180), (-180, 180), (-180, 180)])
     
     # 結果を表示
     omega0, mu0, nu0 = result0.x
@@ -94,48 +95,7 @@ def angle_calc(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe):
         Qv_cal = UBt@(np.array([cp[0], cp[1], cp[2]]))
         Qv_cal=Qv_cal.reshape(-1, 1)
         Qv_cal[np.abs(Qv_cal) <= 1e-6] = 0 #超重要,他のものにも適応
-        """
-        R_cal = Qv_cal@(np.linalg.pinv(Qtheta_cal))
-        #R_cal = Qtheta_cal@(np.linalg.pinv(Qv_cal))
-        omega_cal = np.degrees(np.arctan2(R_cal[1, 0], R_cal[0, 0]))
-        mu_cal = np.degrees(np.arctan2(-R_cal[2, 0], np.sqrt(R_cal[0, 0]**2 + R_cal[1, 0]**2)))
-        if R_cal[2, 1]<1/10000 and R_cal[2, 2]<1/10000:
-            nu_cal = bpnu
-        else:
-            nu_cal = np.degrees(np.arctan2(R_cal[2, 1], R_cal[2, 2]))
-        s_cal=omega_cal+theta_cal
-        omega_inst=s_cal+offset
         
-        if omega_inst<-180:
-            omega_inst=omega_inst+360
-        elif omega_inst>180:
-            omega_inst=omega_inst-360
-            
-        """
-            
-        """
-        #検算プロセス
-        Omat = np.array([[np.cos(np.radians(omega_cal)),-np.sin(np.radians(omega_cal)),0],[np.sin(np.radians(omega_cal)),np.cos(np.radians(omega_cal)),0],[0,0,1]])
-        nu_cal = bpnu
-        mu_cal = bpmu
-        Nmat=np.array([[1,0,0],[0,np.cos(np.radians(nu_cal)),-np.sin(np.radians(nu_cal))],[0,np.sin(np.radians(nu_cal)),np.cos(np.radians(nu_cal))]])
-        Mmat=np.array([[np.cos(np.radians(mu_cal)),0,np.sin(np.radians(mu_cal))],[0,1,0],[-np.sin(np.radians(mu_cal)),0,np.cos(np.radians(mu_cal))]])
-
-        print(np.linalg.inv(Omat))
-        print(Qtheta_cal)
-        print(np.linalg.pinv(Qv_cal))
-        print(np.linalg.inv(Omat)@(Qtheta_cal@np.linalg.pinv(Qv_cal)))
-        """
-        
-        # fitting process
-        """
-        def Omera_toration(omega):
-            return np.array([[np.cos(np.radians(omega)),-np.sin(np.radians(omega)),0],[np.sin(np.radians(omega)),np.cos(np.radians(omega)),0],[0,0,1]])
-        def N_rotation(nu):
-            return np.array([[1,0,0],[0,np.cos(np.radians(nu)),-np.sin(np.radians(nu))],[0,np.sin(np.radians(nu)),np.cos(np.radians(nu))]])
-        def M_rotation(mu):
-            return np.array([[np.cos(np.radians(mu)),0,np.sin(np.radians(mu))],[0,1,0],[-np.sin(np.radians(mu)),0,np.cos(np.radians(mu))]])
-        """
         def objective(angles):
             omega, mu, nu = angles
             rotation_matrix = Omera_toration(omega) @ N_rotation(mu) @ M_rotation(nu)
@@ -145,7 +105,8 @@ def angle_calc(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe):
 
         # 最適化によって omega, mu, nu を求める
         initial_guess = [0, 0, 0]  # 初期値（全ての角度をゼロから開始）
-        result = minimize(objective, initial_guess, method='BFGS')
+        #result = minimize(objective, initial_guess, method='BFGS')
+        result = minimize(objective, initial_guess, method='L-BFGS-B', bounds=[(-180, 180), (-180, 180), (-180, 180)])
         
         # 結果を表示
         omega, mu, nu = result.x
@@ -154,12 +115,7 @@ def angle_calc(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe):
         
         # 結果を表示(-180~180に規格化。)
         omega, mu, nu = [(angle + 180) % 360 - 180 for angle in result.x]
-        """
-        if omega_inst<#-180:
-            omega_inst=omega_inst+360
-        elif omega_inst>180:
-            omega_inst=omega_inst-360
-        """
+        
         # アナライザとモノクロメータの面間隔
         # INIファイルの設定読み込み
         config = configparser.ConfigParser()

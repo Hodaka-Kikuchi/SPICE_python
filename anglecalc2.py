@@ -49,7 +49,8 @@ def angle_calc2(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,hw_ini,hw_fin,hw
 
     # 最適化によって omega, mu, nu を求める
     initial_guess0 = [0, bpmu, bpnu]  # 初期値（全ての角度をゼロから開始）
-    result0 = minimize(objective0, initial_guess0, method='BFGS')
+    #result0 = minimize(objective0, initial_guess0, method='BFGS')
+    result0 = minimize(objective0, initial_guess0, method='L-BFGS-B', bounds=[(-180, 180), (-180, 180), (-180, 180)])
     
     # 結果を表示
     omega0, mu0, nu0 = result0.x
@@ -109,7 +110,8 @@ def angle_calc2(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,hw_ini,hw_fin,hw
 
         # 最適化によって omega, mu, nu を求める
         initial_guess = [0, 0, 0]  # 初期値（全ての角度をゼロから開始）
-        result = minimize(objective, initial_guess, method='BFGS')
+        #result = minimize(objective, initial_guess, method='BFGS')
+        result = minimize(objective, initial_guess, method='L-BFGS-B', bounds=[(-180, 180), (-180, 180), (-180, 180)])
         
         # 結果を表示
         omega, mu, nu = result.x
