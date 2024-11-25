@@ -54,7 +54,7 @@ def angle_calc3(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,hw_cal,h_ini,k_i
         best_fun_bp = float('inf')  # 最小値を探す
 
         for omega in omega_values:
-            initial_guess = [omega, bpmu, bpnu]  # omegaを固定し、mu, nuは初期値0で開始
+            initial_guess = [omega, 0, 0]  # omegaを固定し、mu, nuは初期値0で開始
             result_bp = minimize(objective_bp, initial_guess, method='L-BFGS-B', bounds=[(-180, 180), (-90, 90), (-90, 90)], args=(Qv_bp, Qtheta_bp))
             
             # 最小の最適化結果を選ぶ
@@ -65,7 +65,8 @@ def angle_calc3(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,hw_cal,h_ini,k_i
         return best_result_bp
 
     # omegaの候補値
-    omega_values = [-180, -135, -90, -45, 0, 45, 90, 135]
+    #omega_values = [-180, -135, -90, -45, 0, 45, 90, 135]
+    omega_values = [-180, -90, 0, 90]
     
     # 最適化結果を格納している変数
     best_result_bp = optimize_with_fixed_omega_bp(Qv_bp, Qtheta_bp, omega_values)
