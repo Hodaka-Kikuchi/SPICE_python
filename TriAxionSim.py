@@ -2,7 +2,7 @@
 # ASYURA
 # UB matrixによるoffsetの自動入力
 # 右上にバージョン情報を表示
-__version__ = '1.0.0'
+__version__ = '1.1.0'
 """
 セマンティック バージョニング (Semantic Versioning)
 セマンティック バージョニング（セムバ―、SemVer）は、バージョン番号を「MAJOR.MINOR.PATCH」の形式で表します。それぞれの部分には以下のような意味があります：
@@ -175,6 +175,21 @@ def load_values_from_ini():
     sv2_l.delete(0, tk.END)  # 既存の値をクリア
     sv2_l.insert(0, config['sample'].get('l2', '0'))
     
+    Energy.delete(0, tk.END)  # 既存の値をクリア
+    Energy.insert(0, config['BPP'].get('Energy', '4.8'))
+    bp_h.delete(0, tk.END)  # 既存の値をクリア
+    bp_h.insert(0, config['BPP'].get('bp_h', '1.5'))
+    bp_k.delete(0, tk.END)  # 既存の値をクリア
+    bp_k.insert(0, config['BPP'].get('bp_k', '0'))
+    bp_l.delete(0, tk.END)  # 既存の値をクリア
+    bp_l.insert(0, config['BPP'].get('bp_l', '0'))
+    bp_c2.delete(0, tk.END)  # 既存の値をクリア
+    bp_c2.insert(0, config['BPP'].get('bp_c2', '49.75'))
+    bp_mu.delete(0, tk.END)  # 既存の値をクリア
+    bp_mu.insert(0, config['BPP'].get('bp_mu', '0'))
+    bp_nu.delete(0, tk.END)  # 既存の値をクリア
+    bp_nu.insert(0, config['BPP'].get('bp_nu', '0'))
+    
     # ラジオボタンの初期状態を読み込む
     eief_value = int(config['instrument'].get('eief', '1'))  # 1がデフォルト
 
@@ -285,6 +300,17 @@ def save_values_to_ini():
         'l2': sv2_l.get(),
         'mos_sam_h': mos_sam_h.get(),
         'mos_sam_v': mos_sam_v.get(),
+    })
+    
+    # 'sample'セクションを更新
+    config['BPP'].update({
+        'Energy': Energy.get(),
+        'bp_h': bp_h.get(),
+        'bp_k': bp_k.get(),
+        'bp_l': bp_l.get(),
+        'bp_c2': bp_c2.get(),
+        'bp_mu': bp_mu.get(),
+        'bp_nu': bp_nu.get(),
     })
 
     # 'instrument'セクションを更新
@@ -786,7 +812,7 @@ UBcalculate_button.grid(row=1, column=1,sticky="NSEW")
 
 # ブラッグピーク位置を入力
 # ファイル選択のフレームの作成と設置
-frame4 = ttk.Labelframe(root,text= "bragg peak position")
+frame4 = ttk.Labelframe(root,text= "observed bragg peak position")
 frame4.grid(row=3,column=0,sticky="NSEW")
 
 frame4.columnconfigure(0, weight=1)
@@ -823,46 +849,39 @@ if eief.get()==0:
 elif eief.get()==1:
     bpl1 = tk.Label(frame4,text='Ef (meV)')
 bpl1.grid(row=0, column=1,sticky="NSEW")
+
 Energy = ttk.Entry(frame4)
 Energy.grid(row=1, column=1,sticky="NSEW")
-Energy.insert(0,'4.8')
 
 bpl2 = tk.Label(frame4,text='h')
 bpl2.grid(row=0, column=2,sticky="NSEW")
 bp_h = ttk.Entry(frame4)
 bp_h.grid(row=1, column=2,sticky="NSEW")
-bp_h.insert(0,'1')
 
 bpl3 = tk.Label(frame4,text='k')
 bpl3.grid(row=0, column=3,sticky="NSEW")
 bp_k = ttk.Entry(frame4)
 bp_k.grid(row=1, column=3,sticky="NSEW")
-bp_k.insert(0,'0')
 
 bpl4 = tk.Label(frame4,text='l')
 bpl4.grid(row=0, column=4,sticky="NSEW")
 bp_l = ttk.Entry(frame4)
 bp_l.grid(row=1, column=4,sticky="NSEW")
-bp_l.insert(0,'0')
 
 bpl5 = tk.Label(frame4,text='C2')
 bpl5.grid(row=0, column=5,sticky="NSEW")
 bp_c2 = ttk.Entry(frame4)
 bp_c2.grid(row=1, column=5,sticky="NSEW")
-bp_c2.insert(0,'0')
 
 bpl6 = tk.Label(frame4,text='μ')
 bpl6.grid(row=0, column=6,sticky="NSEW")
 bp_mu = ttk.Entry(frame4)
 bp_mu.grid(row=1, column=6,sticky="NSEW")
-bp_mu.insert(0,'0')
 
 bpl7 = tk.Label(frame4,text='ν')
 bpl7.grid(row=0, column=7,sticky="NSEW")
 bp_nu = ttk.Entry(frame4)
 bp_nu.grid(row=1, column=7,sticky="NSEW")
-bp_nu.insert(0,'0')
-
 
 # select feature
 # ファイル選択のフレームの作成と設置

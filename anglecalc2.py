@@ -41,22 +41,40 @@ def angle_calc2(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,hw_ini,hw_fin,hw
     def M_rotation(mu):
         return np.array([[np.cos(np.radians(mu)),0,np.sin(np.radians(mu))],[0,1,0],[-np.sin(np.radians(mu)),0,np.cos(np.radians(mu))]])
     
-    def objective0(angles):
+    # 最適化対象の関数
+    def objective_bp(angles, Qv_bp, Qtheta_bp):
         omega, mu, nu = angles
         rotation_matrix0 = Omera_toration(omega) @ N_rotation(mu) @ M_rotation(nu)
         transformed_vector0 = rotation_matrix0 @ Qv_bp
         return np.linalg.norm(transformed_vector0 - Qtheta_bp)
 
-    # 最適化によって omega, mu, nu を求める
-    initial_guess0 = [0, bpmu, bpnu]  # 初期値（全ての角度をゼロから開始）
-    #result0 = minimize(objective0, initial_guess0, method='BFGS')
-    result0 = minimize(objective0, initial_guess0, method='L-BFGS-B', bounds=[(-180, 180), (-180, 180), (-180, 180)])
+    # 最適化関数（omegaの各初期値で最適化を行い、最も低い誤差を選択）
+    def optimize_with_fixed_omega_bp(Qv_bp, Qtheta_bp, omega_values):
+        best_result_bp = None
+        best_fun_bp = float('inf')  # 最小値を探す
+
+        for omega in omega_values:
+            initial_guess = [omega, bpmu, bpnu]  # omegaを固定し、mu, nuは初期値0で開始
+            result_bp = minimize(objective_bp, initial_guess, method='L-BFGS-B', bounds=[(-180, 180), (-90, 90), (-90, 90)], args=(Qv_bp, Qtheta_bp))
+            
+            # 最小の最適化結果を選ぶ
+            if result_bp.fun < best_fun_bp:
+                best_result_bp = result_bp
+                best_fun_bp = result_bp.fun
+
+        return best_result_bp
+
+    # omegaの候補値
+    omega_values = [-180, -135, -90, -45, 0, 45, 90, 135]
+    
+    # 最適化結果を格納している変数
+    best_result_bp = optimize_with_fixed_omega_bp(Qv_bp, Qtheta_bp, omega_values)
     
     # 結果を表示
-    omega0, mu0, nu0 = result0.x
+    omega0 = best_result_bp.x[0]
     
     # 結果を表示(-180~180に規格化。)
-    omega0, mu0, nu0 = [(angle + 180) % 360 - 180 for angle in result0.x]
+    #omega0, mu0, nu0 = [(angle + 180) % 360 - 180 for angle in result0.x]
     
     # s_iniの計算
     s_ini = omega0 + theta_bp
@@ -100,27 +118,49 @@ def angle_calc2(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,hw_ini,hw_fin,hw
         Qv_cal = UBt@(np.array([h_cal, k_cal, l_cal]))
         Qv_cal=Qv_cal.reshape(-1, 1)
         Qv_cal[np.abs(Qv_cal) <= 1e-6] = 0 #超重要,他のものにも適応
-        
-        # fitting process
-        def objective(angles):
+    
+        # 最適化対象の関数
+        def objective(angles, Qv_cal, Qtheta_cal):
             omega, mu, nu = angles
             rotation_matrix = Omera_toration(omega) @ N_rotation(mu) @ M_rotation(nu)
             transformed_vector = rotation_matrix @ Qv_cal
             return np.linalg.norm(transformed_vector - Qtheta_cal)
 
-        # 最適化によって omega, mu, nu を求める
-        initial_guess = [0, 0, 0]  # 初期値（全ての角度をゼロから開始）
-        #result = minimize(objective, initial_guess, method='BFGS')
-        result = minimize(objective, initial_guess, method='L-BFGS-B', bounds=[(-180, 180), (-180, 180), (-180, 180)])
+        # 最適化関数（omegaの各初期値で最適化を行い、最も低い誤差を選択）
+        def optimize_with_fixed_omega(Qv_cal, Qtheta_cal, omega_values):
+            best_result = None
+            best_fun = float('inf')  # 最小値を探す
+
+            for omega in omega_values:
+                initial_guess = [omega, 0, 0]  # omegaを固定し、mu, nuは初期値0で開始
+                # argsにQv_calとQtheta_calを渡す
+                result = minimize(
+                    objective,
+                    initial_guess,
+                    method='L-BFGS-B',
+                    bounds=[(-180, 180), (-90, 90), (-90, 90)],
+                    args=(Qv_cal, Qtheta_cal)  # argsにQv_calとQtheta_calを渡す
+                )
+
+                # 最小の最適化結果を選ぶ
+                if result.fun < best_fun:
+                    best_result = result
+                    best_fun = result.fun
+
+            return best_result
+        #最適化結果を格納している変数
+        best_result = optimize_with_fixed_omega(Qv_cal, Qtheta_cal, omega_values)
         
-        # 結果を表示
-        omega, mu, nu = result.x
+        omega = best_result.x[0]
+        mu = best_result.x[1]
+        nu = best_result.x[2]
         
         s_cal=omega+theta_cal
         omega_inst=s_cal+offset
-        
-        # 結果を表示(-180~180に規格化。)
-        omega, mu, nu = [(angle + 180) % 360 - 180 for angle in result.x]
+        if omega_inst>180:
+            omega_inst = omega_inst-360
+        elif omega_inst<-180:
+            omega_inst = omega_inst+360
         
         # アナライザとモノクロメータの面間隔
         # INIファイルの設定読み込み
