@@ -5,7 +5,9 @@ import configparser
 import os
 import sys
 
-def angle_calc2(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,hw_ini,hw_fin,hw_inc,h_cal,k_cal,l_cal):
+from fit_initinal_angle import initial_value_with_multiple_planes
+
+def angle_calc2(astar,bstar,cstar,U,B,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,hw_ini,hw_fin,hw_inc,h_cal,k_cal,l_cal):
     # bragg peakの位置からoffsetを算出
     hkl_bp=bp[0]*astar+bp[1]*bstar+bp[2]*cstar
     #計算されたrlu
@@ -48,31 +50,28 @@ def angle_calc2(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,hw_ini,hw_fin,hw
         transformed_vector0 = rotation_matrix0 @ Qv_bp
         return np.linalg.norm(transformed_vector0 - Qtheta_bp)
 
+    # 最適化対象の関数
+    def objective_bp(angles, Qv_bp, Qtheta_bp):
+        omega, mu, nu = angles
+        rotation_matrix0 = Omera_toration(omega) @ N_rotation(mu) @ M_rotation(nu)
+        transformed_vector0 = rotation_matrix0 @ Qv_bp
+        return np.linalg.norm(transformed_vector0 - Qtheta_bp)
+    
+    # 初期値計算
+    angle_bp = initial_value_with_multiple_planes(U,astar, bstar, cstar, bp)
+
     # 最適化関数（omegaの各初期値で最適化を行い、最も低い誤差を選択）
-    def optimize_with_fixed_omega_bp(Qv_bp, Qtheta_bp, omega_values):
-        best_result_bp = None
-        best_fun_bp = float('inf')  # 最小値を探す
+    def optimize_with_fixed_omega_bp(Qv_bp, Qtheta_bp):
+        initial_guess = [angle_bp[0], bpmu, bpnu]  # omegaを固定し、mu, nuは初期値0で開始
+        result_bp = minimize(objective_bp, initial_guess, method='L-BFGS-B', bounds=[(-180, 180), (-90, 90), (-90, 90)], args=(Qv_bp, Qtheta_bp))
 
-        for omega in omega_values:
-            initial_guess = [omega, 0, 0]  # omegaを固定し、mu, nuは初期値0で開始
-            result_bp = minimize(objective_bp, initial_guess, method='L-BFGS-B', bounds=[(-180, 180), (-90, 90), (-90, 90)], args=(Qv_bp, Qtheta_bp))
-            
-            # 最小の最適化結果を選ぶ
-            if result_bp.fun < best_fun_bp:
-                best_result_bp = result_bp
-                best_fun_bp = result_bp.fun
-
-        return best_result_bp
-
-    # omegaの候補値
-    #omega_values = [-180, -135, -90, -45, 0, 45, 90, 135]
-    omega_values = [-180, -90, 0, 90]
+        return result_bp
     
     # 最適化結果を格納している変数
-    best_result_bp = optimize_with_fixed_omega_bp(Qv_bp, Qtheta_bp, omega_values)
+    result_bp = optimize_with_fixed_omega_bp(Qv_bp, Qtheta_bp)
     
     # 結果を表示
-    omega0 = best_result_bp.x[0]
+    omega0 = result_bp.x[0]
     
     # 結果を表示(-180~180に規格化。)
     #omega0, mu0, nu0 = [(angle + 180) % 360 - 180 for angle in result0.x]
@@ -128,34 +127,29 @@ def angle_calc2(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,hw_ini,hw_fin,hw
                 transformed_vector = rotation_matrix @ Qv_cal
                 return np.linalg.norm(transformed_vector - Qtheta_cal)
 
-            # 最適化関数（omegaの各初期値で最適化を行い、最も低い誤差を選択）
-            def optimize_with_fixed_omega(Qv_cal, Qtheta_cal, omega_values):
-                best_result = None
-                best_fun = float('inf')  # 最小値を探す
-
-                for omega in omega_values:
-                    initial_guess = [omega, 0, 0]  # omegaを固定し、mu, nuは初期値0で開始
-                    # argsにQv_calとQtheta_calを渡す
-                    result = minimize(
-                        objective,
-                        initial_guess,
-                        method='L-BFGS-B',
-                        bounds=[(-180, 180), (-90, 90), (-90, 90)],
-                        args=(Qv_cal, Qtheta_cal)  # argsにQv_calとQtheta_calを渡す
-                    )
-
-                    # 最小の最適化結果を選ぶ
-                    if result.fun < best_fun:
-                        best_result = result
-                        best_fun = result.fun
-
-                return best_result
-            #最適化結果を格納している変数
-            best_result = optimize_with_fixed_omega(Qv_cal, Qtheta_cal, omega_values)
+            # 初期値計算
+            angle_cal = initial_value_with_multiple_planes(U,astar, bstar, cstar, hkl_cal)
             
-            omega = best_result.x[0]
-            mu = best_result.x[1]
-            nu = best_result.x[2]
+            # 最適化関数（omegaの各初期値で最適化を行い、最も低い誤差を選択）
+            def optimize_with_fixed_omega(Qv_cal, Qtheta_cal):
+                initial_guess = [angle_cal[0], angle_cal[1], angle_cal[2]]  # omegaを固定し、mu, nuは初期値0で開始
+                # argsにQv_calとQtheta_calを渡す
+                result = minimize(
+                    objective,
+                    initial_guess,
+                    method='L-BFGS-B',
+                    bounds=[(-180, 180), (-90, 90), (-90, 90)],
+                    args=(Qv_cal, Qtheta_cal)  # argsにQv_calとQtheta_calを渡す
+                )
+
+                return result
+            #最適化結果を格納している変数
+            result = optimize_with_fixed_omega(Qv_cal, Qtheta_cal)
+            
+            omega = result.x[0]
+
+            mu = result.x[1]
+            nu = result.x[2]
         
             s_cal=omega+theta_cal
             omega_inst=s_cal+offset

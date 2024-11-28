@@ -1553,6 +1553,8 @@ def constQscan_show_table():
     # UBtableを取得し、辞書から必要な変数を取り出す
     UBtable = on_UBcalc()
     
+    U=UBtable['U']
+    B=UBtable['B']
     UB=UBtable['UB']
     
     # Bragg peak positionの取得
@@ -1574,7 +1576,7 @@ def constQscan_show_table():
     fixe=float(eief.get())
     
     global angletable2
-    angletable2 = angle_calc2(astar, bstar, cstar, UB, bpe, bpc2, bpmu, bpnu, bp, fixe, hw_ini, hw_fin, hw_inc, h_cal, k_cal, l_cal)
+    angletable2 = angle_calc2(astar, bstar, cstar, U,B,UB, bpe, bpc2, bpmu, bpnu, bp, fixe, hw_ini, hw_fin, hw_inc, h_cal, k_cal, l_cal)
     
     A_sets = []  # A_setsリストを初期化
     QE_sets = []
@@ -1721,6 +1723,8 @@ def conostEscan_show_table():
     # UBtableを取得し、辞書から必要な変数を取り出す
     UBtable = on_UBcalc()
     
+    U=UBtable['U']
+    B=UBtable['B']
     UB=UBtable['UB']
     
     # Bragg peak positionの取得
@@ -1746,7 +1750,7 @@ def conostEscan_show_table():
     fixe=float(eief.get())
     
     global angletable3
-    angletable3 = angle_calc3(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,hw_cal,h_ini,k_ini,l_ini,h_fin,k_fin,l_fin,h_inc,k_inc,l_inc)
+    angletable3 = angle_calc3(astar,bstar,cstar,U,B,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,hw_cal,h_ini,k_ini,l_ini,h_fin,k_fin,l_fin,h_inc,k_inc,l_inc)
     
     
     A_sets = []  # A_setsリストを初期化
