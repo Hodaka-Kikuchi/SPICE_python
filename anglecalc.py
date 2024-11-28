@@ -136,7 +136,8 @@ def angle_calc(astar,bstar,cstar,U,B,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe):
         mu = result.x[1]
         nu = result.x[2]
         
-        final_error = objective([omega, mu, nu], Qv_cal, Qtheta_cal)
+        #fitting値の確認
+        #final_error = objective([omega, mu, nu], Qv_cal, Qtheta_cal)
         
         s_cal=omega+theta_cal
         omega_inst=s_cal+offset
