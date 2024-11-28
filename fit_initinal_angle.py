@@ -29,7 +29,7 @@ def calculate_angle_with_plane(base_vec1, base_vec2, normal_vec, target_vec):
     
     # base_vec1を基準に角度を計算
     dot_product = np.dot(base_vec1, target_proj)
-    angle = np.degrees(np.arccos(np.clip(dot_product, -1.0, 1.0)))
+    angle = -np.degrees(np.arccos(np.clip(dot_product, -1.0, 1.0)))
     
     # 外積で方向を判定
     cross_product = np.cross(base_vec1, target_proj)
@@ -39,16 +39,17 @@ def calculate_angle_with_plane(base_vec1, base_vec2, normal_vec, target_vec):
     return angle
 
 
-def initial_value_with_multiple_planes(U,astar, bstar, cstar, hkl):
+def initial_value_with_multiple_planes(U, astar, bstar, cstar, hkl):
     """
     hklのベクトルと複数の平面のなす角度を計算
     
     Parameters:
+        U: 回転行列
         astar, bstar, cstar: 基準ベクトル
         hkl: 計算対象のベクトル
     
     Returns:
-        平面ごとの符号付き角度（度数単位）の辞書
+        平面ごとの符号付き角度（度数単位）
     """
     vec1 = U[0, 0] * astar + U[0, 1] * bstar + U[0, 2] * cstar
     vec2 = U[1, 0] * astar + U[1, 1] * bstar + U[1, 2] * cstar
@@ -65,7 +66,20 @@ def initial_value_with_multiple_planes(U,astar, bstar, cstar, hkl):
     # 各平面との角度を計算
     angles_omega = calculate_angle_with_plane(Vec1, Vec2, Vec3, vect)
     angles_mu = calculate_angle_with_plane(Vec2, Vec3, Vec1, vect)
-    # どうしてかわからないけどnuだけ符号が逆
-    angles_nu = -calculate_angle_with_plane(Vec1, Vec3, Vec2, vect)
+    angles_nu = -calculate_angle_with_plane(Vec1, Vec3, Vec2, vect)  # 符号が逆になるので補正
 
-    return angles_omega,angles_mu,angles_nu
+    # 角度を-90°～90°の範囲内に制限
+    def normalize_angle(angle):
+        if angle > 90:
+            angle -= 180
+        elif angle < -90:
+            angle += 180
+        return angle
+    # angles_omegaがnanの場合、0に設定
+    if np.isnan(angles_omega):
+        angles_omega = 0
+    angles_mu = normalize_angle(angles_mu)
+    angles_nu = normalize_angle(angles_nu)
+
+    return angles_omega, angles_mu, angles_nu
+

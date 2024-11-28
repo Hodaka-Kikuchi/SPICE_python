@@ -132,11 +132,11 @@ def angle_calc(astar,bstar,cstar,U,B,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe):
             return result
         #最適化結果を格納している変数
         result = optimize_with_fixed_omega(Qv_cal, Qtheta_cal)
-        
         omega = result.x[0]
-
         mu = result.x[1]
         nu = result.x[2]
+        
+        final_error = objective([omega, mu, nu], Qv_cal, Qtheta_cal)
         
         s_cal=omega+theta_cal
         omega_inst=s_cal+offset
