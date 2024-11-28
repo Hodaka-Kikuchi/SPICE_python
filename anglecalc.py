@@ -5,6 +5,8 @@ import configparser
 import os
 import sys
 
+from fit_initinal_angle import initial_value_with_multiple_planes
+
 def angle_calc(astar,bstar,cstar,U,B,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe):
     # bragg peakの位置からoffsetを算出
     hkl_bp=bp[0]*astar+bp[1]*bstar+bp[2]*cstar
@@ -33,29 +35,6 @@ def angle_calc(astar,bstar,cstar,U,B,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe):
     Qv_bp = Qv_bp.reshape(-1, 1)  # 列ベクトルに変
     Qv_bp[np.abs(Qv_bp) <= 1e-6] = 0 #超重要,他のものにも適応
     
-    # 初期値の計算
-    def initial_value(astar,bstar,cstar,hkl):
-        vec1 = U[0,0]*astar+U[0,1]*bstar+U[0,2]*cstar
-        vec2 = U[1,0]*astar+U[1,1]*bstar+U[1,2]*cstar
-        vec3 = U[2,0]*astar+U[2,1]*bstar+U[2,2]*cstar
-        Vec1=vec1/np.linalg.norm(vec1)
-        Vec2=vec2/np.linalg.norm(vec2)
-        Vec3=vec3/np.linalg.norm(vec3)
-        
-        vect = hkl[0]*astar+hkl[1]*bstar+hkl[2]*cstar
-        Vect = vect/np.linalg.norm(vect)
-        
-        # 内積を計算して角度を取得（ラジアン）
-        dot_product = np.dot(Vec1, Vect)
-        # kiはc2の回転に対して逆向きになるため、angleの符号は逆になる。
-        angle = -np.degrees(np.arccos(np.clip(dot_product, -1.0, 1.0)))
-
-        # 外積で方向を判定
-        cross_product = np.cross(Vec1, Vect)
-        if np.dot(cross_product, Vec3) < 0:
-            angle = -angle  # 符号を付与
-        return angle
-    
     # fitting process
     def Omera_toration(omega):
         return np.array([[np.cos(np.radians(omega)),-np.sin(np.radians(omega)),0],[np.sin(np.radians(omega)),np.cos(np.radians(omega)),0],[0,0,1]])
@@ -72,11 +51,11 @@ def angle_calc(astar,bstar,cstar,U,B,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe):
         return np.linalg.norm(transformed_vector0 - Qtheta_bp)
     
     # 初期値計算
-    angle_bp = initial_value(astar,bstar,cstar,bp)
+    angle_bp = initial_value_with_multiple_planes(U,astar, bstar, cstar, bp)
 
     # 最適化関数（omegaの各初期値で最適化を行い、最も低い誤差を選択）
     def optimize_with_fixed_omega_bp(Qv_bp, Qtheta_bp):
-        initial_guess = [angle_bp, bpmu, bpnu]  # omegaを固定し、mu, nuは初期値0で開始
+        initial_guess = [angle_bp[0], bpmu, bpnu]  # omegaを固定し、mu, nuは初期値0で開始
         result_bp = minimize(objective_bp, initial_guess, method='L-BFGS-B', bounds=[(-180, 180), (-90, 90), (-90, 90)], args=(Qv_bp, Qtheta_bp))
 
         return result_bp
@@ -86,6 +65,7 @@ def angle_calc(astar,bstar,cstar,U,B,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe):
     
     # 結果を表示
     omega0 = result_bp.x[0]
+    
     # 結果を表示(-180~180に規格化。)
     #omega0, mu0, nu0 = [(angle + 180) % 360 - 180 for angle in result0.x]
     
@@ -128,8 +108,7 @@ def angle_calc(astar,bstar,cstar,U,B,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe):
         Qv_cal[np.abs(Qv_cal) <= 1e-6] = 0 #超重要,他のものにも適応
         
         # 初期値計算
-        angle_cal = initial_value(astar,bstar,cstar,cp)
-        
+        angle_cal = initial_value_with_multiple_planes(U,astar, bstar, cstar, cp)
         
         # 最適化対象の関数
         def objective(angles, Qv_cal, Qtheta_cal):
@@ -140,7 +119,7 @@ def angle_calc(astar,bstar,cstar,U,B,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe):
 
         # 最適化関数（omegaの各初期値で最適化を行い、最も低い誤差を選択）
         def optimize_with_fixed_omega(Qv_cal, Qtheta_cal):
-            initial_guess = [angle_cal, 0, 0]  # omegaを固定し、mu, nuは初期値0で開始
+            initial_guess = [angle_cal[0], angle_cal[1], angle_cal[2]]  # omegaを固定し、mu, nuは初期値0で開始
             # argsにQv_calとQtheta_calを渡す
             result = minimize(
                 objective,
