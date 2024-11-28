@@ -695,39 +695,39 @@ def calculate_all():
     # U matrixを表示
     txt_u_11.config(state="normal")  # 一時的に編集可能に
     txt_u_11.delete(0, tk.END)
-    txt_u_11.insert(0, round(UBtable['UB'][0,0],4))
+    txt_u_11.insert(0, round(UBtable['U'][0,0],4))
     txt_u_11.config(state="readonly") # 編集不可に設定
     txt_u_12.config(state="normal")  # 一時的に編集可能に
     txt_u_12.delete(0, tk.END)
-    txt_u_12.insert(0, round(UBtable['UB'][0,1],4))
+    txt_u_12.insert(0, round(UBtable['U'][0,1],4))
     txt_u_12.config(state="readonly") # 編集不可に設定
     txt_u_13.config(state="normal")  # 一時的に編集可能に
     txt_u_13.delete(0, tk.END)
-    txt_u_13.insert(0, round(UBtable['UB'][0,2],4))
+    txt_u_13.insert(0, round(UBtable['U'][0,2],4))
     txt_u_13.config(state="readonly") # 編集不可に設定
     txt_u_21.config(state="normal")  # 一時的に編集可能に
     txt_u_21.delete(0, tk.END)
-    txt_u_21.insert(0, round(UBtable['UB'][1,0],4))
+    txt_u_21.insert(0, round(UBtable['U'][1,0],4))
     txt_u_21.config(state="readonly") # 編集不可に設定
     txt_u_22.config(state="normal")  # 一時的に編集可能に
     txt_u_22.delete(0, tk.END)
-    txt_u_22.insert(0, round(UBtable['UB'][1,1],4))
+    txt_u_22.insert(0, round(UBtable['U'][1,1],4))
     txt_u_22.config(state="readonly") # 編集不可に設定
     txt_u_23.config(state="normal")  # 一時的に編集可能に
     txt_u_23.delete(0, tk.END)
-    txt_u_23.insert(0, round(UBtable['UB'][1,2],4))
+    txt_u_23.insert(0, round(UBtable['U'][1,2],4))
     txt_u_23.config(state="readonly") # 編集不可に設定
     txt_u_31.config(state="normal")  # 一時的に編集可能に
     txt_u_31.delete(0, tk.END)
-    txt_u_31.insert(0, round(UBtable['UB'][2,0],4))
+    txt_u_31.insert(0, round(UBtable['U'][2,0],4))
     txt_u_31.config(state="readonly") # 編集不可に設定
     txt_u_32.config(state="normal")  # 一時的に編集可能に
     txt_u_32.delete(0, tk.END)
-    txt_u_32.insert(0, round(UBtable['UB'][2,1],4))
+    txt_u_32.insert(0, round(UBtable['U'][2,1],4))
     txt_u_32.config(state="readonly") # 編集不可に設定
     txt_u_33.config(state="normal")  # 一時的に編集可能に
     txt_u_33.delete(0, tk.END)
-    txt_u_33.insert(0, round(UBtable['UB'][2,2],4))
+    txt_u_33.insert(0, round(UBtable['U'][2,2],4))
     txt_u_33.config(state="readonly") # 編集不可に設定
     
     # B matrixを表示
@@ -1011,7 +1011,7 @@ def on_anglecalc():
     
     # angleを計算
     angletable = angle_calc(
-        astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe
+        astar,bstar,cstar,U,B,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe
     )
     
     return angletable

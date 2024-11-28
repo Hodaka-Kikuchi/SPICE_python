@@ -5,7 +5,7 @@ import configparser
 import os
 import sys
 
-def angle_calc(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe):
+def angle_calc(astar,bstar,cstar,U,B,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe):
     # bragg peakの位置からoffsetを算出
     hkl_bp=bp[0]*astar+bp[1]*bstar+bp[2]*cstar
     #計算されたrlu
@@ -33,6 +33,29 @@ def angle_calc(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe):
     Qv_bp = Qv_bp.reshape(-1, 1)  # 列ベクトルに変
     Qv_bp[np.abs(Qv_bp) <= 1e-6] = 0 #超重要,他のものにも適応
     
+    # 初期値の計算
+    def initial_value(astar,bstar,cstar,hkl):
+        vec1 = U[0,0]*astar+U[0,1]*bstar+U[0,2]*cstar
+        vec2 = U[1,0]*astar+U[1,1]*bstar+U[1,2]*cstar
+        vec3 = U[2,0]*astar+U[2,1]*bstar+U[2,2]*cstar
+        Vec1=vec1/np.linalg.norm(vec1)
+        Vec2=vec2/np.linalg.norm(vec2)
+        Vec3=vec3/np.linalg.norm(vec3)
+        
+        vect = hkl[0]*astar+hkl[1]*bstar+hkl[2]*cstar
+        Vect = vect/np.linalg.norm(vect)
+        
+        # 内積を計算して角度を取得（ラジアン）
+        dot_product = np.dot(Vec1, Vect)
+        # kiはc2の回転に対して逆向きになるため、angleの符号は逆になる。
+        angle = -np.degrees(np.arccos(np.clip(dot_product, -1.0, 1.0)))
+
+        # 外積で方向を判定
+        cross_product = np.cross(Vec1, Vect)
+        if np.dot(cross_product, Vec3) < 0:
+            angle = -angle  # 符号を付与
+        return angle
+    
     # fitting process
     def Omera_toration(omega):
         return np.array([[np.cos(np.radians(omega)),-np.sin(np.radians(omega)),0],[np.sin(np.radians(omega)),np.cos(np.radians(omega)),0],[0,0,1]])
@@ -47,33 +70,22 @@ def angle_calc(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe):
         rotation_matrix0 = Omera_toration(omega) @ N_rotation(mu) @ M_rotation(nu)
         transformed_vector0 = rotation_matrix0 @ Qv_bp
         return np.linalg.norm(transformed_vector0 - Qtheta_bp)
+    
+    # 初期値計算
+    angle_bp = initial_value(astar,bstar,cstar,bp)
 
     # 最適化関数（omegaの各初期値で最適化を行い、最も低い誤差を選択）
-    def optimize_with_fixed_omega_bp(Qv_bp, Qtheta_bp, omega_values):
-        best_result_bp = None
-        best_fun_bp = float('inf')  # 最小値を探す
+    def optimize_with_fixed_omega_bp(Qv_bp, Qtheta_bp):
+        initial_guess = [angle_bp, bpmu, bpnu]  # omegaを固定し、mu, nuは初期値0で開始
+        result_bp = minimize(objective_bp, initial_guess, method='L-BFGS-B', bounds=[(-180, 180), (-90, 90), (-90, 90)], args=(Qv_bp, Qtheta_bp))
 
-        for omega in omega_values:
-            initial_guess = [omega, bpmu, bpnu]  # omegaを固定し、mu, nuは初期値0で開始
-            result_bp = minimize(objective_bp, initial_guess, method='L-BFGS-B', bounds=[(-180, 180), (-90, 90), (-90, 90)], args=(Qv_bp, Qtheta_bp))
-            
-            # 最小の最適化結果を選ぶ
-            if result_bp.fun < best_fun_bp:
-                best_result_bp = result_bp
-                best_fun_bp = result_bp.fun
-
-        return best_result_bp
-
-    # omegaの候補値
-    #omega_values = [-180, -135, -90, -45, 0, 45, 90, 135]
-    omega_values = [-180, -90, 0, 90]
+        return result_bp
     
     # 最適化結果を格納している変数
-    best_result_bp = optimize_with_fixed_omega_bp(Qv_bp, Qtheta_bp, omega_values)
+    result_bp = optimize_with_fixed_omega_bp(Qv_bp, Qtheta_bp)
     
     # 結果を表示
-    omega0 = best_result_bp.x[0]
-    
+    omega0 = result_bp.x[0]
     # 結果を表示(-180~180に規格化。)
     #omega0, mu0, nu0 = [(angle + 180) % 360 - 180 for angle in result0.x]
     
@@ -115,6 +127,10 @@ def angle_calc(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe):
         Qv_cal=Qv_cal.reshape(-1, 1)
         Qv_cal[np.abs(Qv_cal) <= 1e-6] = 0 #超重要,他のものにも適応
         
+        # 初期値計算
+        angle_cal = initial_value(astar,bstar,cstar,cp)
+        
+        
         # 最適化対象の関数
         def objective(angles, Qv_cal, Qtheta_cal):
             omega, mu, nu = angles
@@ -123,33 +139,25 @@ def angle_calc(astar,bstar,cstar,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe):
             return np.linalg.norm(transformed_vector - Qtheta_cal)
 
         # 最適化関数（omegaの各初期値で最適化を行い、最も低い誤差を選択）
-        def optimize_with_fixed_omega(Qv_cal, Qtheta_cal, omega_values):
-            best_result = None
-            best_fun = float('inf')  # 最小値を探す
+        def optimize_with_fixed_omega(Qv_cal, Qtheta_cal):
+            initial_guess = [angle_cal, 0, 0]  # omegaを固定し、mu, nuは初期値0で開始
+            # argsにQv_calとQtheta_calを渡す
+            result = minimize(
+                objective,
+                initial_guess,
+                method='L-BFGS-B',
+                bounds=[(-180, 180), (-90, 90), (-90, 90)],
+                args=(Qv_cal, Qtheta_cal)  # argsにQv_calとQtheta_calを渡す
+            )
 
-            for omega in omega_values:
-                initial_guess = [omega, 0, 0]  # omegaを固定し、mu, nuは初期値0で開始
-                # argsにQv_calとQtheta_calを渡す
-                result = minimize(
-                    objective,
-                    initial_guess,
-                    method='L-BFGS-B',
-                    bounds=[(-180, 180), (-90, 90), (-90, 90)],
-                    args=(Qv_cal, Qtheta_cal)  # argsにQv_calとQtheta_calを渡す
-                )
-
-                # 最小の最適化結果を選ぶ
-                if result.fun < best_fun:
-                    best_result = result
-                    best_fun = result.fun
-
-            return best_result
+            return result
         #最適化結果を格納している変数
-        best_result = optimize_with_fixed_omega(Qv_cal, Qtheta_cal, omega_values)
+        result = optimize_with_fixed_omega(Qv_cal, Qtheta_cal)
         
-        omega = best_result.x[0]
-        mu = best_result.x[1]
-        nu = best_result.x[2]
+        omega = result.x[0]
+
+        mu = result.x[1]
+        nu = result.x[2]
         
         s_cal=omega+theta_cal
         omega_inst=s_cal+offset
