@@ -1,8 +1,7 @@
-# Automation System for Utility in Research Analysis
-# ASYURA
-# UB matrixによるoffsetの自動入力
+#cd C:\DATA_HK\python\SPICE_python
+
 # 右上にバージョン情報を表示
-__version__ = '1.2.0'
+__version__ = '1.2.1'
 """
 セマンティック バージョニング (Semantic Versioning)
 セマンティック バージョニング（セムバ―、SemVer）は、バージョン番号を「MAJOR.MINOR.PATCH」の形式で表します。それぞれの部分には以下のような意味があります：
@@ -2097,6 +2096,7 @@ root.mainloop()
 
 #############
 # pyinstaller tips
+# cd C:\DATA_HK\python\SPICE_python
 # pyinstaller --noconsole --onefile --add-data "config.ini;." --add-data "logo2.ico;." --icon=logo2.ico TriAxionSim.py
 
 """

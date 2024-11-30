@@ -38,7 +38,6 @@ def calculate_angle_with_plane(base_vec1, base_vec2, normal_vec, target_vec):
     
     return angle
 
-
 def initial_value_with_multiple_planes(U, astar, bstar, cstar, hkl):
     """
     hklのベクトルと複数の平面のなす角度を計算
@@ -63,10 +62,21 @@ def initial_value_with_multiple_planes(U, astar, bstar, cstar, hkl):
     # hklのベクトルを計算
     vect = hkl[0] * astar + hkl[1] * bstar + hkl[2] * cstar
 
+    # 平面法線ベクトルの計算
+    plane1_normal = np.cross(Vec1, Vec2)
+
     # 各平面との角度を計算
     angles_omega = calculate_angle_with_plane(Vec1, Vec2, Vec3, vect)
     angles_mu = calculate_angle_with_plane(Vec2, Vec3, Vec1, vect)
     angles_nu = -calculate_angle_with_plane(Vec1, Vec3, Vec2, vect)  # 符号が逆になるので補正
+
+    # vectがVec1とVec2の作る平面上にあるかどうかを判定
+    is_on_plane1 = np.abs(np.dot(vect, plane1_normal)) < 1e-10  # 許容誤差を設定
+
+    # 平面上にある場合、angles_muとangles_nuを0にする
+    if is_on_plane1:
+        angles_mu = 0
+        angles_nu = 0
 
     # 角度を-90°～90°の範囲内に制限
     def normalize_angle(angle):
@@ -75,6 +85,7 @@ def initial_value_with_multiple_planes(U, astar, bstar, cstar, hkl):
         elif angle < -90:
             angle += 180
         return angle
+
     # angles_omegaがnanの場合、0に設定
     if np.isnan(angles_omega):
         angles_omega = 0
@@ -82,4 +93,5 @@ def initial_value_with_multiple_planes(U, astar, bstar, cstar, hkl):
     angles_nu = normalize_angle(angles_nu)
 
     return angles_omega, angles_mu, angles_nu
+
 

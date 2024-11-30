@@ -109,7 +109,6 @@ def angle_calc(astar,bstar,cstar,U,B,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe):
         
         # 初期値計算
         angle_cal = initial_value_with_multiple_planes(U,astar, bstar, cstar, cp)
-        
         # 最適化対象の関数
         def objective(angles, Qv_cal, Qtheta_cal):
             omega, mu, nu = angles
