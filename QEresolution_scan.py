@@ -7,6 +7,8 @@ import configparser
 import os
 import sys
 from matplotlib.widgets import Slider
+from scipy.optimize import minimize_scalar
+from scipy.optimize import minimize
 
 def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,initial_index=0):
 
@@ -344,6 +346,58 @@ def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,init
         plot_ellipse(A_yz, B_yz, C_yz, D_yz, E_yz, F_yz, Xrange_lim, Zrange_lim, label = "", color="blue",shift_x=0, shift_y=0)
         plot_ellipse(A_xz, B_xz, C_xz, D_xz, E_xz, F_xz, Xrange_lim, Zrange_lim, label = "", color="red",shift_x=0, shift_y=0)
 
+        # 楕円球の係数行列 RM と楕円球の方程式
+        def fun3(x, y, z, RM):
+            return (
+                RM[0, 0] * x**2
+                + RM[1, 1] * y**2
+                + RM[2, 2] * z**2
+                + 2 * RM[0, 1] * x * y
+                + 2 * RM[0, 2] * x * z
+                + 2 * RM[1, 2] * y * z
+                - 2 * np.log(2)
+            )
+        
+        # 制約条件（楕円球の式 = 0 を満たす）
+        def constraint(params, RM):
+            x, y, z = params
+            return fun3(x, y, z, RM)
+        
+        # 最大値を探索する関数
+        def find_max_along_axis(RM, axis="x"):
+            # 初期値
+            initial_guess = [0, 0, 0]  # 楕円球の中心に近い点から探索を開始
+            axis_map = {"x": 0, "y": 1, "z": 2}
+            idx = axis_map[axis]
+
+            # 目的関数（探索する軸を最大化）
+            def objective(params):
+                return -params[idx]  # 最大化したいのでマイナスを付ける
+
+            # 制約条件を定義
+            constraints = {"type": "eq", "fun": constraint, "args": (RM,)}
+
+            # 最適化
+            result = minimize(
+                objective,
+                initial_guess,
+                method="SLSQP",
+                constraints=constraints,
+                options={"disp": False},
+            )
+            return result.x[idx], result.x  # 最大値とそのときの座標
+        
+        # 各軸の最大値を計算
+        max_x, coords_x = find_max_along_axis(RM, axis="x")# Q//
+        max_y, coords_y = find_max_along_axis(RM, axis="y")# Q⊥
+        max_z, coords_z = find_max_along_axis(RM, axis="z")# E
+        
+        # 各軸の最大値を2倍した値
+        resolution_Q_parallel = 2 * max_x
+        resolution_Q_perpendicular = 2 * max_y
+        resolution_energy = 2 * max_z
+        
+        
         # 軸やラベルの設定
         ax.axhline(0, color="black", linestyle="--", linewidth=0.5)
         ax.axvline(0, color="black", linestyle="--", linewidth=0.5)
@@ -356,7 +410,7 @@ def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,init
         # 追加情報を ax.text で追加
         ax.text(
             0.5, 1.1,  # グラフの外に配置 (x=0.4, y=1.05)
-            f'ℏω: {QE_sets[index][0]} meV, h: {QE_sets[index][1]}, k: {QE_sets[index][2]}, l: {QE_sets[index][3]}',
+            f'ℏω: {QE_sets[index][0]} meV, h: {QE_sets[index][1]}, k: {QE_sets[index][2]}, l: {QE_sets[index][3]}, δ$Q_{{\\parallel}}$ = {resolution_Q_parallel:.4f}, δ$Q_{{\\perp}}$ = {resolution_Q_perpendicular:.4f}, δE = {resolution_energy:.4f}',
             horizontalalignment='center',
             verticalalignment='center',
             transform=ax.transAxes,

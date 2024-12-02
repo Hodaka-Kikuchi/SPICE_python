@@ -1,7 +1,7 @@
 #cd C:\DATA_HK\python\SPICE_python
 
 # 右上にバージョン情報を表示
-__version__ = '1.2.1'
+__version__ = '1.3.2'
 """
 セマンティック バージョニング (Semantic Versioning)
 セマンティック バージョニング（セムバ―、SemVer）は、バージョン番号を「MAJOR.MINOR.PATCH」の形式で表します。それぞれの部分には以下のような意味があります：
@@ -395,7 +395,7 @@ root.rowconfigure(5, weight=3)
 root.rowconfigure(6, weight=3)
 
 # ファイル選択のフレームの作成と設置
-frame1 = ttk.Labelframe(root,text= "lattice infromation")
+frame1 = ttk.Labelframe(root,text= "lattice information")
 frame1.grid(row=0,column=0,sticky="NSEW")
 
 frame1.columnconfigure(0, weight=1)
@@ -682,7 +682,7 @@ txt_ub_33.insert(0,'0')
 txt_ub_33.grid(row=2, column=2,sticky="NSEW")
 
 # 1つのボタンで両方の計算を実行
-def calculate_all():
+def displayUB():
     # on_Rlcalc の結果を取得
     RLtable = on_Rlcalc()
     #print("RLtable:", RLtable)
@@ -828,7 +828,7 @@ rdo_sense1.grid(row=0, column=1, sticky="NSEW")
 """
 
 #ボタン1つで両方の計算を実行
-UBcalculate_button = ttk.Button(frame3, text="UB display", command=calculate_all)
+UBcalculate_button = ttk.Button(frame3, text="display", command=displayUB)
 UBcalculate_button.grid(row=1, column=1,sticky="NSEW")
 
 # ブラッグピーク位置を入力
@@ -933,13 +933,15 @@ style.map(
 notebook00 = ttk.Notebook(frame6,style="example.TNotebook")
 
 # タブの作成
-tab_001 = tk.Frame(notebook00)# Angle calculation
-tab_002 = tk.Frame(notebook00)# constant Q scan
-tab_003 = tk.Frame(notebook00)# constant E scan
+tab_001 = tk.Frame(notebook00)# single Q-E point
+tab_002 = tk.Frame(notebook00)# scan simulation
+tab_003 = tk.Frame(notebook00)# lattice constant
+tab_004 = tk.Frame(notebook00)# constant E scan
 # notebookにタブを追加
 notebook00.add(tab_001, text="single Q-E point")
 notebook00.add(tab_002, text="scan simulation")
 notebook00.add(tab_003, text="lattice constant")
+notebook00.add(tab_004, text="toolbox")
 
 # Notebookを配置
 notebook00.pack(expand=True, fill="both")
@@ -993,6 +995,121 @@ def on_anglecalc():
     U=UBtable['U']
     B=UBtable['B']
     UB=UBtable['UB']
+    
+    # displayに表示
+    # U matrixを表示
+    txt_u_11.config(state="normal")  # 一時的に編集可能に
+    txt_u_11.delete(0, tk.END)
+    txt_u_11.insert(0, round(UBtable['U'][0,0],4))
+    txt_u_11.config(state="readonly") # 編集不可に設定
+    txt_u_12.config(state="normal")  # 一時的に編集可能に
+    txt_u_12.delete(0, tk.END)
+    txt_u_12.insert(0, round(UBtable['U'][0,1],4))
+    txt_u_12.config(state="readonly") # 編集不可に設定
+    txt_u_13.config(state="normal")  # 一時的に編集可能に
+    txt_u_13.delete(0, tk.END)
+    txt_u_13.insert(0, round(UBtable['U'][0,2],4))
+    txt_u_13.config(state="readonly") # 編集不可に設定
+    txt_u_21.config(state="normal")  # 一時的に編集可能に
+    txt_u_21.delete(0, tk.END)
+    txt_u_21.insert(0, round(UBtable['U'][1,0],4))
+    txt_u_21.config(state="readonly") # 編集不可に設定
+    txt_u_22.config(state="normal")  # 一時的に編集可能に
+    txt_u_22.delete(0, tk.END)
+    txt_u_22.insert(0, round(UBtable['U'][1,1],4))
+    txt_u_22.config(state="readonly") # 編集不可に設定
+    txt_u_23.config(state="normal")  # 一時的に編集可能に
+    txt_u_23.delete(0, tk.END)
+    txt_u_23.insert(0, round(UBtable['U'][1,2],4))
+    txt_u_23.config(state="readonly") # 編集不可に設定
+    txt_u_31.config(state="normal")  # 一時的に編集可能に
+    txt_u_31.delete(0, tk.END)
+    txt_u_31.insert(0, round(UBtable['U'][2,0],4))
+    txt_u_31.config(state="readonly") # 編集不可に設定
+    txt_u_32.config(state="normal")  # 一時的に編集可能に
+    txt_u_32.delete(0, tk.END)
+    txt_u_32.insert(0, round(UBtable['U'][2,1],4))
+    txt_u_32.config(state="readonly") # 編集不可に設定
+    txt_u_33.config(state="normal")  # 一時的に編集可能に
+    txt_u_33.delete(0, tk.END)
+    txt_u_33.insert(0, round(UBtable['U'][2,2],4))
+    txt_u_33.config(state="readonly") # 編集不可に設定
+    
+    # B matrixを表示
+    txt_b_11.config(state="normal")  # 一時的に編集可能に
+    txt_b_11.delete(0, tk.END)
+    txt_b_11.insert(0, round(UBtable['B'][0,0],4))
+    txt_b_11.config(state="readonly") # 編集不可に設定
+    txt_b_12.config(state="normal")  # 一時的に編集可能に
+    txt_b_12.delete(0, tk.END)
+    txt_b_12.insert(0, round(UBtable['B'][0,1],4))
+    txt_b_12.config(state="readonly") # 編集不可に設定
+    txt_b_13.config(state="normal")  # 一時的に編集可能に
+    txt_b_13.delete(0, tk.END)
+    txt_b_13.insert(0, round(UBtable['B'][0,2],4))
+    txt_b_13.config(state="readonly") # 編集不可に設定
+    txt_b_21.config(state="normal")  # 一時的に編集可能に
+    txt_b_21.delete(0, tk.END)
+    txt_b_21.insert(0, round(UBtable['B'][1,0],4))
+    txt_b_21.config(state="readonly") # 編集不可に設定
+    txt_b_22.config(state="normal")  # 一時的に編集可能に
+    txt_b_22.delete(0, tk.END)
+    txt_b_22.insert(0, round(UBtable['B'][1,1],4))
+    txt_b_22.config(state="readonly") # 編集不可に設定
+    txt_b_23.config(state="normal")  # 一時的に編集可能に
+    txt_b_23.delete(0, tk.END)
+    txt_b_23.insert(0, round(UBtable['B'][1,2],4))
+    txt_b_23.config(state="readonly") # 編集不可に設定
+    txt_b_31.config(state="normal")  # 一時的に編集可能に
+    txt_b_31.delete(0, tk.END)
+    txt_b_31.insert(0, round(UBtable['B'][2,0],4))
+    txt_b_31.config(state="readonly") # 編集不可に設定
+    txt_b_32.config(state="normal")  # 一時的に編集可能に
+    txt_b_32.delete(0, tk.END)
+    txt_b_32.insert(0, round(UBtable['B'][2,1],4))
+    txt_b_32.config(state="readonly") # 編集不可に設定
+    txt_b_33.config(state="normal")  # 一時的に編集可能に
+    txt_b_33.delete(0, tk.END)
+    txt_b_33.insert(0, round(UBtable['B'][2,2],4))
+    txt_b_33.config(state="readonly") # 編集不可に設定
+    
+    # UB matrixを表示
+    txt_ub_11.config(state="normal")  # 一時的に編集可能に
+    txt_ub_11.delete(0, tk.END)
+    txt_ub_11.insert(0, round(UBtable['UB'][0,0],4))
+    txt_ub_11.config(state="readonly") # 編集不可に設定
+    txt_ub_12.config(state="normal")  # 一時的に編集可能に
+    txt_ub_12.delete(0, tk.END)
+    txt_ub_12.insert(0, round(UBtable['UB'][0,1],4))
+    txt_ub_12.config(state="readonly") # 編集不可に設定
+    txt_ub_13.config(state="normal")  # 一時的に編集可能に
+    txt_ub_13.delete(0, tk.END)
+    txt_ub_13.insert(0, round(UBtable['UB'][0,2],4))
+    txt_ub_13.config(state="readonly") # 編集不可に設定
+    txt_ub_21.config(state="normal")  # 一時的に編集可能に
+    txt_ub_21.delete(0, tk.END)
+    txt_ub_21.insert(0, round(UBtable['UB'][1,0],4))
+    txt_ub_21.config(state="readonly") # 編集不可に設定
+    txt_ub_22.config(state="normal")  # 一時的に編集可能に
+    txt_ub_22.delete(0, tk.END)
+    txt_ub_22.insert(0, round(UBtable['UB'][1,1],4))
+    txt_ub_22.config(state="readonly") # 編集不可に設定
+    txt_ub_23.config(state="normal")  # 一時的に編集可能に
+    txt_ub_23.delete(0, tk.END)
+    txt_ub_23.insert(0, round(UBtable['UB'][1,2],4))
+    txt_ub_23.config(state="readonly") # 編集不可に設定
+    txt_ub_31.config(state="normal")  # 一時的に編集可能に
+    txt_ub_31.delete(0, tk.END)
+    txt_ub_31.insert(0, round(UBtable['UB'][2,0],4))
+    txt_ub_31.config(state="readonly") # 編集不可に設定
+    txt_ub_32.config(state="normal")  # 一時的に編集可能に
+    txt_ub_32.delete(0, tk.END)
+    txt_ub_32.insert(0, round(UBtable['UB'][2,1],4))
+    txt_ub_32.config(state="readonly") # 編集不可に設定
+    txt_ub_33.config(state="normal")  # 一時的に編集可能に
+    txt_ub_33.delete(0, tk.END)
+    txt_ub_33.insert(0, round(UBtable['UB'][2,2],4))
+    txt_ub_33.config(state="readonly") # 編集不可に設定
     
     # Bragg peak positionの取得
     bpe = float(Energy.get())
@@ -1556,6 +1673,121 @@ def constQscan_show_table():
     B=UBtable['B']
     UB=UBtable['UB']
     
+    # displayに表示
+    # U matrixを表示
+    txt_u_11.config(state="normal")  # 一時的に編集可能に
+    txt_u_11.delete(0, tk.END)
+    txt_u_11.insert(0, round(UBtable['U'][0,0],4))
+    txt_u_11.config(state="readonly") # 編集不可に設定
+    txt_u_12.config(state="normal")  # 一時的に編集可能に
+    txt_u_12.delete(0, tk.END)
+    txt_u_12.insert(0, round(UBtable['U'][0,1],4))
+    txt_u_12.config(state="readonly") # 編集不可に設定
+    txt_u_13.config(state="normal")  # 一時的に編集可能に
+    txt_u_13.delete(0, tk.END)
+    txt_u_13.insert(0, round(UBtable['U'][0,2],4))
+    txt_u_13.config(state="readonly") # 編集不可に設定
+    txt_u_21.config(state="normal")  # 一時的に編集可能に
+    txt_u_21.delete(0, tk.END)
+    txt_u_21.insert(0, round(UBtable['U'][1,0],4))
+    txt_u_21.config(state="readonly") # 編集不可に設定
+    txt_u_22.config(state="normal")  # 一時的に編集可能に
+    txt_u_22.delete(0, tk.END)
+    txt_u_22.insert(0, round(UBtable['U'][1,1],4))
+    txt_u_22.config(state="readonly") # 編集不可に設定
+    txt_u_23.config(state="normal")  # 一時的に編集可能に
+    txt_u_23.delete(0, tk.END)
+    txt_u_23.insert(0, round(UBtable['U'][1,2],4))
+    txt_u_23.config(state="readonly") # 編集不可に設定
+    txt_u_31.config(state="normal")  # 一時的に編集可能に
+    txt_u_31.delete(0, tk.END)
+    txt_u_31.insert(0, round(UBtable['U'][2,0],4))
+    txt_u_31.config(state="readonly") # 編集不可に設定
+    txt_u_32.config(state="normal")  # 一時的に編集可能に
+    txt_u_32.delete(0, tk.END)
+    txt_u_32.insert(0, round(UBtable['U'][2,1],4))
+    txt_u_32.config(state="readonly") # 編集不可に設定
+    txt_u_33.config(state="normal")  # 一時的に編集可能に
+    txt_u_33.delete(0, tk.END)
+    txt_u_33.insert(0, round(UBtable['U'][2,2],4))
+    txt_u_33.config(state="readonly") # 編集不可に設定
+    
+    # B matrixを表示
+    txt_b_11.config(state="normal")  # 一時的に編集可能に
+    txt_b_11.delete(0, tk.END)
+    txt_b_11.insert(0, round(UBtable['B'][0,0],4))
+    txt_b_11.config(state="readonly") # 編集不可に設定
+    txt_b_12.config(state="normal")  # 一時的に編集可能に
+    txt_b_12.delete(0, tk.END)
+    txt_b_12.insert(0, round(UBtable['B'][0,1],4))
+    txt_b_12.config(state="readonly") # 編集不可に設定
+    txt_b_13.config(state="normal")  # 一時的に編集可能に
+    txt_b_13.delete(0, tk.END)
+    txt_b_13.insert(0, round(UBtable['B'][0,2],4))
+    txt_b_13.config(state="readonly") # 編集不可に設定
+    txt_b_21.config(state="normal")  # 一時的に編集可能に
+    txt_b_21.delete(0, tk.END)
+    txt_b_21.insert(0, round(UBtable['B'][1,0],4))
+    txt_b_21.config(state="readonly") # 編集不可に設定
+    txt_b_22.config(state="normal")  # 一時的に編集可能に
+    txt_b_22.delete(0, tk.END)
+    txt_b_22.insert(0, round(UBtable['B'][1,1],4))
+    txt_b_22.config(state="readonly") # 編集不可に設定
+    txt_b_23.config(state="normal")  # 一時的に編集可能に
+    txt_b_23.delete(0, tk.END)
+    txt_b_23.insert(0, round(UBtable['B'][1,2],4))
+    txt_b_23.config(state="readonly") # 編集不可に設定
+    txt_b_31.config(state="normal")  # 一時的に編集可能に
+    txt_b_31.delete(0, tk.END)
+    txt_b_31.insert(0, round(UBtable['B'][2,0],4))
+    txt_b_31.config(state="readonly") # 編集不可に設定
+    txt_b_32.config(state="normal")  # 一時的に編集可能に
+    txt_b_32.delete(0, tk.END)
+    txt_b_32.insert(0, round(UBtable['B'][2,1],4))
+    txt_b_32.config(state="readonly") # 編集不可に設定
+    txt_b_33.config(state="normal")  # 一時的に編集可能に
+    txt_b_33.delete(0, tk.END)
+    txt_b_33.insert(0, round(UBtable['B'][2,2],4))
+    txt_b_33.config(state="readonly") # 編集不可に設定
+    
+    # UB matrixを表示
+    txt_ub_11.config(state="normal")  # 一時的に編集可能に
+    txt_ub_11.delete(0, tk.END)
+    txt_ub_11.insert(0, round(UBtable['UB'][0,0],4))
+    txt_ub_11.config(state="readonly") # 編集不可に設定
+    txt_ub_12.config(state="normal")  # 一時的に編集可能に
+    txt_ub_12.delete(0, tk.END)
+    txt_ub_12.insert(0, round(UBtable['UB'][0,1],4))
+    txt_ub_12.config(state="readonly") # 編集不可に設定
+    txt_ub_13.config(state="normal")  # 一時的に編集可能に
+    txt_ub_13.delete(0, tk.END)
+    txt_ub_13.insert(0, round(UBtable['UB'][0,2],4))
+    txt_ub_13.config(state="readonly") # 編集不可に設定
+    txt_ub_21.config(state="normal")  # 一時的に編集可能に
+    txt_ub_21.delete(0, tk.END)
+    txt_ub_21.insert(0, round(UBtable['UB'][1,0],4))
+    txt_ub_21.config(state="readonly") # 編集不可に設定
+    txt_ub_22.config(state="normal")  # 一時的に編集可能に
+    txt_ub_22.delete(0, tk.END)
+    txt_ub_22.insert(0, round(UBtable['UB'][1,1],4))
+    txt_ub_22.config(state="readonly") # 編集不可に設定
+    txt_ub_23.config(state="normal")  # 一時的に編集可能に
+    txt_ub_23.delete(0, tk.END)
+    txt_ub_23.insert(0, round(UBtable['UB'][1,2],4))
+    txt_ub_23.config(state="readonly") # 編集不可に設定
+    txt_ub_31.config(state="normal")  # 一時的に編集可能に
+    txt_ub_31.delete(0, tk.END)
+    txt_ub_31.insert(0, round(UBtable['UB'][2,0],4))
+    txt_ub_31.config(state="readonly") # 編集不可に設定
+    txt_ub_32.config(state="normal")  # 一時的に編集可能に
+    txt_ub_32.delete(0, tk.END)
+    txt_ub_32.insert(0, round(UBtable['UB'][2,1],4))
+    txt_ub_32.config(state="readonly") # 編集不可に設定
+    txt_ub_33.config(state="normal")  # 一時的に編集可能に
+    txt_ub_33.delete(0, tk.END)
+    txt_ub_33.insert(0, round(UBtable['UB'][2,2],4))
+    txt_ub_33.config(state="readonly") # 編集不可に設定
+    
     # Bragg peak positionの取得
     bpe = float(Energy.get())
     bpc2 = float(bp_c2.get())
@@ -1725,6 +1957,121 @@ def conostEscan_show_table():
     U=UBtable['U']
     B=UBtable['B']
     UB=UBtable['UB']
+    
+    # displayに表示
+    # U matrixを表示
+    txt_u_11.config(state="normal")  # 一時的に編集可能に
+    txt_u_11.delete(0, tk.END)
+    txt_u_11.insert(0, round(UBtable['U'][0,0],4))
+    txt_u_11.config(state="readonly") # 編集不可に設定
+    txt_u_12.config(state="normal")  # 一時的に編集可能に
+    txt_u_12.delete(0, tk.END)
+    txt_u_12.insert(0, round(UBtable['U'][0,1],4))
+    txt_u_12.config(state="readonly") # 編集不可に設定
+    txt_u_13.config(state="normal")  # 一時的に編集可能に
+    txt_u_13.delete(0, tk.END)
+    txt_u_13.insert(0, round(UBtable['U'][0,2],4))
+    txt_u_13.config(state="readonly") # 編集不可に設定
+    txt_u_21.config(state="normal")  # 一時的に編集可能に
+    txt_u_21.delete(0, tk.END)
+    txt_u_21.insert(0, round(UBtable['U'][1,0],4))
+    txt_u_21.config(state="readonly") # 編集不可に設定
+    txt_u_22.config(state="normal")  # 一時的に編集可能に
+    txt_u_22.delete(0, tk.END)
+    txt_u_22.insert(0, round(UBtable['U'][1,1],4))
+    txt_u_22.config(state="readonly") # 編集不可に設定
+    txt_u_23.config(state="normal")  # 一時的に編集可能に
+    txt_u_23.delete(0, tk.END)
+    txt_u_23.insert(0, round(UBtable['U'][1,2],4))
+    txt_u_23.config(state="readonly") # 編集不可に設定
+    txt_u_31.config(state="normal")  # 一時的に編集可能に
+    txt_u_31.delete(0, tk.END)
+    txt_u_31.insert(0, round(UBtable['U'][2,0],4))
+    txt_u_31.config(state="readonly") # 編集不可に設定
+    txt_u_32.config(state="normal")  # 一時的に編集可能に
+    txt_u_32.delete(0, tk.END)
+    txt_u_32.insert(0, round(UBtable['U'][2,1],4))
+    txt_u_32.config(state="readonly") # 編集不可に設定
+    txt_u_33.config(state="normal")  # 一時的に編集可能に
+    txt_u_33.delete(0, tk.END)
+    txt_u_33.insert(0, round(UBtable['U'][2,2],4))
+    txt_u_33.config(state="readonly") # 編集不可に設定
+    
+    # B matrixを表示
+    txt_b_11.config(state="normal")  # 一時的に編集可能に
+    txt_b_11.delete(0, tk.END)
+    txt_b_11.insert(0, round(UBtable['B'][0,0],4))
+    txt_b_11.config(state="readonly") # 編集不可に設定
+    txt_b_12.config(state="normal")  # 一時的に編集可能に
+    txt_b_12.delete(0, tk.END)
+    txt_b_12.insert(0, round(UBtable['B'][0,1],4))
+    txt_b_12.config(state="readonly") # 編集不可に設定
+    txt_b_13.config(state="normal")  # 一時的に編集可能に
+    txt_b_13.delete(0, tk.END)
+    txt_b_13.insert(0, round(UBtable['B'][0,2],4))
+    txt_b_13.config(state="readonly") # 編集不可に設定
+    txt_b_21.config(state="normal")  # 一時的に編集可能に
+    txt_b_21.delete(0, tk.END)
+    txt_b_21.insert(0, round(UBtable['B'][1,0],4))
+    txt_b_21.config(state="readonly") # 編集不可に設定
+    txt_b_22.config(state="normal")  # 一時的に編集可能に
+    txt_b_22.delete(0, tk.END)
+    txt_b_22.insert(0, round(UBtable['B'][1,1],4))
+    txt_b_22.config(state="readonly") # 編集不可に設定
+    txt_b_23.config(state="normal")  # 一時的に編集可能に
+    txt_b_23.delete(0, tk.END)
+    txt_b_23.insert(0, round(UBtable['B'][1,2],4))
+    txt_b_23.config(state="readonly") # 編集不可に設定
+    txt_b_31.config(state="normal")  # 一時的に編集可能に
+    txt_b_31.delete(0, tk.END)
+    txt_b_31.insert(0, round(UBtable['B'][2,0],4))
+    txt_b_31.config(state="readonly") # 編集不可に設定
+    txt_b_32.config(state="normal")  # 一時的に編集可能に
+    txt_b_32.delete(0, tk.END)
+    txt_b_32.insert(0, round(UBtable['B'][2,1],4))
+    txt_b_32.config(state="readonly") # 編集不可に設定
+    txt_b_33.config(state="normal")  # 一時的に編集可能に
+    txt_b_33.delete(0, tk.END)
+    txt_b_33.insert(0, round(UBtable['B'][2,2],4))
+    txt_b_33.config(state="readonly") # 編集不可に設定
+    
+    # UB matrixを表示
+    txt_ub_11.config(state="normal")  # 一時的に編集可能に
+    txt_ub_11.delete(0, tk.END)
+    txt_ub_11.insert(0, round(UBtable['UB'][0,0],4))
+    txt_ub_11.config(state="readonly") # 編集不可に設定
+    txt_ub_12.config(state="normal")  # 一時的に編集可能に
+    txt_ub_12.delete(0, tk.END)
+    txt_ub_12.insert(0, round(UBtable['UB'][0,1],4))
+    txt_ub_12.config(state="readonly") # 編集不可に設定
+    txt_ub_13.config(state="normal")  # 一時的に編集可能に
+    txt_ub_13.delete(0, tk.END)
+    txt_ub_13.insert(0, round(UBtable['UB'][0,2],4))
+    txt_ub_13.config(state="readonly") # 編集不可に設定
+    txt_ub_21.config(state="normal")  # 一時的に編集可能に
+    txt_ub_21.delete(0, tk.END)
+    txt_ub_21.insert(0, round(UBtable['UB'][1,0],4))
+    txt_ub_21.config(state="readonly") # 編集不可に設定
+    txt_ub_22.config(state="normal")  # 一時的に編集可能に
+    txt_ub_22.delete(0, tk.END)
+    txt_ub_22.insert(0, round(UBtable['UB'][1,1],4))
+    txt_ub_22.config(state="readonly") # 編集不可に設定
+    txt_ub_23.config(state="normal")  # 一時的に編集可能に
+    txt_ub_23.delete(0, tk.END)
+    txt_ub_23.insert(0, round(UBtable['UB'][1,2],4))
+    txt_ub_23.config(state="readonly") # 編集不可に設定
+    txt_ub_31.config(state="normal")  # 一時的に編集可能に
+    txt_ub_31.delete(0, tk.END)
+    txt_ub_31.insert(0, round(UBtable['UB'][2,0],4))
+    txt_ub_31.config(state="readonly") # 編集不可に設定
+    txt_ub_32.config(state="normal")  # 一時的に編集可能に
+    txt_ub_32.delete(0, tk.END)
+    txt_ub_32.insert(0, round(UBtable['UB'][2,1],4))
+    txt_ub_32.config(state="readonly") # 編集不可に設定
+    txt_ub_33.config(state="normal")  # 一時的に編集可能に
+    txt_ub_33.delete(0, tk.END)
+    txt_ub_33.insert(0, round(UBtable['UB'][2,2],4))
+    txt_ub_33.config(state="readonly") # 編集不可に設定
     
     # Bragg peak positionの取得
     bpe = float(Energy.get())
@@ -1918,8 +2265,7 @@ def fitting_process():
             initial_params=initial_params  # 取得した初期値を渡す
         )
         
-        # 結果を表示
-         # 結果をGUIに反映
+        # 結果をGUIに反映
         fit_resa.configure(state="normal")
         fit_resb.configure(state="normal")
         fit_resc.configure(state="normal")
@@ -2018,6 +2364,275 @@ fit_reswa.grid(row=2, column=0,sticky="NSEW")
 fit_resme = tk.Label(tab_003b,text='')
 fit_resme.grid(row=2, column=1,columnspan=5,sticky="NSEW")
 
+# toolbox
+# グリッドの重みを設定
+tab_004.columnconfigure(0, weight=4)
+tab_004.columnconfigure(1, weight=4)
+tab_004.rowconfigure(0, weight=2)
+tab_004.rowconfigure(1, weight=4)
+
+tab_004a = ttk.Labelframe(tab_004,text= "reciprocal vectors")
+tab_004a.grid(row=0,column=0,rowspan=2, sticky="NSEW")
+tab_004a.columnconfigure(0, weight=1)
+tab_004a.columnconfigure(1, weight=1)
+tab_004a.columnconfigure(2, weight=1)
+tab_004a.columnconfigure(3, weight=1)
+tab_004a.rowconfigure(0, weight=1)
+tab_004a.rowconfigure(1, weight=1)
+tab_004a.rowconfigure(2, weight=1)
+tab_004a.rowconfigure(3, weight=1)
+tab_004a.rowconfigure(4, weight=1)
+
+rvx= tk.Label(tab_004a,text='x')
+rvx.grid(row=0, column=1,sticky="NSEW")
+rvy= tk.Label(tab_004a,text='y')
+rvy.grid(row=0, column=2,sticky="NSEW")
+rvz= tk.Label(tab_004a,text='z')
+rvz.grid(row=0, column=3,sticky="NSEW")
+
+rv1= tk.Label(tab_004a,text='a* = ',width=16)
+rv1.grid(row=1, column=0,sticky="NSEW")
+rv1x = ttk.Entry(tab_004a,state="readonly")
+rv1x.grid(row=1, column=1,sticky="NSEW")
+rv1y = ttk.Entry(tab_004a,state="readonly")
+rv1y.grid(row=1, column=2,sticky="NSEW")
+rv1z = ttk.Entry(tab_004a,state="readonly")
+rv1z.grid(row=1, column=3,sticky="NSEW")
+
+rv2= tk.Label(tab_004a,text='b* = ',width=16)
+rv2.grid(row=2, column=0,sticky="NSEW")
+rv2x = ttk.Entry(tab_004a,state="readonly")
+rv2x.grid(row=2, column=1,sticky="NSEW")
+rv2y = ttk.Entry(tab_004a,state="readonly")
+rv2y.grid(row=2, column=2,sticky="NSEW")
+rv2z = ttk.Entry(tab_004a,state="readonly")
+rv2z.grid(row=2, column=3,sticky="NSEW")
+
+rv3= tk.Label(tab_004a,text='c* = ',width=16)
+rv3.grid(row=3, column=0,sticky="NSEW")
+rv3x = ttk.Entry(tab_004a,state="readonly")
+rv3x.grid(row=3, column=1,sticky="NSEW")
+rv3y = ttk.Entry(tab_004a,state="readonly")
+rv3y.grid(row=3, column=2,sticky="NSEW")
+rv3z = ttk.Entry(tab_004a,state="readonly")
+rv3z.grid(row=3, column=3,sticky="NSEW")
+
+def calc_RVs():
+    # RLtableを取得し、辞書から必要な変数を取り出す
+    RLtable = on_Rlcalc()
+    
+    # 結果をGUIに反映
+    rv1x.configure(state="normal")
+    rv1y.configure(state="normal")
+    rv1z.configure(state="normal")
+    rv1x.delete(0, tk.END)
+    rv1y.delete(0, tk.END)
+    rv1z.delete(0, tk.END)
+    rv1x.insert(0, round(RLtable['astar'][0],4))
+    rv1y.insert(0, round(RLtable['astar'][1],4))
+    rv1z.insert(0, round(RLtable['astar'][2],4))
+    rv1x.configure(state="readonly")
+    rv1y.configure(state="readonly")
+    rv1z.configure(state="readonly")
+    
+    rv2x.configure(state="normal")
+    rv2y.configure(state="normal")
+    rv2z.configure(state="normal")
+    rv2x.delete(0, tk.END)
+    rv2y.delete(0, tk.END)
+    rv2z.delete(0, tk.END)
+    rv2x.insert(0, round(RLtable['bstar'][0],4))
+    rv2y.insert(0, round(RLtable['bstar'][1],4))
+    rv2z.insert(0, round(RLtable['bstar'][2],4))
+    rv2x.configure(state="readonly")
+    rv2y.configure(state="readonly")
+    rv2z.configure(state="readonly")
+    
+    rv3x.configure(state="normal")
+    rv3y.configure(state="normal")
+    rv3z.configure(state="normal")
+    rv3x.delete(0, tk.END)
+    rv3y.delete(0, tk.END)
+    rv3z.delete(0, tk.END)
+    rv3x.insert(0, round(RLtable['cstar'][0],4))
+    rv3y.insert(0, round(RLtable['cstar'][1],4))
+    rv3z.insert(0, round(RLtable['cstar'][2],4))
+    rv3x.configure(state="readonly")
+    rv3y.configure(state="readonly")
+    rv3z.configure(state="readonly")
+
+# fitting結果を反映させるボタン
+ref_button = ttk.Button(tab_004a, text="calc", command=calc_RVs)
+ref_button.grid(row=4, column=0, columnspan=4 , sticky="NSEW")
+
+tab_004b = ttk.Labelframe(tab_004,text= "calculation1")
+tab_004b.grid(row=0,column=1,sticky="NSEW")
+tab_004b.columnconfigure(0, weight=1)
+tab_004b.columnconfigure(1, weight=1)
+tab_004b.columnconfigure(2, weight=1)
+tab_004b.rowconfigure(0, weight=1)
+tab_004b.rowconfigure(1, weight=1)
+
+def trans_ELK(event=None):
+    """
+    入力された値に基づいてエネルギー、波長、波数を計算し、エントリーボックスを更新します。
+    """
+    try:
+        # フォーカスされているウィジェットを特定
+        focused_widget = root.focus_get()
+
+        # 各エントリーボックスの値を取得
+        energy = entry_energy.get().strip()
+        wavelength = entry_wavelength.get().strip()
+        wavenumber = entry_wavenumber.get().strip()
+
+        # フォーカスされているエントリーボックスに応じて処理
+        if focused_widget == entry_energy and energy:
+            energy = float(energy)
+            wavelength = math.sqrt(81.81 / energy)  # Å
+            wavenumber = 2 * math.pi / wavelength  # Å⁻¹
+            # 他のボックスをクリアして計算結果を出力
+            entry_wavelength.delete(0, tk.END)
+            entry_wavenumber.delete(0, tk.END)
+            entry_wavelength.insert(0, f"{wavelength:.4f}")
+            entry_wavenumber.insert(0, f"{wavenumber:.4f}")
+
+        elif focused_widget == entry_wavelength and wavelength:
+            wavelength = float(wavelength)
+            energy = 81.81 / (wavelength ** 2)  # meV
+            wavenumber = 2 * math.pi / wavelength  # Å⁻¹
+            # 他のボックスをクリアして計算結果を出力
+            entry_energy.delete(0, tk.END)
+            entry_wavenumber.delete(0, tk.END)
+            entry_energy.insert(0, f"{energy:.4f}")
+            entry_wavenumber.insert(0, f"{wavenumber:.4f}")
+
+        elif focused_widget == entry_wavenumber and wavenumber:
+            wavenumber = float(wavenumber)
+            wavelength = 2 * math.pi / wavenumber  # Å
+            energy = 81.81 / (wavelength ** 2)  # meV
+            # 他のボックスをクリアして計算結果を出力
+            entry_energy.delete(0, tk.END)
+            entry_wavelength.delete(0, tk.END)
+            entry_wavelength.insert(0, f"{wavelength:.4f}")
+            entry_energy.insert(0, f"{energy:.4f}")
+
+        else:
+            pass
+            return
+
+    except ValueError:
+        pass
+
+# ラベルとエントリーボックス
+tk.Label(tab_004b, text="E (meV)").grid(row=0, column=0,sticky="NSEW")
+entry_energy = ttk.Entry(tab_004b)
+entry_energy.grid(row=1, column=0,sticky="NSEW")
+
+tk.Label(tab_004b, text="λ (Å)").grid(row=0, column=1,sticky="NSEW")
+entry_wavelength = ttk.Entry(tab_004b)
+entry_wavelength.grid(row=1, column=1,sticky="NSEW")
+
+tk.Label(tab_004b, text="k (Å⁻¹)").grid(row=0, column=2,sticky="NSEW")
+entry_wavenumber = ttk.Entry(tab_004b)
+entry_wavenumber.grid(row=1, column=2,sticky="NSEW")
+
+# エンターキーで計算を実行
+entry_energy.bind("<Return>", trans_ELK)
+entry_wavelength.bind("<Return>", trans_ELK)
+entry_wavenumber.bind("<Return>", trans_ELK)
+
+tab_004c = ttk.Labelframe(tab_004,text= "calculation2")
+tab_004c.grid(row=1,column=1,sticky="NSEW")
+tab_004c.columnconfigure(0, weight=1)
+tab_004c.columnconfigure(1, weight=1)
+tab_004c.columnconfigure(2, weight=1)
+tab_004c.columnconfigure(3, weight=1)
+tab_004c.rowconfigure(0, weight=1)
+tab_004c.rowconfigure(1, weight=1)
+tab_004c.rowconfigure(2, weight=1)
+tab_004c.rowconfigure(3, weight=1)
+
+# ラベルとエントリーボックス
+tk.Label(tab_004c, text="ℏω (meV)").grid(row=0, column=0,sticky="NSEW")
+entry_hw = ttk.Entry(tab_004c)
+entry_hw.grid(row=1, column=0,sticky="NSEW")
+
+tk.Label(tab_004c, text="h").grid(row=0, column=1,sticky="NSEW")
+entry_h = ttk.Entry(tab_004c)
+entry_h.grid(row=1, column=1,sticky="NSEW")
+
+tk.Label(tab_004c, text="k").grid(row=0, column=2,sticky="NSEW")
+entry_k = ttk.Entry(tab_004c)
+entry_k.grid(row=1, column=2,sticky="NSEW")
+
+tk.Label(tab_004c, text="l").grid(row=0, column=3,sticky="NSEW")
+entry_l = ttk.Entry(tab_004c)
+entry_l.grid(row=1, column=3,sticky="NSEW")
+
+# ttaとdとQを計算する
+def calc_tta_d_Q():
+    RLtable = on_Rlcalc()
+    astar = RLtable['astar']
+    bstar = RLtable['bstar']
+    cstar = RLtable['cstar']
+    
+    entry_tta.configure(state="normal")
+    entry_d.configure(state="normal")
+    entry_q.configure(state="normal")
+    entry_tta.delete(0,tk.END)
+    entry_d.delete(0,tk.END)
+    entry_q.delete(0,tk.END)
+    
+    hw=float(entry_hw.get())
+    h=float(entry_h.get())
+    k=float(entry_k.get())
+    l=float(entry_l.get())
+    hkl=h*astar+k*bstar+l*cstar
+
+    #計算されたrlu
+    Nhkl=np.linalg.norm(hkl)
+    dhkl=2*math.pi/Nhkl
+    
+    # ei / ef
+    if float(eief.get())==0: # ei fix
+        Ei = float(Energy.get())
+        Ef = float(Energy.get()) - hw
+    elif float(eief.get())==1: # ef fix
+        Ei = float(Energy.get()) + hw
+        Ef = float(Energy.get())
+
+    #lamdaとkを計算
+    Ki=(Ei/2.072)**(1/2)
+    Kf=(Ef/2.072)**(1/2)
+    
+    tta=math.degrees(math.acos((Ki**2+Kf**2-Nhkl**2)/(2*Ki*Kf)))
+    
+    entry_tta.insert(0, f"{tta:.4f}")
+    entry_d.insert(0, f"{dhkl:.4f}")
+    entry_q.insert(0, f"{Nhkl:.4f}")
+    
+    entry_tta.configure(state="readonly")
+    entry_d.configure(state="readonly")
+    entry_q.configure(state="readonly")
+    
+# 結果を反映させるボタン
+ref_button = ttk.Button(tab_004c, text="calc", command=calc_tta_d_Q)
+ref_button.grid(row=3, column=3 , sticky="NSEW")
+
+# ラベルとエントリーボックス
+tk.Label(tab_004c, text="2θ (deg)").grid(row=2, column=0,sticky="NSEW")
+entry_tta = ttk.Entry(tab_004c,state="readonly")
+entry_tta.grid(row=3, column=0,sticky="NSEW")
+
+tk.Label(tab_004c, text="d (Å)").grid(row=2, column=1,sticky="NSEW")
+entry_d = ttk.Entry(tab_004c,state="readonly")
+entry_d.grid(row=3, column=1,sticky="NSEW")
+
+tk.Label(tab_004c, text="Q (Å⁻¹)").grid(row=2, column=2,sticky="NSEW")
+entry_q = ttk.Entry(tab_004c,state="readonly")
+entry_q.grid(row=3, column=2,sticky="NSEW")
+
 #メニューバーの作成
 menubar = tk.Menu(root)
 root.configure(menu=menubar)
@@ -2031,8 +2646,6 @@ filemenu.add_command(label="load ini.file",command=load_values_from_ini)
 
 #fileメニューにini fileのsave
 filemenu.add_command(label="save ini.file",command=save_values_to_ini)
-
-filemenu.add_command(label="exit",command=lambda:root.destroy())
 
 def save_cQ_table():
 
@@ -2083,10 +2696,15 @@ def save_cE_table():
 #fileメニュー(save)
 filemenu2 = tk.Menu(menubar,tearoff=0)
 menubar.add_cascade(label="output",menu=filemenu2)
-#fileメニューにexitを追加。ついでにexit funcも実装
+#fileメニュー(save)
 filemenu2.add_command(label="const Q scan",command=save_cQ_table)
-#fileメニューにexitを追加。ついでにexit funcも実装
+#fileメニュー(save)
 filemenu2.add_command(label="const E scan",command=save_cE_table)
+
+#fileメニュー(exit)
+filemenu3 = tk.Menu(menubar,tearoff=0)
+menubar.add_cascade(label="exit",menu=filemenu3)
+filemenu3.add_command(label="exit",command=lambda:root.destroy())
 
 # アプリ起動時にデフォルト値を読み込む
 load_values_from_ini()
