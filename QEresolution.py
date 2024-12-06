@@ -222,61 +222,6 @@ def calcresolution(A_sets,QE_sets,bpe,fixe,hw,Hfocus,num_ana,entry_values):
     # プロット範囲
     #Xrange_lim = 0.1
     #Zrange_lim = 0.5
-    if Hfocus==0:
-        QE_sets_array = np.array(QE_sets)
-        hw_max = np.max(QE_sets_array[:,0])
-        L=sample_to_analyzer
-        W=analyzer_width
-        af=2 * np.degrees(np.arctan((W / 2) / L))
-        A_sets_array = np.array(A_sets)
-        # NaN および Inf を除外して最大値を取得
-        valid_values = A_sets_array[:, 1][~np.isnan(A_sets_array[:, 1]) & ~np.isinf(A_sets_array[:, 1])]
-        if valid_values.size > 0:  # 有効な値が存在する場合
-            A2_max = np.max(valid_values)
-        else:  # 有効な値が存在しない場合
-            A2_max = 100  # デフォルト値
-        if fixe==0: # ei fix
-            Ei_max = bpe
-            Ef_max = bpe + hw_max
-            ki_max=(Ei_max/2.072)**(1/2)
-            kf_max=(Ef_max/2.072)**(1/2)
-            Q_max = np.abs(np.sqrt(ki_max**2 + kf_max**2 - 2 * ki_max * kf_max * np.cos(np.radians(A2_max-af/2))) - np.sqrt(ki_max**2 + kf_max**2 - 2 * ki_max * kf_max * np.cos(np.radians(A2_max+af/2))))
-        elif fixe==1: # ef fix
-            Ei_max = bpe + hw_max
-            Ef_max = bpe
-            ki_max=(Ei_max/2.072)**(1/2)
-            kf_max=(Ef_max/2.072)**(1/2)
-            Q_max = np.abs(np.sqrt(ki_max**2 + kf_max**2 - 2 * ki_max * kf_max * np.cos(np.radians(A2_max-af/2))) - np.sqrt(ki_max**2 + kf_max**2 - 2 * ki_max * kf_max * np.cos(np.radians(A2_max+af/2))))
-        Xrange_lim=Q_max*2
-    elif Hfocus==1:
-        QE_sets_array = np.array(QE_sets)
-        hw_max = np.max(QE_sets_array[:,0])
-        L=sample_to_analyzer
-        W=analyzer_width*num_ana*np.sin(np.radians(A3))
-        af=2 * np.degrees(np.arctan((W / 2) / L))
-        A_sets_array = np.array(A_sets)
-       
-        # NaN および Inf を除外して最大値を取得
-        valid_values = A_sets_array[:, 1][~np.isnan(A_sets_array[:, 1]) & ~np.isinf(A_sets_array[:, 1])]
-        if valid_values.size > 0:  # 有効な値が存在する場合
-            A2_max = np.max(valid_values)
-        else:  # 有効な値が存在しない場合
-            A2_max = 100  # デフォルト値
-            
-        if fixe==0: # ei fix
-            Ei_max = bpe
-            Ef_max = bpe + hw_max
-            ki_max=(Ei_max/2.072)**(1/2)
-            kf_max=(Ef_max/2.072)**(1/2)
-            Q_max = np.abs(np.sqrt(ki_max**2 + kf_max**2 - 2 * ki_max * kf_max * np.cos(np.radians(A2_max-af/2))) - np.sqrt(ki_max**2 + kf_max**2 - 2 * ki_max * kf_max * np.cos(np.radians(A2_max+af/2))))
-        elif fixe==1: # ef fix
-            Ei_max = bpe + hw_max
-            Ef_max = bpe
-            ki_max=(Ei_max/2.072)**(1/2)
-            kf_max=(Ef_max/2.072)**(1/2)
-            Q_max = np.abs(np.sqrt(ki_max**2 + kf_max**2 - 2 * ki_max * kf_max * np.cos(np.radians(A2_max-af/2))) - np.sqrt(ki_max**2 + kf_max**2 - 2 * ki_max * kf_max * np.cos(np.radians(A2_max+af/2)))) 
-        Xrange_lim=Q_max
-    Zrange_lim=Ei*10/100
     
     # Qx=Q//,Qy=Q⊥の定義
     
@@ -384,6 +329,13 @@ def calcresolution(A_sets,QE_sets,bpe,fixe,hw,Hfocus,num_ana,entry_values):
     max_x, coords_x = find_max_along_axis(RM, axis="x")# Q//
     max_y, coords_y = find_max_along_axis(RM, axis="y")# Q⊥
     max_z, coords_z = find_max_along_axis(RM, axis="z")# E
+    
+    if max_y>max_x:
+        Xrange_lim=max_y*1.5
+    elif max_y<max_x:
+        Xrange_lim=max_x*1.5
+        
+    Zrange_lim=max_z*1.5
     
     # 各軸の最大値を2倍した値
     resolution_Q_parallel = 2 * max_x
