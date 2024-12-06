@@ -182,15 +182,16 @@ def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,init
         term = np.linalg.inv(G + C_T @ F @ C)  # G + C' * F * C の逆行列
         HF = A @ term @ A.T  # A * (G + C' * F * C)^(-1) * A'
         if Hfocus == 1:
-            HF = np.linalg.inv(HF)
-            HF[4, 4] = 12 / ((kf * af / 180 * pi) ** 2)
-            HF[4, 3] = 0
-            HF[3, 4] = 0
-            HF[3, 3] = 12*(np.tan(np.radians(thetaA)) / (etaA * kf)) ** 2
-            HF = np.linalg.inv(HF)
-        Minv = B @ HF @ B.T
+            P = np.linalg.inv(HF)
+            P[4, 4] = 12 / ((kf * af / 180 * pi) ** 2)
+            P[3, 4] = 0
+            P[3, 3] = 12*(np.tan(np.radians(thetaA)) / (etaA * kf)) ** 2
+            Pinv = np.linalg.inv(P)
+            Pinv[4, 3] = 0
+            Minv = B @ Pinv @ B.T
+        if Hfocus == 0:
+            Minv = B @ HF @ B.T
         M = np.linalg.inv(Minv)
-
         # RM 行列の設定
         RM = np.zeros((4, 4))  # 4x4 のゼロ行列で初期化
         RM[0, 0] = M[0, 0]

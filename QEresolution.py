@@ -118,9 +118,7 @@ def calcresolution(A_sets,QE_sets,bpe,fixe,hw,Hfocus,num_ana,entry_values):
     elif Hfocus==1:
         L=sample_to_analyzer
         W=analyzer_width*num_ana*np.sin(np.radians(A3))
-        print(W)
         af=2 * np.degrees(np.arctan((W / 2) / L))
-        print(af)
         alpha3 = (8*np.log(2)/12)**(1/2)*af / 180 * pi
     
     alpha4 = div_4th_h / 60 / 180 * pi
@@ -177,19 +175,19 @@ def calcresolution(A_sets,QE_sets,bpe,fixe,hw,Hfocus,num_ana,entry_values):
     C[3, 6] = 1 / (2 * sin(np.radians(thetaA)))
     C[3, 7] = -C[3, 6]
     
-    # 行列 C の転置（C' in MATLAB）
-    C_T = C.T
     # 計算
-    term = np.linalg.inv(G + C_T @ F @ C)  # G + C' * F * C の逆行列
+    term = np.linalg.inv(G + C.T @ F @ C)  # G + C' * F * C の逆行列,転置（C' in MATLAB）
     HF = A @ term @ A.T  # A * (G + C' * F * C)^(-1) * A'
     if Hfocus == 1:
-        HF = np.linalg.inv(HF)
-        HF[4, 4] = 12 / ((kf * af / 180 * pi) ** 2)
-        HF[4, 3] = 0
-        HF[3, 4] = 0
-        HF[3, 3] = 12*(np.tan(np.radians(thetaA)) / (etaA * kf)) ** 2
-        HF = np.linalg.inv(HF)
-    Minv = B @ HF @ B.T
+        P = np.linalg.inv(HF)
+        P[4, 4] = 12 / ((kf * af / 180 * pi) ** 2)
+        P[3, 4] = 0
+        P[3, 3] = 12*(np.tan(np.radians(thetaA)) / (etaA * kf)) ** 2
+        Pinv = np.linalg.inv(P)
+        Pinv[4, 3] = 0
+        Minv = B @ Pinv @ B.T
+    if Hfocus == 0:
+        Minv = B @ HF @ B.T
     M = np.linalg.inv(Minv)
     
     # RM 行列の設定
