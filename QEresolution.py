@@ -117,7 +117,7 @@ def calcresolution(A_sets,QE_sets,bpe,fixe,hw,Hfocus,num_ana,entry_values):
         alpha3 = div_3rd_h / 60 / 180 * pi
     elif Hfocus==1:
         L=sample_to_analyzer
-        W=analyzer_width*num_ana
+        W=analyzer_width*num_ana*np.sin(np.radians(A3))
         af=2*np.degrees(2 * np.arctan((W / 2) / L))
         alpha3 = (8*np.log(2)/12)**(1/2)*af / 180 * pi
     
@@ -252,7 +252,7 @@ def calcresolution(A_sets,QE_sets,bpe,fixe,hw,Hfocus,num_ana,entry_values):
         QE_sets_array = np.array(QE_sets)
         hw_max = np.max(QE_sets_array[:,0])
         L=sample_to_analyzer
-        W=analyzer_width*num_ana
+        W=analyzer_width*num_ana*np.sin(np.radians(A3))
         af=2 * np.degrees(np.arctan((W / 2) / L))
         A_sets_array = np.array(A_sets)
        
