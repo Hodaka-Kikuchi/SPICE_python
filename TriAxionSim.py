@@ -360,7 +360,7 @@ def save_values_to_ini():
     # 'sample'セクションを更新
     config['option'].update({
         'fig_spec': str(fig_spec.get()),
-        'fig_reso': str(fig_spec.get()),
+        'fig_reso': str(fig_reso.get()),
         'calc_hf': str(calc_hf.get()),
     })
     
