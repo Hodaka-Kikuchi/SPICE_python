@@ -31,7 +31,7 @@ def calcresolution(A_sets,QE_sets,bpe,fixe,hw,Hfocus,num_ana,entry_values):
     # 設定を変数に代入
     """
     # instrumentセクションのview設定を読み込む
-    div_1st_h = float(config['instrument']['div_1st_h'])
+    div_1st_m = float(config['instrument']['div_1st_m'])
     div_1st_v = float(config['instrument']['div_1st_v'])
     div_2nd_h = float(config['instrument']['div_2nd_h'])
     div_2nd_v = float(config['instrument']['div_2nd_v'])
@@ -54,8 +54,7 @@ def calcresolution(A_sets,QE_sets,bpe,fixe,hw,Hfocus,num_ana,entry_values):
     view_mode = config['settings']['system']
     
     # divergenceの読み出し
-    div_1st_h = float(entry_values.get("div_1st_h"))
-    div_1st_v = float(entry_values.get("div_1st_v"))
+    div_1st_m = float(entry_values.get("div_1st_m"))
     div_2nd_h = float(entry_values.get("div_2nd_h"))
     div_2nd_v = float(entry_values.get("div_2nd_v"))
     div_3rd_h = float(entry_values.get("div_3rd_h"))
@@ -110,7 +109,11 @@ def calcresolution(A_sets,QE_sets,bpe,fixe,hw,Hfocus,num_ana,entry_values):
     # Define constants for the resolution matrices
     # ここでαi とβi は、コリメータの水平方向と鉛直方向における発散角を表している。η とη′をモノクロメータとアナライザの水平方向と鉛直方向のモザイクのFWHM
 
-    alpha1 = div_1st_h / 60 / 180 * pi
+    #alpha1 = div_1st_m / 60 / 180 * pi
+    # guide管の反射率
+    theta0 = 0.1 #(A^-1)
+    lamda = (81.81 / Ei)**(1/2)
+    alpha1 = div_1st_m * theta0 * lamda * ((2*np.log(2))**(1/2)) / (3*(1/2)) / 180 * pi
     alpha2 = div_2nd_h / 60 / 180 * pi
     # focusingの場合式が異なる。
     if Hfocus==0:
@@ -122,7 +125,7 @@ def calcresolution(A_sets,QE_sets,bpe,fixe,hw,Hfocus,num_ana,entry_values):
         alpha3 = (8*np.log(2)/12)**(1/2)*af / 180 * pi
     
     alpha4 = div_4th_h / 60 / 180 * pi
-    beta1 = div_1st_v / 60 / 180 * pi
+    beta1 = alpha1
     beta2 = div_2nd_v / 60 / 180 * pi
     beta3 = div_3rd_v / 60 / 180 * pi
     beta4 = div_4th_v / 60 / 180 * pi
