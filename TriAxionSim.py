@@ -1,6 +1,6 @@
 #cd C:\DATA_HK\python\SPICE_python
 # 右上にバージョン情報を表示
-__version__ = '1.4.3'
+__version__ = '1.5.0'
 """
 セマンティック バージョニング (Semantic Versioning)
 セマンティック バージョニング（セムバ―、SemVer）は、バージョン番号を「MAJOR.MINOR.PATCH」の形式で表します。それぞれの部分には以下のような意味があります：
@@ -1188,7 +1188,7 @@ def calculate_angle():
         round(angletable['mu'],4)>float(hwl8t.get()) or
         round(angletable['nu'],4)<float(hwl9f.get()) or
         round(angletable['nu'],4)>float(hwl9t.get())):
-        acl10.config(text="Out of hardware limit range.", fg="red")
+        acl10.config(text="Out of the hardware limit range.", fg="red")
     
     else:
         # `phi_cal` の結果を用いた続きの処理
@@ -1916,8 +1916,8 @@ def constQscan_show_table():
             round(results['mu'],4)>float(hwl8t.get()) or
             round(results['nu'],4)<float(hwl9f.get()) or
             round(results['nu'],4)>float(hwl9t.get())):
-            tree.tag_configure("red", foreground="red")  # 'red' タグを設定
-            tree.item(item_id, tags=("red",))  # 行に 'red' タグを適用
+            tree.tag_configure("blue", foreground="blue")  # 'red' タグを設定
+            tree.item(item_id, tags=("blue",))  # 行に 'red' タグを適用
         #tree.insert("", "end", values=values)
         
     if fig_spec.get()==1:
@@ -2265,8 +2265,8 @@ def conostEscan_show_table():
             round(results['mu'],4)>float(hwl8t.get()) or
             round(results['nu'],4)<float(hwl9f.get()) or
             round(results['nu'],4)>float(hwl9t.get())):
-            tree.tag_configure("red", foreground="red")  # 'red' タグを設定
-            tree.item(item_id, tags=("red",))  # 行に 'red' タグを適用
+            tree.tag_configure("blue", foreground="blue")  # 'red' タグを設定
+            tree.item(item_id, tags=("blue",))  # 行に 'red' タグを適用
         
     if fig_spec.get()==1:
         # プロット関数を呼び出し
