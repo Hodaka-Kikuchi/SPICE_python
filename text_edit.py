@@ -1,34 +1,32 @@
-cp_h_entry = cp_h.get()
+h_inc_entry = ces7.get()
     try:
         # 少数の場合
-        if '/' not in cp_h_entry:
-            cph = float(cp_h_entry)
+        if '/' not in h_inc_entry:
+            h_inc = float(h_inc_entry)
         else:
             # 分数の場合
-            cph = float(Fraction(cp_h_entry))
+            h_inc = float(Fraction(h_inc_entry))
     except ValueError:
         pass
     
-    cp_k_entry = cp_k.get()
+    k_inc_entry = ces8.get()
     try:
         # 少数の場合
-        if '/' not in cp_k_entry:
-            cpk = float(cp_k_entry)
+        if '/' not in k_inc_entry:
+            k_inc = float(k_inc_entry)
         else:
             # 分数の場合
-            cpk = float(Fraction(cp_k_entry))
+            k_inc = float(Fraction(k_inc_entry))
     except ValueError:
         pass
     
-    cp_l_entry = cp_l.get()
+    l_inc_entry = ces9.get()
     try:
         # 少数の場合
-        if '/' not in cp_l_entry:
-            cpl = float(cp_l_entry)
+        if '/' not in l_inc_entry:
+            l_inc = float(l_inc_entry)
         else:
             # 分数の場合
-            cpl = float(Fraction(cp_l_entry))
+            l_inc = float(Fraction(l_inc_entry))
     except ValueError:
         pass
-    
-    cp = np.array([cph,cpk,cpl])

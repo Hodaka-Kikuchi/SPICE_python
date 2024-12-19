@@ -2622,9 +2622,42 @@ def fitting_process():
     cry_select = cb_cl.current()
     
     # 変数初期化
-    h = float(cry_fit_h.get())     # h
-    k = float(cry_fit_k.get())     # k
-    l = float(cry_fit_l.get())     # l
+    #h = float(cry_fit_h.get())     # h
+    #k = float(cry_fit_k.get())     # k
+    #l = float(cry_fit_l.get())     # l
+    
+    h_fit_entry = cry_fit_h.get()
+    try:
+        # 少数の場合
+        if '/' not in h_fit_entry:
+            h = float(h_fit_entry)
+        else:
+            # 分数の場合
+            h = float(Fraction(h_fit_entry))
+    except ValueError:
+        pass
+    
+    k_fit_entry = cry_fit_k.get()
+    try:
+        # 少数の場合
+        if '/' not in k_fit_entry:
+            k = float(k_fit_entry)
+        else:
+            # 分数の場合
+            k = float(Fraction(k_fit_entry))
+    except ValueError:
+        pass
+    
+    l_fit_entry = cry_fit_l.get()
+    try:
+        # 少数の場合
+        if '/' not in l_fit_entry:
+            l = float(l_fit_entry)
+        else:
+            # 分数の場合
+            l = float(Fraction(l_fit_entry))
+    except ValueError:
+        pass
     
     kf = (float(Energy.get()) / 2.072) ** (1 / 2)
     ki = (float(Energy.get()) / 2.072) ** (1 / 2)
