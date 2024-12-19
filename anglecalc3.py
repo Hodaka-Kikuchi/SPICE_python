@@ -76,34 +76,30 @@ def angle_calc3(astar,bstar,cstar,U,B,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,hw_cal,h_ini
     
     ####################################################################################################
     # 変数はhkl
-    if h_ini!=h_fin:
-        h_tab = np.arange(h_ini, h_fin, h_inc)
+    if h_ini != h_fin:
+        h_tab = np.linspace(h_ini, h_fin, int(abs(h_fin - h_ini) / h_inc) + 1)
     else:
-        if k_ini!=k_fin:
-            h_tab = np.full(len(k_tab), h_ini)
-        elif l_ini!=l_fin:
-            h_tab = np.full(len(l_tab), h_ini) 
-        
-    if k_ini!=k_fin:
-        k_tab = np.arange(k_ini, k_fin, k_inc)
+        if k_ini != k_fin:
+            h_tab = np.full(len(np.linspace(k_ini, k_fin, int(abs(k_fin - k_ini) / k_inc) + 1)), h_ini)
+        elif l_ini != l_fin:
+            h_tab = np.full(len(np.linspace(l_ini, l_fin, int(abs(l_fin - l_ini) / l_inc) + 1)), h_ini)
+
+    if k_ini != k_fin:
+        k_tab = np.linspace(k_ini, k_fin, int(abs(k_fin - k_ini) / k_inc) + 1)
     else:
-        if h_ini!=h_fin:
+        if h_ini != h_fin:
             k_tab = np.full(len(h_tab), k_ini)
-        elif l_ini!=l_fin:
-            k_tab = np.full(len(l_tab), k_ini)
-            
-    if l_ini!=l_fin:
-        l_tab = np.arange(l_ini, l_fin, l_inc)
+        elif l_ini != l_fin:
+            k_tab = np.full(len(np.linspace(l_ini, l_fin, int(abs(l_fin - l_ini) / l_inc) + 1)), k_ini)
+
+    if l_ini != l_fin:
+        l_tab = np.linspace(l_ini, l_fin, int(abs(l_fin - l_ini) / l_inc) + 1)
     else:
-        if h_ini!=h_fin:
+        if h_ini != h_fin:
             l_tab = np.full(len(h_tab), l_ini)
-        elif k_ini!=k_fin:
+        elif k_ini != k_fin:
             l_tab = np.full(len(k_tab), l_ini)
-    
-    h_tab = np.append(h_tab, h_fin)
-    k_tab = np.append(k_tab, k_fin)
-    l_tab = np.append(l_tab, l_fin)
-    
+
     if fixe==0: # ei fix
         Ei = bpe
         Ef = bpe - hw_cal
