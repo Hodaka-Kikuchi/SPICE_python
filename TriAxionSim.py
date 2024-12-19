@@ -1,6 +1,6 @@
 #cd C:\DATA_HK\python\SPICE_python
 # 右上にバージョン情報を表示
-__version__ = '1.5.0'
+__version__ = '1.5.1'
 """
 セマンティック バージョニング (Semantic Versioning)
 セマンティック バージョニング（セムバ―、SemVer）は、バージョン番号を「MAJOR.MINOR.PATCH」の形式で表します。それぞれの部分には以下のような意味があります：
@@ -82,6 +82,8 @@ from matplotlib.widgets import TextBox
 
 from matplotlib.patches import Rectangle
 import matplotlib.patches as patches
+
+from fractions import Fraction
 
 import statistics as stat
 from scipy import stats
@@ -1112,11 +1114,81 @@ def on_anglecalc():
     bpc2 = float(bp_c2.get())
     bpmu = float(bp_mu.get())
     bpnu = float(bp_nu.get())
-    bp = np.array([float(bp_h.get()), float(bp_k.get()), float(bp_l.get())])
+    #bp = np.array([float(bp_h.get()), float(bp_k.get()), float(bp_l.get())])
+    
+    bp_h_entry = bp_h.get()
+    try:
+        # 少数の場合
+        if '/' not in bp_h_entry:
+            bph = float(bp_h_entry)
+        else:
+            # 分数の場合
+            bph = float(Fraction(bp_h_entry))
+    except ValueError:
+        pass
+    
+    bp_k_entry = bp_k.get()
+    try:
+        # 少数の場合
+        if '/' not in bp_k_entry:
+            bpk = float(bp_k_entry)
+        else:
+            # 分数の場合
+            bpk = float(Fraction(bp_k_entry))
+    except ValueError:
+        pass
+    
+    bp_l_entry = bp_l.get()
+    try:
+        # 少数の場合
+        if '/' not in bp_l_entry:
+            bpl = float(bp_l_entry)
+        else:
+            # 分数の場合
+            bpl = float(Fraction(bp_l_entry))
+    except ValueError:
+        pass
+    
+    bp = np.array([bph,bpk,bpl])
     
     # calculation pointの取得
     cphw = float(acbe.get())
-    cp = np.array([float(acbh.get()), float(acbk.get()), float(acbl.get())])
+    #cp = np.array([float(acbh.get()), float(acbk.get()), float(acbl.get())])
+    
+    cp_h_entry = acbh.get()
+    try:
+        # 少数の場合
+        if '/' not in cp_h_entry:
+            cph = float(cp_h_entry)
+        else:
+            # 分数の場合
+            cph = float(Fraction(cp_h_entry))
+    except ValueError:
+        pass
+    
+    cp_k_entry = acbk.get()
+    try:
+        # 少数の場合
+        if '/' not in cp_k_entry:
+            cpk = float(cp_k_entry)
+        else:
+            # 分数の場合
+            cpk = float(Fraction(cp_k_entry))
+    except ValueError:
+        pass
+    
+    cp_l_entry = acbl.get()
+    try:
+        # 少数の場合
+        if '/' not in cp_l_entry:
+            cpl = float(cp_l_entry)
+        else:
+            # 分数の場合
+            cpl = float(Fraction(cp_l_entry))
+    except ValueError:
+        pass
+    
+    cp = np.array([cph,cpk,cpl])
     
     # Ei or Ef fixの判定
     fixe=float(eief.get())
@@ -1245,9 +1317,47 @@ def calculate_angle():
     A_sets.append([A1, A2, A3])  # A_sets に追加
     # hw, h,k,l
     hw = round(float(acbe.get()), 4)  # 'hw'
-    h = round(float(acbh.get()), 4)  # 'h'
-    k = round(float(acbk.get()), 4)  # 'k'
-    l = round(float(acbl.get()), 4)  # 'l'
+    #h = round(float(acbh.get()), 4)  # 'h'
+    #k = round(float(acbk.get()), 4)  # 'k'
+    #l = round(float(acbl.get()), 4)  # 'l'
+    
+    cp_h_entry = acbh.get()
+    try:
+        # 少数の場合
+        if '/' not in cp_h_entry:
+            h = float(cp_h_entry)
+        else:
+            # 分数の場合
+            h = float(Fraction(cp_h_entry))
+    except ValueError:
+        pass
+    
+    cp_k_entry = acbk.get()
+    try:
+        # 少数の場合
+        if '/' not in cp_k_entry:
+            k = float(cp_k_entry)
+        else:
+            # 分数の場合
+            k = float(Fraction(cp_k_entry))
+    except ValueError:
+        pass
+    
+    cp_l_entry = acbl.get()
+    try:
+        # 少数の場合
+        if '/' not in cp_l_entry:
+            l = float(cp_l_entry)
+        else:
+            # 分数の場合
+            l = float(Fraction(cp_l_entry))
+    except ValueError:
+        pass
+    
+    h=round(h,4)
+    k=round(k,4)
+    l=round(l,4)
+    
     QE_sets.append([hw, h, k, l])
 
     if fig_spec.get()==1:
@@ -1831,10 +1941,45 @@ def constQscan_show_table():
     hw_ini = float(cqsef.get())
     hw_fin = float(cqset.get())
     hw_inc = float(cqsei.get())
-    h_cal = float(cqse1.get())
-    k_cal = float(cqse2.get())
-    l_cal = float(cqse3.get())
+    #h_cal = float(cqse1.get())
+    #k_cal = float(cqse2.get())
+    #l_cal = float(cqse3.get())
     
+    # 分数も少数も受け付ける。
+    # エントリーボックスから値を取得
+    h_cal_entry = cqse1.get()
+    try:
+        # 少数の場合
+        if '/' not in h_cal_entry:
+            h_cal = float(h_cal_entry)
+        else:
+            # 分数の場合
+            h_cal = float(Fraction(h_cal_entry))
+    except ValueError:
+        pass
+    
+    k_cal_entry = cqse2.get()
+    try:
+        # 少数の場合
+        if '/' not in k_cal_entry:
+            k_cal = float(k_cal_entry)
+        else:
+            # 分数の場合
+            k_cal = float(Fraction(k_cal_entry))
+    except ValueError:
+        pass
+    
+    l_cal_entry = cqse3.get()
+    try:
+        # 少数の場合
+        if '/' not in l_cal_entry:
+            l_cal = float(l_cal_entry)
+        else:
+            # 分数の場合
+            l_cal = float(Fraction(l_cal_entry))
+    except ValueError:
+        pass
+               
     # Ei or Ef fixの判定
     fixe=float(eief.get())
     
@@ -2173,15 +2318,114 @@ def conostEscan_show_table():
     
     # calculation pointの取得
     hw_cal = float(ces10.get())
-    h_ini = float(ces1.get())
-    k_ini = float(ces2.get())
-    l_ini = float(ces3.get())
-    h_fin = float(ces4.get())
-    k_fin = float(ces5.get())
-    l_fin = float(ces6.get())
-    h_inc = float(ces7.get())
-    k_inc = float(ces8.get())
-    l_inc = float(ces9.get())
+    #h_ini = float(ces1.get())
+    #k_ini = float(ces2.get())
+    #l_ini = float(ces3.get())
+    #h_fin = float(ces4.get())
+    #k_fin = float(ces5.get())
+    #l_fin = float(ces6.get())
+    #h_inc = float(ces7.get())
+    #k_inc = float(ces8.get())
+    #l_inc = float(ces9.get())
+    
+    h_ini_entry = ces1.get()
+    try:
+        # 少数の場合
+        if '/' not in h_ini_entry:
+            h_ini = float(h_ini_entry)
+        else:
+            # 分数の場合
+            h_ini = float(Fraction(h_ini_entry))
+    except ValueError:
+        pass
+    
+    k_ini_entry = ces2.get()
+    try:
+        # 少数の場合
+        if '/' not in k_ini_entry:
+            k_ini = float(k_ini_entry)
+        else:
+            # 分数の場合
+            k_ini = float(Fraction(k_ini_entry))
+    except ValueError:
+        pass
+    
+    l_ini_entry = ces3.get()
+    try:
+        # 少数の場合
+        if '/' not in l_ini_entry:
+            l_ini = float(l_ini_entry)
+        else:
+            # 分数の場合
+            l_ini = float(Fraction(l_ini_entry))
+    except ValueError:
+        pass
+    
+    h_fin_entry = ces4.get()
+    try:
+        # 少数の場合
+        if '/' not in h_fin_entry:
+            h_fin = float(h_fin_entry)
+        else:
+            # 分数の場合
+            h_fin = float(Fraction(h_fin_entry))
+    except ValueError:
+        pass
+    
+    k_fin_entry = ces5.get()
+    try:
+        # 少数の場合
+        if '/' not in k_fin_entry:
+            k_fin = float(k_fin_entry)
+        else:
+            # 分数の場合
+            k_fin = float(Fraction(k_fin_entry))
+    except ValueError:
+        pass
+    
+    l_fin_entry = ces6.get()
+    try:
+        # 少数の場合
+        if '/' not in l_fin_entry:
+            l_fin = float(l_fin_entry)
+        else:
+            # 分数の場合
+            l_fin = float(Fraction(l_fin_entry))
+    except ValueError:
+        pass
+    
+    h_inc_entry = ces7.get()
+    try:
+        # 少数の場合
+        if '/' not in h_inc_entry:
+            h_inc = float(h_inc_entry)
+        else:
+            # 分数の場合
+            h_inc = float(Fraction(h_inc_entry))
+    except ValueError:
+        pass
+    
+    k_inc_entry = ces8.get()
+    try:
+        # 少数の場合
+        if '/' not in k_inc_entry:
+            k_inc = float(k_inc_entry)
+        else:
+            # 分数の場合
+            k_inc = float(Fraction(k_inc_entry))
+    except ValueError:
+        pass
+    
+    l_inc_entry = ces9.get()
+    try:
+        # 少数の場合
+        if '/' not in l_inc_entry:
+            l_inc = float(l_inc_entry)
+        else:
+            # 分数の場合
+            l_inc = float(Fraction(l_inc_entry))
+    except ValueError:
+        pass
     
     # 先にフロアの条件を読み込み
     # INIファイルから設定を読み込む
