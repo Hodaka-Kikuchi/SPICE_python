@@ -1,6 +1,6 @@
 #cd C:\DATA_HK\python\SPICE_python
 # 右上にバージョン情報を表示
-__version__ = '1.5.1'
+__version__ = '1.5.2'
 """
 セマンティック バージョニング (Semantic Versioning)
 セマンティック バージョニング（セムバ―、SemVer）は、バージョン番号を「MAJOR.MINOR.PATCH」の形式で表します。それぞれの部分には以下のような意味があります：
@@ -267,12 +267,16 @@ def load_values_from_ini():
     fig_spec_value = int(config['option'].get('fig_spec', '1'))  # 1がデフォルト
     # fig_specの初期値を設定
     fig_spec.set(fig_spec_value)
-    fig_reso_value = int(config['option'].get('fig_reso', '1'))  # 1がデフォルト
+    fig_reso_value = int(config['option'].get('fig_reso', '1'))  # 1がデフォルト  
     # fig_resoの初期値を設定
     fig_reso.set(fig_reso_value)
     calc_hf_value = int(config['option'].get('calc_hf', '1'))  # 1がデフォルト
     # calc_hfの初期値を設定
     calc_hf.set(calc_hf_value)
+    
+    # fig_resoの初期値を設定
+    fig_reci_value = int(config['option'].get('fig_reci', '1'))  # 1がデフォルト
+    fig_reci.set(fig_reci_value)
 
 def save_values_to_ini():
     """
@@ -362,6 +366,7 @@ def save_values_to_ini():
     config['option'].update({
         'fig_spec': str(fig_spec.get()),
         'fig_reso': str(fig_reso.get()),
+        'fig_reci': str(fig_reci.get()),
         'calc_hf': str(calc_hf.get()),
     })
     
@@ -379,6 +384,7 @@ from specfigscan import plot_spectrometer #
 from fittingLC import fit_lattice_constants
 from QEresolution import calcresolution
 from QEresolution_scan import calcresolution_scan
+from fig_reciprocal_space import plot_reciprocal_space
 
 from specfigscan_gif import plot_spectrometer_with_gif #画像をgif保存したいとき
 
@@ -427,7 +433,7 @@ def on_UBcalc():
     """UBtableを計算して返す"""
     params = get_parameters()
     
-    # サンプル点の取得
+    # 散乱面の取得
     sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
     sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
     
@@ -1368,6 +1374,56 @@ def calculate_angle():
     Hfocus = calc_hf.get()
     num_ana = float(acna.get())
     
+    if fig_reci.get()==1:
+        # 逆格子空間のki,kf,τベクトルを示す。
+        params = get_parameters()
+        RLtable = RL_calc(**params)  # RL_calcに辞書を展開して渡す
+        
+        # 散乱面の取得
+        sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
+        sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
+        
+        cp_h_entry = acbh.get()
+        try:
+            # 少数の場合
+            if '/' not in cp_h_entry:
+                cph = float(cp_h_entry)
+            else:
+                # 分数の場合
+                cph = float(Fraction(cp_h_entry))
+        except ValueError:
+            pass
+        
+        cp_k_entry = acbk.get()
+        try:
+            # 少数の場合
+            if '/' not in cp_k_entry:
+                cpk = float(cp_k_entry)
+            else:
+                # 分数の場合
+                cpk = float(Fraction(cp_k_entry))
+        except ValueError:
+            pass
+        
+        cp_l_entry = acbl.get()
+        try:
+            # 少数の場合
+            if '/' not in cp_l_entry:
+                cpl = float(cp_l_entry)
+            else:
+                # 分数の場合
+                cpl = float(Fraction(cp_l_entry))
+        except ValueError:
+            pass
+        
+        cphw = float(acbe.get())
+        cp = np.array([cph,cpk,cpl])
+        
+        fixe=float(eief.get())
+        bpe = float(Energy.get())
+        
+        plot_reciprocal_space(bpe,cphw,cp,fixe,sv1,sv2,**RLtable)
+    
     if fig_reso.get()==1:
         bpe = float(Energy.get())
         fixe=float(eief.get())
@@ -1715,6 +1771,7 @@ frame5b.grid(row=0,column=1,sticky="NSEW")
 frame5b.columnconfigure(0, weight=1)
 frame5b.rowconfigure(0, weight=1)
 frame5b.rowconfigure(1, weight=1)
+frame5b.rowconfigure(2, weight=1)
 
 # 分光器図と分解能を表示するかどうかのチェックボックス
 # チェック有無変数
@@ -1726,12 +1783,20 @@ show_fig_spec = tk.Checkbutton(frame5b, variable=fig_spec, text='spec',width=14)
 show_fig_spec.grid(row=0, column=0,sticky="NSEW")
 
 # チェック有無変数
+fig_reci = tk.IntVar()
+# value=0にチェックを入れる
+fig_reci.set(1)
+
+show_fig_reci = tk.Checkbutton(frame5b, variable=fig_reci, text='reci')
+show_fig_reci.grid(row=1, column=0,sticky="NSEW")
+
+# チェック有無変数
 fig_reso = tk.IntVar()
 # value=0にチェックを入れる
 fig_reso.set(1)
 
 show_fig_reso = tk.Checkbutton(frame5b, variable=fig_reso, text='reso')
-show_fig_reso.grid(row=1, column=0,sticky="NSEW")
+show_fig_reso.grid(row=2, column=0,sticky="NSEW")
 
 # グリッドの重みを設定
 tab_002.columnconfigure(0, weight=1)

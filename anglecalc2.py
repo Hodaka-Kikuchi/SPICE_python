@@ -59,7 +59,6 @@ def angle_calc2(astar,bstar,cstar,U,B,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,hw_ini,hw_fi
     
     # 初期値計算
     angle_bp = initial_value_with_multiple_planes(U,astar, bstar, cstar, bp)
-
     # 最適化関数（omegaの各初期値で最適化を行い、最も低い誤差を選択）
     def optimize_with_fixed_omega_bp(Qv_bp, Qtheta_bp):
         initial_guess = [angle_bp[0], bpmu, bpnu]  # omegaを固定し、mu, nuは初期値0で開始
@@ -126,7 +125,7 @@ def angle_calc2(astar,bstar,cstar,U,B,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,hw_ini,hw_fi
                 rotation_matrix = Omera_toration(omega) @ N_rotation(mu) @ M_rotation(nu)
                 transformed_vector = rotation_matrix @ Qv_cal
                 return np.linalg.norm(transformed_vector - Qtheta_cal)
-
+            
             # 初期値計算
             angle_cal = initial_value_with_multiple_planes(U,astar, bstar, cstar, hkl_cal)
             

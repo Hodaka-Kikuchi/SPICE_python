@@ -77,6 +77,7 @@ def angle_calc(astar,bstar,cstar,U,B,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe):
     # hklの位置から各angleを算出
     hkl_cal=cp[0]*astar+cp[1]*bstar+cp[2]*cstar
     Nhkl_cal=np.linalg.norm(hkl_cal)
+    
     if fixe==0: # ei fix
         Ei = bpe
         Ef = bpe - cphw
@@ -108,7 +109,8 @@ def angle_calc(astar,bstar,cstar,U,B,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe):
         Qv_cal[np.abs(Qv_cal) <= 1e-6] = 0 #超重要,他のものにも適応
         
         # 初期値計算
-        angle_cal = initial_value_with_multiple_planes(U,astar, bstar, cstar, cp)
+        angle_cal = initial_value_with_multiple_planes(U,astar, bstar, cstar, hkl_cal)
+        
         # 最適化対象の関数
         def objective(angles, Qv_cal, Qtheta_cal):
             omega, mu, nu = angles
