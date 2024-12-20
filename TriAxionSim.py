@@ -1315,12 +1315,18 @@ def calculate_angle():
     
     A_sets = []  # A_setsリストを初期化
     QE_sets = []
+    C_sets = []
     
     # A1, A2, A3 を取得して A_sets に追加
     A1 = round(angletable['A1'],4)  # 'A1'
     A2 = -round(angletable['A2'],4)  # 'A2'
     A3 = round(angletable['A3'],4)  # 'A3'
     A_sets.append([A1, A2, A3])  # A_sets に追加
+    C1 = round(angletable['C1'], 4)  # 'C1'
+    C2 = round(angletable['C2'], 4)  # 'C2'
+    C3 = round(angletable['C3'], 4)  # 'C3'
+    C4 = round(angletable['offset'], 4)  # 'offset'
+    C_sets.append([C1, C2, C3, C4])
     # hw, h,k,l
     hw = round(float(acbe.get()), 4)  # 'hw'
     #h = round(float(acbh.get()), 4)  # 'h'
@@ -1422,7 +1428,7 @@ def calculate_angle():
         fixe=float(eief.get())
         bpe = float(Energy.get())
         bpc2 = float(bp_c2.get())
-        plot_reciprocal_space(bpe,bpc2,cphw,cp,fixe,sv1,sv2,RLtable,angletable)
+        plot_reciprocal_space(bpe,bpc2,cphw,cp,fixe,sv1,sv2,RLtable,A_sets,C_sets,QE_sets)
     
     if fig_reso.get()==1:
         bpe = float(Energy.get())
@@ -2077,6 +2083,7 @@ def constQscan_show_table():
     
     A_sets = []  # A_setsリストを初期化
     QE_sets = []
+    C_sets = []
     # resultsリストの各結果をTreeviewに追加
     for results in angletable2:
         values = tuple(results.values())
@@ -2086,6 +2093,11 @@ def constQscan_show_table():
         A2 = -round(results['A2'], 4)  # 'A2'
         A3 = round(results['A3'], 4)  # 'A3'
         A_sets.append([A1, A2, A3])  # A_sets に追加
+        C1 = round(results['C1'], 4)  # 'C1'
+        C2 = round(results['C2'], 4)  # 'C2'
+        C3 = round(results['C3'], 4)  # 'C3'
+        C4 = round(results['offset'], 4)  # 'offset'
+        C_sets.append([C1, C2, C3, C4])
         # hw, h,k,l
         hw = round(results['hw'], 4)  # 'A1'
         h = round(results['h'], 4)  # 'A2'
@@ -2137,6 +2149,56 @@ def constQscan_show_table():
 
     Hfocus = calc_hf.get()
     num_ana = float(acna.get())
+    
+    if fig_reci.get()==1:
+        # 逆格子空間のki,kf,τベクトルを示す。
+        params = get_parameters()
+        RLtable = RL_calc(**params)  # RL_calcに辞書を展開して渡す
+        
+        # 散乱面の取得
+        sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
+        sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
+        
+        cp_h_entry = acbh.get()
+        try:
+            # 少数の場合
+            if '/' not in cp_h_entry:
+                cph = float(cp_h_entry)
+            else:
+                # 分数の場合
+                cph = float(Fraction(cp_h_entry))
+        except ValueError:
+            pass
+        
+        cp_k_entry = acbk.get()
+        try:
+            # 少数の場合
+            if '/' not in cp_k_entry:
+                cpk = float(cp_k_entry)
+            else:
+                # 分数の場合
+                cpk = float(Fraction(cp_k_entry))
+        except ValueError:
+            pass
+        
+        cp_l_entry = acbl.get()
+        try:
+            # 少数の場合
+            if '/' not in cp_l_entry:
+                cpl = float(cp_l_entry)
+            else:
+                # 分数の場合
+                cpl = float(Fraction(cp_l_entry))
+        except ValueError:
+            pass
+        
+        cphw = float(acbe.get())
+        cp = np.array([cph,cpk,cpl])
+        
+        fixe=float(eief.get())
+        bpe = float(Energy.get())
+        bpc2 = float(bp_c2.get())
+        plot_reciprocal_space(bpe,bpc2,cphw,cp,fixe,sv1,sv2,RLtable,A_sets,C_sets,QE_sets)
     
     if fig_reso.get()==1:
         bpe = float(Energy.get())
@@ -2524,6 +2586,7 @@ def conostEscan_show_table():
     
     A_sets = []  # A_setsリストを初期化
     QE_sets = []
+    C_sets = []
     # resultsリストの各結果をTreeviewに追加
     for results in angletable3:
         values = tuple(results.values())
@@ -2534,6 +2597,11 @@ def conostEscan_show_table():
         A2 = -round(results['A2'], 4)  # 'A2'
         A3 = round(results['A3'], 4)  # 'A3'
         A_sets.append([A1, A2, A3])  # A_sets に追加
+        C1 = round(results['C1'], 4)  # 'C1'
+        C2 = round(results['C2'], 4)  # 'C2'
+        C3 = round(results['C3'], 4)  # 'C3'
+        C4 = round(results['offset'], 4)  # 'offset'
+        C_sets.append([C1, C2, C3, C4])
         # hw, h,k,l
         hw = round(results['hw'], 4)  # 'A1'
         h = round(results['h'], 4)  # 'A2'
@@ -2584,6 +2652,56 @@ def conostEscan_show_table():
     
     Hfocus = calc_hf.get()
     num_ana = float(acna.get())
+    
+    if fig_reci.get()==1:
+        # 逆格子空間のki,kf,τベクトルを示す。
+        params = get_parameters()
+        RLtable = RL_calc(**params)  # RL_calcに辞書を展開して渡す
+        
+        # 散乱面の取得
+        sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
+        sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
+        
+        cp_h_entry = acbh.get()
+        try:
+            # 少数の場合
+            if '/' not in cp_h_entry:
+                cph = float(cp_h_entry)
+            else:
+                # 分数の場合
+                cph = float(Fraction(cp_h_entry))
+        except ValueError:
+            pass
+        
+        cp_k_entry = acbk.get()
+        try:
+            # 少数の場合
+            if '/' not in cp_k_entry:
+                cpk = float(cp_k_entry)
+            else:
+                # 分数の場合
+                cpk = float(Fraction(cp_k_entry))
+        except ValueError:
+            pass
+        
+        cp_l_entry = acbl.get()
+        try:
+            # 少数の場合
+            if '/' not in cp_l_entry:
+                cpl = float(cp_l_entry)
+            else:
+                # 分数の場合
+                cpl = float(Fraction(cp_l_entry))
+        except ValueError:
+            pass
+        
+        cphw = float(acbe.get())
+        cp = np.array([cph,cpk,cpl])
+        
+        fixe=float(eief.get())
+        bpe = float(Energy.get())
+        bpc2 = float(bp_c2.get())
+        plot_reciprocal_space(bpe,bpc2,cphw,cp,fixe,sv1,sv2,RLtable,A_sets,C_sets,QE_sets)
     
     if fig_reso.get()==1:
         bpe = float(Energy.get())

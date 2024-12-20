@@ -194,6 +194,7 @@ def angle_calc2(astar,bstar,cstar,U,B,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,hw_ini,hw_fi
             'A3' : round(A3,4),
             'mu' : round(mu+bpmu,4),
             'nu' : round(nu+bpnu,4),
+            'offset' : offset,
         }
         
         # リストに追加
