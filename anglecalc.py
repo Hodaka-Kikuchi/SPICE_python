@@ -177,6 +177,8 @@ def angle_calc(astar,bstar,cstar,U,B,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe):
             'A3' : A3,
             'mu' : mu+bpmu,
             'nu' : nu+bpnu,
+            'offset' : offset,
+            'phi_bp' : phi_bp,
         }
         
         return result, None

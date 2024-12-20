@@ -1421,8 +1421,8 @@ def calculate_angle():
         
         fixe=float(eief.get())
         bpe = float(Energy.get())
-        
-        plot_reciprocal_space(bpe,cphw,cp,fixe,sv1,sv2,**RLtable)
+        bpc2 = float(bp_c2.get())
+        plot_reciprocal_space(bpe,bpc2,cphw,cp,fixe,sv1,sv2,RLtable,angletable)
     
     if fig_reso.get()==1:
         bpe = float(Energy.get())
