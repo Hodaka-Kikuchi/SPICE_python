@@ -126,7 +126,7 @@ def plot_reciprocal_space(bpe, bpc2, cphw, cp, fixe, sv1, sv2, RLtable,A_sets, C
         hkl_x = c1 * sp1v_2d[0] + c2 * sp2v_2d[0]
         hkl_y = c1 * sp1v_2d[1] + c2 * sp2v_2d[1]
         # hkl_calベクトルを描画
-        ax.quiver(0, 0, hkl_x, hkl_y, angles='xy', scale_units='xy', scale=1, color='red', label='hkl_cal')
+        ax.quiver(0, 0, hkl_x, hkl_y, angles='xy', scale_units='xy', scale=1, color='red', label='τ (ki-kf)')
         
         # sp1v_2d, sp2v_2dベクトルを描画
         # 端に表示するようにする。
