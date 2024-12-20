@@ -28,6 +28,8 @@ def plot_reciprocal_space(bpe, bpc2, cphw, cp, fixe, sv1, sv2, RLtable,A_sets, C
     """
     逆格子空間を描く（sp1vとsp2vがなす角度、格子点生成、ベクトルの表示）
     """
+    #QE_sets.append([hw, h, k, l])
+    
     astar = RLtable['astar']
     bstar = RLtable['bstar']
     cstar = RLtable['cstar']
@@ -40,9 +42,9 @@ def plot_reciprocal_space(bpe, bpc2, cphw, cp, fixe, sv1, sv2, RLtable,A_sets, C
     
     if fixe==0: # ei fix
         Ei = bpe
-        Ef = bpe - cphw
+        Ef = bpe - QE_sets[initial_index][0]
     elif fixe==1: # ef fix
-        Ei = bpe + cphw
+        Ei = bpe + QE_sets[initial_index][0]
         Ef = bpe
     ki_cal=(Ei/2.072)**(1/2)
     kf_cal=(Ef/2.072)**(1/2)
@@ -103,8 +105,17 @@ def plot_reciprocal_space(bpe, bpc2, cphw, cp, fixe, sv1, sv2, RLtable,A_sets, C
         
         ax.clear()
         
-         # 格子点を描画
+        # 格子点を描画
         ax.scatter(grid_points[:, 0], grid_points[:, 1], color='black', s=10, label='Lattice Points')
+        
+        if fixe==0: # ei fix
+            Ei = bpe
+            Ef = bpe - QE_sets[index][0]
+        elif fixe==1: # ef fix
+            Ei = bpe + QE_sets[index][0]
+            Ef = bpe
+        ki_cal=(Ei/2.072)**(1/2)
+        kf_cal=(Ef/2.072)**(1/2)
         
         # hkl_calベクトルの計算 (sp1v_2d と sp2v_2d の線形和)
         hkl_cal = QE_sets[index][1] * astar + QE_sets[index][2] * bstar + QE_sets[index][3] * cstar
