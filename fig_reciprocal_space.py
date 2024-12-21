@@ -156,6 +156,11 @@ def plot_reciprocal_space(bpe, bpc2, cphw, cp, fixe, sv1, sv2, RLtable,A_sets, C
         ax.set_xlabel(r'$k_x\ (\mathrm{\AA}^{-1})$')
         ax.set_ylabel(r'$k_y\ (\mathrm{\AA}^{-1})$')
         
+        # スキャン条件表示用テキストを初期化
+        ax.text(0.4, 1.05, f'ℏω: {QE_sets[index][0]} meV, h: {QE_sets[index][1]}, k: {QE_sets[index][2]}, l: {QE_sets[index][3]}', 
+                                    horizontalalignment='center', verticalalignment='center', transform=ax.transAxes)
+
+        
         # 凡例をグラフの外に配置
         ax.legend(loc='upper left', bbox_to_anchor=(1.01, 1), borderaxespad=0., fontsize=10)
         
