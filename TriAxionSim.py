@@ -1452,8 +1452,7 @@ def calculate_angle():
             "mos_ana_h": mos_ana_h.get(),
             "mos_ana_v": mos_ana_v.get(),
         }
-        #calcresolution_scan(A_sets,QE_sets,bpe,fixe,hw,Hfocus,num_ana,entry_values)
-        calcresolution(A_sets,QE_sets,bpe,fixe,hw,Hfocus,num_ana,entry_values)
+        calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values)
     
     plt.show()
 
