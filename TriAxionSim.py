@@ -388,6 +388,10 @@ from fig_reciprocal_space import plot_reciprocal_space
 
 from specfigscan_gif import plot_spectrometer_with_gif #画像をgif保存したいとき
 
+from fig_reciprocal_space_gif import plot_reciprocal_space_with_gif #画像をgif保存したいとき
+
+from QEresolution_scan_gif import calcresolution_scan_with_gif #画像をgif保存したいとき
+
 # GUIの配分を決める。
 root.columnconfigure(0, weight=1)
 root.rowconfigure(0, weight=2)
@@ -1374,7 +1378,6 @@ def calculate_angle():
 
     if fig_spec.get()==1:
         # プロット関数を呼び出し
-        #plot_spectrometer_with_gif(A_sets,QE_sets)
         plot_spectrometer(A_sets,QE_sets)
     
     Hfocus = calc_hf.get()
@@ -1433,7 +1436,6 @@ def calculate_angle():
     if fig_reso.get()==1:
         bpe = float(Energy.get())
         fixe=float(eief.get())
-        
         # Entry ウィジェットの値を辞書にまとめる
         entry_values = {
             "div_1st_m": div_1st_m.get(),
@@ -1450,11 +1452,12 @@ def calculate_angle():
             "mos_ana_h": mos_ana_h.get(),
             "mos_ana_v": mos_ana_v.get(),
         }
+        #calcresolution_scan(A_sets,QE_sets,bpe,fixe,hw,Hfocus,num_ana,entry_values)
         calcresolution(A_sets,QE_sets,bpe,fixe,hw,Hfocus,num_ana,entry_values)
     
     plt.show()
 
-acle = tk.Label(tab_001a,text='ℏω')
+acle = tk.Label(tab_001a,text='ℏω (meV)')
 acle.grid(row=0, column=0,sticky="NSEW")
 acbe = ttk.Entry(tab_001a)
 acbe.grid(row=1, column=0,sticky="NSEW")
@@ -1822,7 +1825,7 @@ tab_002a.rowconfigure(2, weight=1)
 tab_002a.rowconfigure(3, weight=1)
 tab_002a.rowconfigure(4, weight=1)
 
-cqslt = tk.Label(tab_002a,text='ℏω')
+cqslt = tk.Label(tab_002a,text='ℏω (meV)')
 cqslt.grid(row=0, column=1,sticky="NSEW")
 cqslf = tk.Label(tab_002a,text='from',width=15)
 cqslf.grid(row=1, column=0,sticky="NSEW")
@@ -2198,7 +2201,9 @@ def constQscan_show_table():
         fixe=float(eief.get())
         bpe = float(Energy.get())
         bpc2 = float(bp_c2.get())
+        
         plot_reciprocal_space(bpe,bpc2,cphw,cp,fixe,sv1,sv2,RLtable,A_sets,C_sets,QE_sets)
+        #plot_reciprocal_space_with_gif(bpe,bpc2,cphw,cp,fixe,sv1,sv2,RLtable,A_sets,C_sets,QE_sets)
     
     if fig_reso.get()==1:
         bpe = float(Energy.get())
@@ -2221,6 +2226,7 @@ def constQscan_show_table():
             "mos_ana_v": mos_ana_v.get(),
         }
         calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values)
+        #calcresolution_scan_with_gif(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values)
 
     plt.show()
     
@@ -2243,7 +2249,7 @@ tab_002b.rowconfigure(2, weight=1)
 tab_002b.rowconfigure(3, weight=1)
 tab_002b.rowconfigure(4, weight=1)
 
-cesel= tk.Label(tab_002b,text='ℏω')
+cesel= tk.Label(tab_002b,text='ℏω (meV)')
 cesel.grid(row=0, column=4,sticky="NSEW")
 
 cesl1= tk.Label(tab_002b,text='from',width=15)
@@ -2701,7 +2707,9 @@ def conostEscan_show_table():
         fixe=float(eief.get())
         bpe = float(Energy.get())
         bpc2 = float(bp_c2.get())
+        
         plot_reciprocal_space(bpe,bpc2,cphw,cp,fixe,sv1,sv2,RLtable,A_sets,C_sets,QE_sets)
+        #plot_reciprocal_space_with_gif(bpe,bpc2,cphw,cp,fixe,sv1,sv2,RLtable,A_sets,C_sets,QE_sets)
     
     if fig_reso.get()==1:
         bpe = float(Energy.get())
@@ -2724,6 +2732,7 @@ def conostEscan_show_table():
             "mos_ana_v": mos_ana_v.get(),
         }
         calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values)
+        #calcresolution_scan_with_gif(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values)
         
     plt.show()
     

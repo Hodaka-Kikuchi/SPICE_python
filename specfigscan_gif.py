@@ -114,7 +114,7 @@ def plot_spectrometer_with_gif(A_sets, QE_sets, initial_index=0, save_gif=True, 
         frames[0].save(gif_name, save_all=True, append_images=frames[1:], duration=100, loop=0)
         print(f"GIF 保存完了: {gif_name}")
 
-    plt.show()
+    #plt.show()
 
 """
 # サンプルデータ
