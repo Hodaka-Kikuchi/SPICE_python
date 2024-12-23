@@ -1,6 +1,6 @@
 #cd C:\DATA_HK\python\SPICE_python
 # 右上にバージョン情報を表示
-__version__ = '1.6.1'
+__version__ = '1.6.2'
 """
 セマンティック バージョニング (Semantic Versioning)
 セマンティック バージョニング（セムバ―、SemVer）は、バージョン番号を「MAJOR.MINOR.PATCH」の形式で表します。それぞれの部分には以下のような意味があります：
@@ -1235,20 +1235,20 @@ def calculate_angle():
     floor_position_y = float(config['settings']['floor_position_y'])
     
     # sample gonioがfloorからはみ出る場合
-    positionY_sample = monochromator_to_sample * np.sin(np.radians(angletable['A1'])) - sample_goniometer_radius # < floor_position_y
+    #positionY_sample = monochromator_to_sample * np.sin(np.radians(angletable['A1'])) - sample_goniometer_radius # < floor_position_y
     # analyzer dramがfloorからはみ出る場合
-    positionY_analyzer = monochromator_to_sample * np.sin(np.radians(angletable['A1'])) - sample_to_analyzer * np.sin(np.radians(angletable['A2'] - angletable['A1'])) - analyzer_radius # < floor_position_y
+    #positionY_analyzer = monochromator_to_sample * np.sin(np.radians(angletable['A1'])) - sample_to_analyzer * np.sin(np.radians(angletable['A2'] - angletable['A1'])) - analyzer_radius # < floor_position_y
     # detector dramがfloorからはみ出る場合
-    positionY_detector = monochromator_to_sample * np.sin(np.radians(angletable['A1'])) - sample_to_analyzer * np.sin(np.radians(angletable['A2'] - angletable['A1'])) + analyzer_to_detector * np.sin(np.radians(angletable['A3'] - angletable['A2'] + angletable['A1'])) - detector_radius # < floor_position_y
-    positionX_detector = monochromator_to_sample * np.cos(np.radians(angletable['A1'])) + sample_to_analyzer * np.cos(np.radians(angletable['A2'] - angletable['A1'])) + analyzer_to_detector * np.cos(np.radians(angletable['A3'] - angletable['A2'] + angletable['A1'])) - detector_radius # < floor_position_x+floor_length
+    #positionY_detector = monochromator_to_sample * np.sin(np.radians(angletable['A1'])) - sample_to_analyzer * np.sin(np.radians(angletable['A2'] - angletable['A1'])) + analyzer_to_detector * np.sin(np.radians(angletable['A3'] - angletable['A2'] + angletable['A1'])) - detector_radius # < floor_position_y
+    #positionX_detector = monochromator_to_sample * np.cos(np.radians(angletable['A1'])) + sample_to_analyzer * np.cos(np.radians(angletable['A2'] - angletable['A1'])) + analyzer_to_detector * np.cos(np.radians(angletable['A3'] - angletable['A2'] + angletable['A1'])) - detector_radius # < floor_position_x+floor_length
     
     if error_message is not None:
         acl10.config(text=error_message, fg="red")
         return  # 計算を中断
-    elif (positionY_sample < floor_position_y or
-          positionY_analyzer < floor_position_y or
-          positionY_detector < floor_position_y or
-          positionX_detector > floor_position_x+floor_length):
+    elif (monochromator_to_sample * np.sin(np.radians(angletable['A1'])) - sample_goniometer_radius < floor_position_y or
+          monochromator_to_sample * np.sin(np.radians(angletable['A1'])) - sample_to_analyzer * np.sin(np.radians(angletable['A2'] - angletable['A1'])) - analyzer_radius < floor_position_y or
+          monochromator_to_sample * np.sin(np.radians(angletable['A1'])) - sample_to_analyzer * np.sin(np.radians(angletable['A2'] - angletable['A1'])) + analyzer_to_detector * np.sin(np.radians(angletable['A3'] - angletable['A2'] + angletable['A1'])) - detector_radius < floor_position_y or
+          monochromator_to_sample * np.cos(np.radians(angletable['A1'])) + sample_to_analyzer * np.cos(np.radians(angletable['A2'] - angletable['A1'])) + analyzer_to_detector * np.cos(np.radians(angletable['A3'] - angletable['A2'] + angletable['A1'])) - detector_radius > floor_position_x+floor_length):
         acl10.config(text="Out of the floor.", fg="red")
     elif (round(angletable['C1'],4)<float(hwl2f.get()) or
         round(angletable['C1'],4)>float(hwl2t.get()) or
