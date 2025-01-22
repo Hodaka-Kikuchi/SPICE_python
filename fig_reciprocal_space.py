@@ -71,7 +71,7 @@ def plot_reciprocal_space(bpe, bpc2, cphw, cp, fixe, sv1, sv2, RLtable,A_sets, C
     cosine_theta = dot_product / (norm_sp1v * norm_sp2v)
     angle_deg = np.degrees(np.arccos(np.clip(cosine_theta, -1.0, 1.0)))  # 角度を度で計算
 
-    # XY空間上にベクトルを投影
+    # XY空間上にベクトルを投影   
     sp1v_2d = [norm_sp1v,0]
     sp2v_2d = [norm_sp2v * np.cos(np.radians(angle_deg)),norm_sp2v * np.sin(np.radians(angle_deg))]
 

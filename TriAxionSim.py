@@ -1,6 +1,6 @@
 #cd C:\DATA_HK\python\SPICE_python
 # 右上にバージョン情報を表示
-__version__ = '1.6.3'
+__version__ = '1.6.4'
 """
 セマンティック バージョニング (Semantic Versioning)
 セマンティック バージョニング（セムバ―、SemVer）は、バージョン番号を「MAJOR.MINOR.PATCH」の形式で表します。それぞれの部分には以下のような意味があります：
@@ -2055,7 +2055,7 @@ def constQscan_show_table():
     tree_height = num_rows if num_rows > 0 else 1  # 行数が0の場合は最低1行表示
     
     # Treeviewの設定
-    tree = ttk.Treeview(result_window, columns=("hw","h","k","l","C1", "A1", "C2", "A2", "C3", "A3", "mu", "nu"), show="headings", height=tree_height)
+    tree = ttk.Treeview(result_window, columns=("pt","hw","h","k","l","C1", "A1", "C2", "A2", "C3", "A3", "mu", "nu"), show="headings", height=tree_height)
     tree.pack(fill="both", expand=True)
     
     # 各列に見出しを設定
@@ -2091,8 +2091,8 @@ def constQscan_show_table():
     QE_sets = []
     C_sets = []
     # resultsリストの各結果をTreeviewに追加
-    for results in angletable2:
-        values = tuple(results.values())
+    for idx, results in enumerate(angletable2, start=1):  # idxでスキャン番号を取得
+        values = (idx,) + tuple(results.values())
         item_id = tree.insert("", "end", values=values)
         # A1, A2, A3 を取得して A_sets に追加
         A1 = round(results['A1'], 4)  # 'A1'
@@ -2589,7 +2589,7 @@ def conostEscan_show_table():
     tree_height = num_rows if num_rows > 0 else 1  # 行数が0の場合は最低1行表示
     
     # Treeviewの設定
-    tree = ttk.Treeview(result_window, columns=("hw","h","k","l","C1", "A1", "C2", "A2", "C3", "A3", "mu", "nu"), show="headings", height=tree_height)
+    tree = ttk.Treeview(result_window, columns=("pt","hw","h","k","l","C1", "A1", "C2", "A2", "C3", "A3", "mu", "nu"), show="headings", height=tree_height)
     tree.pack(fill="both", expand=True)
     
     # 各列に見出しを設定
@@ -2601,8 +2601,8 @@ def conostEscan_show_table():
     QE_sets = []
     C_sets = []
     # resultsリストの各結果をTreeviewに追加
-    for results in angletable3:
-        values = tuple(results.values())
+    for idx, results in enumerate(angletable3, start=1):  # idxでスキャン番号を取得
+        values = (idx,) + tuple(results.values())
         item_id = tree.insert("", "end", values=values)
     
         # A1, A2, A3 を取得して A_sets に追加
