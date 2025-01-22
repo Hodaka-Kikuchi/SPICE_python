@@ -49,6 +49,16 @@ def plot_reciprocal_space(bpe, bpc2, cphw, cp, fixe, sv1, sv2, RLtable,A_sets, C
     ki_cal=(Ei/2.072)**(1/2)
     kf_cal=(Ef/2.072)**(1/2)
     
+    """
+    # ベクトル u1, u2 の計算
+    u1 = sv1[0] * astar + sv1[1] * bstar + sv1[2] * cstar
+    U1 = u1 / np.linalg.norm(u1)
+    
+    u2 = sv2[0] * astar + sv2[1] * bstar + sv2[2] * cstar
+    uu2 = u2 - np.dot(U1, u2) * U1
+    U2 = uu2 / np.linalg.norm(uu2)
+    """
+    
     # sp1v, sp2vベクトルの計算
     sp1v = sv1[0] * astar + sv1[1] * bstar + sv1[2] * cstar
     sp2v = sv2[0] * astar + sv2[1] * bstar + sv2[2] * cstar

@@ -1,6 +1,6 @@
 #cd C:\DATA_HK\python\SPICE_python
 # 右上にバージョン情報を表示
-__version__ = '1.6.2'
+__version__ = '1.6.3'
 """
 セマンティック バージョニング (Semantic Versioning)
 セマンティック バージョニング（セムバ―、SemVer）は、バージョン番号を「MAJOR.MINOR.PATCH」の形式で表します。それぞれの部分には以下のような意味があります：
@@ -1862,19 +1862,6 @@ cqse3.insert(0,'0')
 
 # 別ウィンドウでデータテーブルを表示する関数
 def constQscan_show_table():
-    # 新しいウィンドウを作成
-    result_window = tk.Toplevel()
-    result_window.title("calculation results (unit : deg)")
-    
-    # Treeviewの設定
-    tree = ttk.Treeview(result_window, columns=("hw","h","k","l","C1", "A1", "C2", "A2", "C3", "A3", "mu", "nu"), show="headings")
-    tree.pack(fill="both", expand=True)
-    
-    # 各列に見出しを設定
-    for col in tree["columns"]:
-        tree.heading(col, text=col)
-        tree.column(col, width=80, anchor="center")
-    
     # RLtableを取得し、辞書から必要な変数を取り出す
     RLtable = on_Rlcalc()
     astar = RLtable['astar']
@@ -2058,6 +2045,23 @@ def constQscan_show_table():
     
     global angletable2
     angletable2 = angle_calc2(astar, bstar, cstar, U,B,UB, bpe, bpc2, bpmu, bpnu, bp, fixe, hw_ini, hw_fin, hw_inc, h_cal, k_cal, l_cal)
+    
+    # 新しいウィンドウを作成
+    result_window = tk.Toplevel()
+    result_window.title("calculation results (unit : deg)")
+    
+    # データの行数に基づいてTreeviewの高さを設定
+    num_rows = len(angletable2)  # データの行数を取得
+    tree_height = num_rows if num_rows > 0 else 1  # 行数が0の場合は最低1行表示
+    
+    # Treeviewの設定
+    tree = ttk.Treeview(result_window, columns=("hw","h","k","l","C1", "A1", "C2", "A2", "C3", "A3", "mu", "nu"), show="headings", height=tree_height)
+    tree.pack(fill="both", expand=True)
+    
+    # 各列に見出しを設定
+    for col in tree["columns"]:
+        tree.heading(col, text=col)
+        tree.column(col, width=80, anchor="center")
     
     # 先にフロアの条件を読み込み
     # INIファイルから設定を読み込む
@@ -2300,19 +2304,6 @@ ces10.grid(row=1, column=4,sticky="NSEW")
 ces10.insert(0,'1')
 
 def conostEscan_show_table():
-    # 新しいウィンドウを作成
-    result_window = tk.Toplevel()
-    result_window.title("calculation results (unit : deg)")
-    
-    # Treeviewの設定
-    tree = ttk.Treeview(result_window, columns=("hw","h","k","l","C1", "A1", "C2", "A2", "C3", "A3", "mu", "nu"), show="headings")
-    tree.pack(fill="both", expand=True)
-    
-    # 各列に見出しを設定
-    for col in tree["columns"]:
-        tree.heading(col, text=col)
-        tree.column(col, width=80, anchor="center")
-    
     # RLtableを取得し、辞書から必要な変数を取り出す
     RLtable = on_Rlcalc()
     astar = RLtable['astar']
@@ -2588,6 +2579,23 @@ def conostEscan_show_table():
     
     global angletable3
     angletable3 = angle_calc3(astar,bstar,cstar,U,B,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,hw_cal,h_ini,k_ini,l_ini,h_fin,k_fin,l_fin,h_inc,k_inc,l_inc)
+    
+    # 新しいウィンドウを作成
+    result_window = tk.Toplevel()
+    result_window.title("calculation results (unit : deg)")
+    
+    # データの行数に基づいてTreeviewの高さを設定
+    num_rows = len(angletable3)  # データの行数を取得
+    tree_height = num_rows if num_rows > 0 else 1  # 行数が0の場合は最低1行表示
+    
+    # Treeviewの設定
+    tree = ttk.Treeview(result_window, columns=("hw","h","k","l","C1", "A1", "C2", "A2", "C3", "A3", "mu", "nu"), show="headings", height=tree_height)
+    tree.pack(fill="both", expand=True)
+    
+    # 各列に見出しを設定
+    for col in tree["columns"]:
+        tree.heading(col, text=col)
+        tree.column(col, width=80, anchor="center")
     
     A_sets = []  # A_setsリストを初期化
     QE_sets = []
