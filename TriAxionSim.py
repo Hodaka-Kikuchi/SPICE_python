@@ -1,6 +1,6 @@
 #cd C:\DATA_HK\python\SPICE_python
 # 右上にバージョン情報を表示
-__version__ = '1.6.4'
+__version__ = '1.7.0'
 """
 セマンティック バージョニング (Semantic Versioning)
 セマンティック バージョニング（セムバ―、SemVer）は、バージョン番号を「MAJOR.MINOR.PATCH」の形式で表します。それぞれの部分には以下のような意味があります：
@@ -375,6 +375,7 @@ def save_values_to_ini():
         config.write(configfile)
 
 # fuction setting
+# from .pyのファイル名 import def()名
 from RLcalc import RL_calc  #
 from UBcalc import UB_calc  #
 from anglecalc import angle_calc    #
@@ -387,10 +388,11 @@ from QEresolution_scan import calcresolution_scan
 from fig_reciprocal_space import plot_reciprocal_space
 
 from specfigscan_gif import plot_spectrometer_with_gif #画像をgif保存したいとき
-
 from fig_reciprocal_space_gif import plot_reciprocal_space_with_gif #画像をgif保存したいとき
-
 from QEresolution_scan_gif import calcresolution_scan_with_gif #画像をgif保存したいとき
+
+from time_estimate import constqtime
+from time_estimate import constetime
 
 # GUIの配分を決める。
 root.columnconfigure(0, weight=1)
@@ -1823,6 +1825,7 @@ tab_002a.rowconfigure(1, weight=1)
 tab_002a.rowconfigure(2, weight=1)
 tab_002a.rowconfigure(3, weight=1)
 tab_002a.rowconfigure(4, weight=1)
+tab_002a.rowconfigure(5, weight=1)
 
 cqslt = tk.Label(tab_002a,text='ℏω (meV)')
 cqslt.grid(row=0, column=1,sticky="NSEW")
@@ -1859,6 +1862,25 @@ cqse2.insert(0,'0')
 cqse3 = ttk.Entry(tab_002a)
 cqse3.grid(row=1, column=4,sticky="NSEW")
 cqse3.insert(0,'0')
+
+cqsltl= tk.Label(tab_002a,text='mcu')
+cqsltl.grid(row=4, column=0,sticky="NSEW")
+cqs11 = ttk.Entry(tab_002a)
+cqs11.grid(row=4, column=1,sticky="NSEW")
+cqs11.insert(0,'1')
+
+cqsetl0= tk.Label(tab_002a,text='time')
+cqsetl0.grid(row=5, column=0,sticky="NSEW")
+cqs12 = ttk.Entry(tab_002a)
+cqs12.grid(row=5, column=1,sticky="NSEW")
+cqs12.config(state="readonly") # 編集不可に設定
+cqsetl1= tk.Label(tab_002a,text='hour')
+cqsetl1.grid(row=5, column=2,sticky="NSEW")
+cqs13 = ttk.Entry(tab_002a)
+cqs13.grid(row=5, column=3,sticky="NSEW")
+cqs13.config(state="readonly") # 編集不可に設定
+cqsetl1= tk.Label(tab_002a,text='min')
+cqsetl1.grid(row=5, column=4,sticky="NSEW")
 
 # 別ウィンドウでデータテーブルを表示する関数
 def constQscan_show_table():
@@ -2045,6 +2067,20 @@ def constQscan_show_table():
     
     global angletable2
     angletable2 = angle_calc2(astar, bstar, cstar, U,B,UB, bpe, bpc2, bpmu, bpnu, bp, fixe, hw_ini, hw_fin, hw_inc, h_cal, k_cal, l_cal)
+    
+    # mcuの取得
+    mcu = float(cqs11.get())
+    scantime = constqtime(flux_Ei, flux_cps, bpe, fixe, hw_ini, hw_fin, hw_inc, mcu)
+    # スキャン時間を返す
+    cqs12.config(state="normal")  # 一時的に編集可能に
+    cqs12.delete(0, tk.END)
+    cqs12.insert(0, int(scantime['hour']))
+    cqs12.config(state="readonly") # 編集不可に設定
+    
+    cqs13.config(state="normal")  # 一時的に編集可能に
+    cqs13.delete(0, tk.END)
+    cqs13.insert(0, int(scantime['min']))
+    cqs13.config(state="readonly") # 編集不可に設定
     
     # 新しいウィンドウを作成
     result_window = tk.Toplevel()
@@ -2237,7 +2273,7 @@ def constQscan_show_table():
 
 # ボタンの作成
 button = ttk.Button(tab_002a, text="calc", command=constQscan_show_table)
-button.grid(row=4, column=0,columnspan=5, sticky="NSEW")
+button.grid(row=4, column=2,columnspan=3, sticky="NSEW")
 
 tab_002b = ttk.Labelframe(tab_002,text= "constant E scan")
 tab_002b.grid(row=0,column=1,sticky="NSEW")
@@ -2251,6 +2287,7 @@ tab_002b.rowconfigure(1, weight=1)
 tab_002b.rowconfigure(2, weight=1)
 tab_002b.rowconfigure(3, weight=1)
 tab_002b.rowconfigure(4, weight=1)
+tab_002b.rowconfigure(5, weight=1)
 
 cesel= tk.Label(tab_002b,text='ℏω (meV)')
 cesel.grid(row=0, column=4,sticky="NSEW")
@@ -2302,6 +2339,25 @@ ces9.insert(0,'0')
 ces10 = ttk.Entry(tab_002b)
 ces10.grid(row=1, column=4,sticky="NSEW")
 ces10.insert(0,'1')
+
+cesltl= tk.Label(tab_002b,text='mcu')
+cesltl.grid(row=4, column=0,sticky="NSEW")
+ces11 = ttk.Entry(tab_002b)
+ces11.grid(row=4, column=1,sticky="NSEW")
+ces11.insert(0,'1')
+
+cesetl0= tk.Label(tab_002b,text='time')
+cesetl0.grid(row=5, column=0,sticky="NSEW")
+ces12 = ttk.Entry(tab_002b)
+ces12.grid(row=5, column=1,sticky="NSEW")
+ces12.config(state="readonly") # 編集不可に設定
+cesetl1= tk.Label(tab_002b,text='hour')
+cesetl1.grid(row=5, column=2,sticky="NSEW")
+ces13 = ttk.Entry(tab_002b)
+ces13.grid(row=5, column=3,sticky="NSEW")
+ces13.config(state="readonly") # 編集不可に設定
+cesetl2= tk.Label(tab_002b,text='min')
+cesetl2.grid(row=5, column=4,sticky="NSEW")
 
 def conostEscan_show_table():
     # RLtableを取得し、辞書から必要な変数を取り出す
@@ -2580,6 +2636,20 @@ def conostEscan_show_table():
     global angletable3
     angletable3 = angle_calc3(astar,bstar,cstar,U,B,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,hw_cal,h_ini,k_ini,l_ini,h_fin,k_fin,l_fin,h_inc,k_inc,l_inc)
     
+    # mcuの取得
+    mcu = float(ces11.get())
+    scantime = constetime(flux_Ei, flux_cps, bpe, fixe, hw_cal,h_ini,k_ini,l_ini,h_fin,k_fin,l_fin,h_inc,k_inc,l_inc, mcu)
+    # スキャン時間を返す
+    ces12.config(state="normal")  # 一時的に編集可能に
+    ces12.delete(0, tk.END)
+    ces12.insert(0, int(scantime['hour']))
+    ces12.config(state="readonly") # 編集不可に設定
+    
+    ces13.config(state="normal")  # 一時的に編集可能に
+    ces13.delete(0, tk.END)
+    ces13.insert(0, int(scantime['min']))
+    ces13.config(state="readonly") # 編集不可に設定
+    
     # 新しいウィンドウを作成
     result_window = tk.Toplevel()
     result_window.title("calculation results (unit : deg)")
@@ -2747,7 +2817,7 @@ def conostEscan_show_table():
 
 # ボタンの作成
 button = ttk.Button(tab_002b, text="calc", command=conostEscan_show_table)
-button.grid(row=4, column=0,columnspan=5, sticky="NSEW")
+button.grid(row=4, column=2,columnspan=3, sticky="NSEW")
 
 # グリッドの重みを設定
 tab_003.columnconfigure(0, weight=1)
@@ -3333,6 +3403,21 @@ filemenu3.add_command(label="exit",command=lambda:root.destroy())
 
 # アプリ起動時にデフォルト値を読み込む
 load_values_from_ini()
+
+# アプリ起動時にflux.datがあれば読み込む
+# ファイル名
+filename = "flux.dat"
+
+# flux.dat が存在する場合に読み込む
+if os.path.exists(filename):
+    try:
+        data = np.loadtxt(filename)
+        flux_Ei = data[:, 0]  # 1列目 (Ei)
+        flux_cps = data[:, 1]  # 2列目 (cps)
+    except Exception as e:
+        messagebox.showerror("Error", f"Failed to load flux.dat: {e}")
+else:
+    messagebox.showerror("Error", "flux.dat does not exist in same directory.")
 
 #window状態の維持
 root.mainloop()
