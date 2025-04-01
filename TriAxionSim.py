@@ -3416,8 +3416,12 @@ if os.path.exists(filename):
         flux_cps = data[:, 1]  # 2列目 (cps)
     except Exception as e:
         messagebox.showerror("Error", f"Failed to load flux.dat: {e}")
+        flux_Ei = np.array([1, 50, 100]).T
+        flux_cps = np.array([1, 1, 1]).T
 else:
     messagebox.showerror("Error", "flux.dat does not exist in same directory.")
+    flux_Ei = np.array([1, 50, 100]).T
+    flux_cps = np.array([1, 1, 1]).T
 
 #window状態の維持
 root.mainloop()
