@@ -111,6 +111,7 @@ def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,init
 
         #theta0 = 0.1 #(A^-1)
         #lamda = (81.81 / Ei)**(1/2)
+        # 0.4246609 = 1/(2*sqrt(2*log(2)))
         #alpha1 = div_1st_m * theta0 * lamda * ((2*np.log(2))**(1/2)) / (3*(1/2)) / 180 * pi * 0.4246609
         alpha1 = div_1st_h / 60 / 180 * pi * 0.4246609
         alpha2 = div_2nd_h / 60 / 180 * pi * 0.4246609
@@ -121,7 +122,7 @@ def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,init
             L=sample_to_analyzer
             W=analyzer_width*num_ana*np.sin(np.radians(A3))
             af=2 * np.degrees(np.arctan((W / 2) / L))
-            alpha3 = (8*np.log(2)/12)**(1/2)*af / 180 * pi * 0.4246609
+            alpha3 = (1/12)**(1/2)*af / 180 * pi * 0.4246609 #* 8*np.log(2)
         
         alpha4 = div_4th_h / 60 / 180 * pi * 0.4246609
         #beta1 = alpha1
@@ -194,8 +195,8 @@ def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,init
         if Hfocus == 0:
             Minv = B @ HF @ B.T
         # サンプルモザイクを入れた場合の計算
-        #Minv[1, 1] += Q**2 * etaS**2# / (8 * np.log(2))
-        #Minv[3, 3] += Q**2 * etaSp**2# / (8 * np.log(2))
+        Minv[1, 1] += Q**2 * etaS**2# / (8 * np.log(2))
+        Minv[3, 3] += Q**2 * etaSp**2# / (8 * np.log(2))
         M = np.linalg.inv(Minv)
         
         # RM 行列の設定
@@ -209,8 +210,6 @@ def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,init
         # 軸 2↔3 をスワップするインデックス
         swap = [0, 1, 3, 2]
         RM = M[np.ix_(swap, swap)]
-        
-        print(RM)
 
         # RMは(q//,q⊥,hw,qz)における空間分布
         
@@ -271,7 +270,6 @@ def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,init
             # 等高線をプロット（楕円の曲線部分）
             #plt.contour(X_shifted, Z_shifted, ellipse, levels=[0], colors=color, label=label)
             ax.contour(X_shifted, Z_shifted, ellipse, levels=[0], colors=color, label=label)
-
 
         log2 = np.log(2)
 
@@ -350,14 +348,14 @@ def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,init
         ax.set_ylabel("ℏω (meV)")
         
         # グラフのタイトル（楕円の説明）
-        #ax.set_title("red circle : $Q_{\\parallel}$, blue circle : $Q_{\\perp}$", fontsize=12)
-        ax.set_title("red circle : $Q_{x}$, blue circle : $Q_{y}$", fontsize=12)
+        ax.set_title("red circle : $Q_{\\parallel}$, blue circle : $Q_{\\perp}$", fontsize=12)
+        #ax.set_title("red circle : $Q_{x}$, blue circle : $Q_{y}$", fontsize=12)
 
         # 追加情報を ax.text で追加
         ax.text(
             0.5, 1.1,  # グラフの外に配置 (x=0.4, y=1.05)
-            #f'ℏω: {QE_sets[index][0]} meV, h: {QE_sets[index][1]}, k: {QE_sets[index][2]}, l: {QE_sets[index][3]}, δ$Q_{{\\parallel}}$ = {resolution_Q_parallel:.4f}, δ$Q_{{\\perp}}$ = {resolution_Q_perpendicular:.4f}, δE = {resolution_energy:.4f}',
-            f'ℏω: {QE_sets[index][0]} meV, h: {QE_sets[index][1]}, k: {QE_sets[index][2]}, l: {QE_sets[index][3]}, δ$Q_{{x}}$ = {resolution_Q_parallel:.4f}, δ$Q_{{y}}$ = {resolution_Q_perpendicular:.4f}, δE = {resolution_energy:.4f}',
+            f'ℏω: {QE_sets[index][0]} meV, h: {QE_sets[index][1]}, k: {QE_sets[index][2]}, l: {QE_sets[index][3]}, δ$Q_{{\\parallel}}$ = {resolution_Q_parallel:.4f}, δ$Q_{{\\perp}}$ = {resolution_Q_perpendicular:.4f}, δE = {resolution_energy:.4f}',
+            #f'ℏω: {QE_sets[index][0]} meV, h: {QE_sets[index][1]}, k: {QE_sets[index][2]}, l: {QE_sets[index][3]}, δ$Q_{{x}}$ = {resolution_Q_parallel:.4f}, δ$Q_{{y}}$ = {resolution_Q_perpendicular:.4f}, δE = {resolution_energy:.4f}',
             horizontalalignment='center',
             verticalalignment='center',
             transform=ax.transAxes,
