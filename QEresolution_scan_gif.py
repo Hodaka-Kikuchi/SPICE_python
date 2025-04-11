@@ -85,9 +85,11 @@ def calcresolution_scan_with_gif(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_va
         # system設定に基づいてy軸の設定を変更
         if view_mode == 'left':
             EM = -1
+            EA = -1
         elif view_mode == 'right':
             EM = 1
-
+            EA = 1
+            
         if fixe==0: # ei fix
             Ei = bpe
             Ef = bpe - hw

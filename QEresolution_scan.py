@@ -27,7 +27,9 @@ def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,init
     view_mode = config['settings']['system']
     
     # divergenceの読み出し
-    div_1st_m = float(entry_values.get("div_1st_m"))
+    #div_1st_m = float(entry_values.get("div_1st_m"))
+    div_1st_h = float(entry_values.get("div_1st_h"))
+    div_1st_v = float(entry_values.get("div_1st_v"))
     div_2nd_h = float(entry_values.get("div_2nd_h"))
     div_2nd_v = float(entry_values.get("div_2nd_v"))
     div_3rd_h = float(entry_values.get("div_3rd_h"))
@@ -72,16 +74,13 @@ def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,init
         A1, A2, A3 = A_sets[index]
         hw = QE_sets[index][0]
         
+        
         # プロットを再描画
         ax.clear()
         
-        A2 = -A2 # 分光器の図を書くためにA2はマイナスにして値を渡しているため
-        
-        # system設定に基づいてy軸の設定を変更
-        if view_mode == 'left':
-            EM = -1
-        elif view_mode == 'right':
-            EM = 1
+        # system設定に基づいて角度の係数を変更
+        EM = 1
+        EA = 1 #anti-W配置の場合-1 
 
         if fixe==0: # ei fix
             Ei = bpe
@@ -101,50 +100,53 @@ def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,init
         # C3とA3の計算
         C3 = A3/2
 
-        thetaM = -C1 * EM
+        thetaM = C1 * EM
         thetaS = A2 / 2
-        thetaA = -C3 * EM
+        thetaA = C3 * EA
         
         phi = np.degrees(np.arctan2(-kf * np.sin(np.radians(2 * thetaS)), ki - kf * np.cos(np.radians(2 * thetaS))))
 
         # Define constants for the resolution matrices
         # ここでαi とβi は、コリメータの水平方向と鉛直方向における発散角を表している。η とη′をモノクロメータとアナライザの水平方向と鉛直方向のモザイクのFWHM
 
-        theta0 = 0.1 #(A^-1)
-        lamda = (81.81 / Ei)**(1/2)
-        alpha1 = div_1st_m * theta0 * lamda * ((2*np.log(2))**(1/2)) / (3*(1/2)) / 180 * pi
-        alpha2 = div_2nd_h / 60 / 180 * pi
+        #theta0 = 0.1 #(A^-1)
+        #lamda = (81.81 / Ei)**(1/2)
+        #alpha1 = div_1st_m * theta0 * lamda * ((2*np.log(2))**(1/2)) / (3*(1/2)) / 180 * pi * 0.4246609
+        alpha1 = div_1st_h / 60 / 180 * pi * 0.4246609
+        alpha2 = div_2nd_h / 60 / 180 * pi * 0.4246609
         # focusingの場合式が異なる。
         if Hfocus==0:
-            alpha3 = div_3rd_h / 60 / 180 * pi
+            alpha3 = div_3rd_h / 60 / 180 * pi * 0.4246609
         elif Hfocus==1:
             L=sample_to_analyzer
             W=analyzer_width*num_ana*np.sin(np.radians(A3))
             af=2 * np.degrees(np.arctan((W / 2) / L))
-            alpha3 = (8*np.log(2)/12)**(1/2)*af / 180 * pi
+            alpha3 = (8*np.log(2)/12)**(1/2)*af / 180 * pi * 0.4246609
         
-        alpha4 = div_4th_h / 60 / 180 * pi
-        beta1 = alpha1
-        beta2 = div_2nd_v / 60 / 180 * pi
-        beta3 = div_3rd_v / 60 / 180 * pi
-        beta4 = div_4th_v / 60 / 180 * pi
+        alpha4 = div_4th_h / 60 / 180 * pi * 0.4246609
+        #beta1 = alpha1
+        beta1 = div_1st_v / 60 / 180 * pi * 0.4246609
+        beta2 = div_2nd_v / 60 / 180 * pi * 0.4246609
+        beta3 = div_3rd_v / 60 / 180 * pi * 0.4246609
+        beta4 = div_4th_v / 60 / 180 * pi * 0.4246609
         
-        etaM = mos_mono_h / 60 / 180 * pi
-        etaA = mos_ana_h / 60 / 180 * pi
-        etaS = mos_sam_h / 60 / 180 * pi
-        etaMp = mos_mono_v / 60 / 180 * pi
-        etaAp = mos_ana_v / 60 / 180 * pi
-        etaSp = mos_sam_v / 60 / 180 * pi
+        etaM = mos_mono_h / 60 / 180 * pi * 0.4246609
+        etaA = mos_ana_h / 60 / 180 * pi * 0.4246609
+        etaS = mos_sam_h / 60 / 180 * pi * 0.4246609
+        etaMp = mos_mono_v / 60 / 180 * pi * 0.4246609
+        etaAp = mos_ana_v / 60 / 180 * pi * 0.4246609
+        etaSp = mos_sam_v / 60 / 180 * pi * 0.4246609
 
-        G = 8 * np.log(2) * np.diag([1 / alpha1 ** 2, 1 / alpha2 ** 2, 1 / beta1 ** 2, 1 / beta2 ** 2, 1 / alpha3 ** 2, 1 / alpha4 ** 2, 1 / beta3 ** 2, 1 / beta4 ** 2])
-
-        F = 8 * np.log(2) * np.diag([1 / etaM ** 2, 1 / etaMp ** 2, 1 / etaA ** 2, 1 / etaAp ** 2])
-
+        # Gについてreslibと同じ値になることを確認
+        G = 8 * np.log(2) / (8 * np.log(2)) * np.diag([1 / (alpha1 ** 2), 1 / (alpha2 ** 2), 1 / (beta1 ** 2), 1 / (beta2 ** 2), 1 / (alpha3 ** 2), 1 / (alpha4 ** 2), 1 / (beta3 ** 2), 1 / (beta4 ** 2)])
+        # Fについてreslibと同じ値になることを確認
+        F = 8 * np.log(2) / (8 * np.log(2))  * np.diag([1 / (etaM ** 2), 1 / (etaMp ** 2), 1 / (etaA ** 2), 1 / (etaAp ** 2)])
+        
         # Define matrices A, B, and C
-        A = np.zeros((6, 8))
-        C = np.zeros((4, 8))
-        B = np.zeros((4, 6))
-
+        A = np.zeros((6, 8))# reslibと一致することを確認
+        C = np.zeros((4, 8))# reslibと一致することを確認
+        B = np.zeros((4, 6))# reslibと一致することを確認
+        
         A[0, 0] = ki / (2 * np.tan(np.radians(thetaM)))
         A[0, 1] = -A[0, 0]
         A[3, 4] = kf / (2 * np.tan(np.radians(thetaA)))
@@ -153,7 +155,7 @@ def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,init
         A[2, 3] = ki
         A[4, 4] = kf
         A[5, 6] = kf
-
+        
         # 2.072142=h^2/m
         B[0, 0] = np.cos(np.radians(phi))
         B[0, 1] = np.sin(np.radians(phi))
@@ -176,12 +178,11 @@ def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,init
         C[1, 3] = -C[1, 2]
         C[3, 6] = 1 / (2 * sin(np.radians(thetaA)))
         C[3, 7] = -C[3, 6]
-
-        # 行列 C の転置（C' in MATLAB）
-        C_T = C.T
+        
         # 計算
-        term = np.linalg.inv(G + C_T @ F @ C)  # G + C' * F * C の逆行列
+        term = np.linalg.inv(G + C.T @ F @ C)  # G + C' * F * C の逆行列
         HF = A @ term @ A.T  # A * (G + C' * F * C)^(-1) * A'
+        # HFまでreslibと一致
         if Hfocus == 1:
             P = np.linalg.inv(HF)
             P[4, 4] = 12 / ((kf * af / 180 * pi) ** 2)
@@ -192,35 +193,24 @@ def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,init
             Minv = B @ Pinv @ B.T
         if Hfocus == 0:
             Minv = B @ HF @ B.T
-        M = np.linalg.inv(Minv)
-        # RM 行列の設定
-        RM = np.zeros((4, 4))  # 4x4 のゼロ行列で初期化
-        RM[0, 0] = M[0, 0]
-        RM[1, 0] = M[1, 0]
-        RM[0, 1] = M[0, 1]
-        RM[1, 1] = M[1, 1]
-        RM[0, 2] = M[0, 3]
-        RM[1, 2] = M[1, 3]
-        RM[2, 0] = M[3, 0]
-        RM[2, 2] = M[3, 3]
-        RM[2, 1] = M[3, 1]
-        RM[1, 2] = M[1, 3]
-        RM[0, 3] = M[0, 2]
-        RM[3, 0] = M[2, 0]
-        RM[3, 3] = M[2, 2]
-        RM[3, 1] = M[2, 1]
-        RM[1, 3] = M[1, 2]
-
         # サンプルモザイクを入れた場合の計算
-        # Minv の再計算
-        Minv = np.linalg.inv(RM)
+        #Minv[1, 1] += Q**2 * etaS**2# / (8 * np.log(2))
+        #Minv[3, 3] += Q**2 * etaSp**2# / (8 * np.log(2))
+        M = np.linalg.inv(Minv)
         
-        # Minv の要素を修正
-        Minv[1, 1] += Q**2 * etaS**2 / (8 * np.log(2))
-        Minv[3, 3] += Q**2 * etaSp**2 / (8 * np.log(2))
+        # RM 行列の設定
+        #RM = np.zeros((4, 4))  # 4x4 のゼロ行列で初期化
+        """
+        RM = [[M[0, 0],M[0, 1],M[0, 3],M[0, 2]],
+            [M[1, 0],M[1, 1],M[1, 3],M[1, 2]],
+            [M[3, 0],M[3, 1],M[3, 3],M[3, 2]],
+            [M[2, 0],M[2, 1],M[2, 3],M[2, 2]]]
+        """
+        # 軸 2↔3 をスワップするインデックス
+        swap = [0, 1, 3, 2]
+        RM = M[np.ix_(swap, swap)]
         
-        # RM の再計算
-        RM = np.linalg.inv(Minv)
+        print(RM)
 
         # RMは(q//,q⊥,hw,qz)における空間分布
         
@@ -345,8 +335,8 @@ def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,init
         Zrange_lim=max_z*1.5
         
         # xz平面とyz平面の楕円を描画
-        plot_ellipse(A_yz, B_yz, C_yz, D_yz, E_yz, F_yz, Xrange_lim, Zrange_lim, label = "", color="blue",shift_x=0, shift_y=0)
         plot_ellipse(A_xz, B_xz, C_xz, D_xz, E_xz, F_xz, Xrange_lim, Zrange_lim, label = "", color="red",shift_x=0, shift_y=0)
+        plot_ellipse(A_yz, B_yz, C_yz, D_yz, E_yz, F_yz, Xrange_lim, Zrange_lim, label = "", color="blue",shift_x=0, shift_y=0)
         
         # 各軸の最大値を2倍した値
         resolution_Q_parallel = 2 * max_x
@@ -360,12 +350,14 @@ def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,init
         ax.set_ylabel("ℏω (meV)")
         
         # グラフのタイトル（楕円の説明）
-        ax.set_title("red circle : $Q_{\\parallel}$, blue circle : $Q_{\\perp}$", fontsize=12)
+        #ax.set_title("red circle : $Q_{\\parallel}$, blue circle : $Q_{\\perp}$", fontsize=12)
+        ax.set_title("red circle : $Q_{x}$, blue circle : $Q_{y}$", fontsize=12)
 
         # 追加情報を ax.text で追加
         ax.text(
             0.5, 1.1,  # グラフの外に配置 (x=0.4, y=1.05)
-            f'ℏω: {QE_sets[index][0]} meV, h: {QE_sets[index][1]}, k: {QE_sets[index][2]}, l: {QE_sets[index][3]}, δ$Q_{{\\parallel}}$ = {resolution_Q_parallel:.4f}, δ$Q_{{\\perp}}$ = {resolution_Q_perpendicular:.4f}, δE = {resolution_energy:.4f}',
+            #f'ℏω: {QE_sets[index][0]} meV, h: {QE_sets[index][1]}, k: {QE_sets[index][2]}, l: {QE_sets[index][3]}, δ$Q_{{\\parallel}}$ = {resolution_Q_parallel:.4f}, δ$Q_{{\\perp}}$ = {resolution_Q_perpendicular:.4f}, δE = {resolution_energy:.4f}',
+            f'ℏω: {QE_sets[index][0]} meV, h: {QE_sets[index][1]}, k: {QE_sets[index][2]}, l: {QE_sets[index][3]}, δ$Q_{{x}}$ = {resolution_Q_parallel:.4f}, δ$Q_{{y}}$ = {resolution_Q_perpendicular:.4f}, δE = {resolution_energy:.4f}',
             horizontalalignment='center',
             verticalalignment='center',
             transform=ax.transAxes,

@@ -198,8 +198,12 @@ def load_values_from_ini():
     # ラベルの自動更新
     update_label()
     # collimator & mosaic
-    div_1st_m.delete(0, tk.END)  # 既存の値をクリア
-    div_1st_m.insert(0, config['instrument'].get('div_1st_m', '1.2'))
+    #div_1st_m.delete(0, tk.END)  # 既存の値をクリア
+    #div_1st_m.insert(0, config['instrument'].get('div_1st_m', '1.2'))
+    div_1st_h.delete(0, tk.END)  # 既存の値をクリア
+    div_1st_h.insert(0, config['instrument'].get('div_1st_h', '80'))
+    div_1st_v.delete(0, tk.END)  # 既存の値をクリア
+    div_1st_v.insert(0, config['instrument'].get('div_1st_v', '200'))
     div_2nd_h.delete(0, tk.END)  # 既存の値をクリア
     div_2nd_h.insert(0, config['instrument'].get('div_2nd_h', '120'))
     div_2nd_v.delete(0, tk.END)  # 既存の値をクリア
@@ -332,7 +336,9 @@ def save_values_to_ini():
     # 'instrument'セクションを更新
     config['instrument'].update({
         'eief': str(eief.get()),  # ラジオボタンの状態を保存
-        'div_1st_m': div_1st_m.get(),
+        #'div_1st_m': div_1st_m.get(),
+        "div_1st_h": div_1st_h.get(),
+        "div_1st_v": div_1st_v.get(),
         'div_2nd_h': div_2nd_h.get(),
         'div_2nd_v': div_2nd_v.get(),
         'div_3rd_h': div_3rd_h.get(),
@@ -1440,7 +1446,9 @@ def calculate_angle():
         fixe=float(eief.get())
         # Entry ウィジェットの値を辞書にまとめる
         entry_values = {
-            "div_1st_m": div_1st_m.get(),
+            #"div_1st_m": div_1st_m.get(),
+            "div_1st_h": div_1st_h.get(),
+            "div_1st_v": div_1st_v.get(),
             "div_2nd_h": div_2nd_h.get(),
             "div_2nd_v": div_2nd_v.get(),
             "div_3rd_h": div_3rd_h.get(),
@@ -1585,13 +1593,15 @@ frame6a.rowconfigure(1, weight=1)
 frame6a.rowconfigure(2, weight=1)
 
 label1 = tk.Label(frame6a,text='H',width = 12)
-label1.grid(row=1, column=1,sticky="NSEW")
+label1.grid(row=1, column=0,sticky="NSEW")
 label2 = tk.Label(frame6a,text='V',width = 12)
-label2.grid(row=2, column=1,sticky="NSEW")
-label3 = tk.Label(frame6a,text='guide')
-label3.grid(row=0, column=0,sticky="NSEW")
-label3m = tk.Label(frame6a,text='m')
-label3m.grid(row=1, column=0,sticky="NSEW")
+label2.grid(row=2, column=0,sticky="NSEW")
+#label3 = tk.Label(frame6a,text='guide')
+#label3.grid(row=0, column=0,sticky="NSEW")
+#label3m = tk.Label(frame6a,text='m')
+#label3m.grid(row=1, column=0,sticky="NSEW")
+label3 = tk.Label(frame6a,text='1st col')
+label3.grid(row=0, column=1,sticky="NSEW")
 label4 = tk.Label(frame6a,text='2nd col')
 label4.grid(row=0, column=2,sticky="NSEW")
 label5 = tk.Label(frame6a,text='3rd col')
@@ -1599,8 +1609,12 @@ label5.grid(row=0, column=3,sticky="NSEW")
 label6 = tk.Label(frame6a,text='4th col')
 label6.grid(row=0, column=4,sticky="NSEW")
 
-div_1st_m = ttk.Entry(frame6a)
-div_1st_m.grid(row=2, column=0,sticky="NSEW")
+#div_1st_m = ttk.Entry(frame6a)
+#div_1st_m.grid(row=2, column=0,sticky="NSEW")
+div_1st_h = ttk.Entry(frame6a)
+div_1st_h.grid(row=1, column=1,sticky="NSEW")
+div_1st_v = ttk.Entry(frame6a)
+div_1st_v.grid(row=2, column=1,sticky="NSEW")
 div_2nd_h = ttk.Entry(frame6a)
 div_2nd_h.grid(row=1, column=2,sticky="NSEW")
 div_2nd_v = ttk.Entry(frame6a)
@@ -2250,7 +2264,9 @@ def constQscan_show_table():
         
         # Entry ウィジェットの値を辞書にまとめる
         entry_values = {
-            "div_1st_m": div_1st_m.get(),
+            #"div_1st_m": div_1st_m.get(),
+            "div_1st_h": div_1st_h.get(),
+            "div_1st_v": div_1st_v.get(),
             "div_2nd_h": div_2nd_h.get(),
             "div_2nd_v": div_2nd_v.get(),
             "div_3rd_h": div_3rd_h.get(),
@@ -2794,7 +2810,9 @@ def conostEscan_show_table():
         
         # Entry ウィジェットの値を辞書にまとめる
         entry_values = {
-            "div_1st_m": div_1st_m.get(),
+            #"div_1st_m": div_1st_m.get(),
+            "div_1st_h": div_1st_h.get(),
+            "div_1st_v": div_1st_v.get(),
             "div_2nd_h": div_2nd_h.get(),
             "div_2nd_v": div_2nd_v.get(),
             "div_3rd_h": div_3rd_h.get(),

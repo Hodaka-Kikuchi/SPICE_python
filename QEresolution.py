@@ -79,8 +79,10 @@ def calcresolution(A_sets,QE_sets,bpe,fixe,hw,Hfocus,num_ana,entry_values):
     # system設定に基づいてy軸の設定を変更
     if view_mode == 'left':
         EM = -1
+        EA = -1
     elif view_mode == 'right':
         EM = 1
+        EA = 1
 
     if fixe==0: # ei fix
         Ei = bpe
@@ -102,7 +104,7 @@ def calcresolution(A_sets,QE_sets,bpe,fixe,hw,Hfocus,num_ana,entry_values):
 
     thetaM = -C1 * EM
     thetaS = A2 / 2
-    thetaA = -C3 * EM
+    thetaA = -C3 * EA
     
     phi = np.degrees(np.arctan2(-kf * np.sin(np.radians(2 * thetaS)), ki - kf * np.cos(np.radians(2 * thetaS))))
 
@@ -168,6 +170,8 @@ def calcresolution(A_sets,QE_sets,bpe,fixe,hw,Hfocus,num_ana,entry_values):
     B[2, 5] = -1
     B[3, 0] = 2 * 2.072142 * ki
     B[3, 3] = -2 * 2.072142 * kf
+    
+    B = -B
 
     C[0, 0] = 1 / 2
     C[0, 1] = 1 / 2
@@ -194,6 +198,7 @@ def calcresolution(A_sets,QE_sets,bpe,fixe,hw,Hfocus,num_ana,entry_values):
     M = np.linalg.inv(Minv)
     
     # RM 行列の設定
+    """
     RM = np.zeros((4, 4))  # 4x4 のゼロ行列で初期化
     RM[0, 0] = M[0, 0]
     RM[1, 0] = M[1, 0]
@@ -210,6 +215,15 @@ def calcresolution(A_sets,QE_sets,bpe,fixe,hw,Hfocus,num_ana,entry_values):
     RM[3, 3] = M[2, 2]
     RM[3, 1] = M[2, 1]
     RM[1, 3] = M[1, 2]
+    """
+    RM = [[M[0, 0],M[0, 1],M[0, 3],M[0, 2]],
+          [M[1, 0],M[1, 1],M[1, 3],M[1, 2]],
+          [M[3, 0],M[3, 1],M[3, 3],M[3, 2]],
+          [M[2, 0],M[2, 1],M[2, 3],M[2, 2]]]
+    
+    # 軸 2↔3 をスワップするインデックス
+    # swap = [0, 1, 3, 2]
+    # RM = M[np.ix_(swap, swap)]
 
     # サンプルモザイクを入れた場合の計算
     # Minv の再計算
@@ -259,7 +273,7 @@ def calcresolution(A_sets,QE_sets,bpe,fixe,hw,Hfocus,num_ana,entry_values):
                 A -= (RM[0, 1]**2) / correction
                 C -= (RM[0, 2]**2) / correction
                 B -= 2 * (RM[0, 1] * RM[0, 2]) / correction
-
+        
         return A, B, C, D, E, F
 
     # 楕円をプロットする関数
