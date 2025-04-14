@@ -1,4 +1,4 @@
-#cd C:\DATA_HK\python\SPICE_python
+# cd C:\DATA_HK\python\SPICE_python
 # 右上にバージョン情報を表示
 __version__ = '1.7.0'
 """

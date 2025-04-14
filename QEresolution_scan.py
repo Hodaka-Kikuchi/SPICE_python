@@ -10,7 +10,10 @@ from matplotlib.widgets import Slider
 from scipy.optimize import minimize_scalar
 from scipy.optimize import minimize
 
-def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,initial_index=0):
+from PIL import Image  # GIF 保存のために必要
+
+def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,initial_index=0,save_gif=False,gif_name="resolution.gif"):
+    # save_gifがTrueだと保存、falseだと非保存
 
     # INIファイルから設定を読み込む
     config = configparser.ConfigParser()
@@ -55,6 +58,9 @@ def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,init
     # スライダー設定
     ax_slider = plt.axes([0.25, 0.10, 0.65, 0.03], facecolor='lightgoldenrodyellow')
     slider = Slider(ax_slider, 'scan number', 1, len(A_sets) , valinit=initial_index+1, valstep=1)
+    
+    # フレーム保存用リスト
+    frames = []
     
     # グラフのタイトル（楕円の説明）
     ax.set_title("red circle : $Q_{\\parallel}$, blue circle : $Q_{\\perp}$", fontsize=12)
@@ -366,6 +372,13 @@ def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,init
         ax.set_xlim([-Xrange_lim, Xrange_lim])
         ax.set_ylim([-Zrange_lim, Zrange_lim])
         ax.grid(True)
+        
+        # フレーム保存（GIF用）
+        if save_gif:
+            fig.canvas.draw()
+            image = np.frombuffer(fig.canvas.tostring_rgb(), dtype=np.uint8)
+            image = image.reshape(fig.canvas.get_width_height()[::-1] + (3,))
+            frames.append(Image.fromarray(image))
 
         # プロットの表示
         plt.draw()
@@ -386,3 +399,9 @@ def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,init
 
     # キーイベントを設定
     fig.canvas.mpl_connect('key_press_event', on_key)
+    
+    if save_gif:
+        for val in range(1, len(A_sets) + 1):
+            slider.set_val(val)
+        frames[0].save(gif_name, save_all=True, append_images=frames[1:], duration=100, loop=0)
+        print(f"GIF 保存完了: {gif_name}")
