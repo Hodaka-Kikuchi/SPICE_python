@@ -128,7 +128,8 @@ def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,init
             L=sample_to_analyzer
             W=analyzer_width*num_ana*np.sin(np.radians(A3))
             af=2 * np.degrees(np.arctan((W / 2) / L))
-            alpha3 = (1/12)**(1/2)*af / 180 * pi * 0.4246609 #* 8*np.log(2)
+            #alpha3 = div_3rd_h / 60 / 180 * pi * 0.4246609 * (8*np.log(2)/12)**(1/2)
+            alpha3 = af / 180 * pi * 0.4246609 * (8*np.log(2)/12)**(1/2)
         
         alpha4 = div_4th_h / 60 / 180 * pi * 0.4246609
         #beta1 = alpha1
@@ -192,11 +193,11 @@ def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,init
         # HFまでreslibと一致
         if Hfocus == 1:
             P = np.linalg.inv(HF)
-            P[4, 4] = 12 / ((kf * af / 180 * pi) ** 2)
+            P[4, 4] = (1 / (kf * alpha3)) ** 2
             P[3, 4] = 0
-            P[3, 3] = 12*(np.tan(np.radians(thetaA)) / (etaA * kf)) ** 2
+            P[3, 3] = (np.tan(np.radians(thetaA)) / (etaA * kf)) ** 2
+            P[4, 3] = 0
             Pinv = np.linalg.inv(P)
-            Pinv[4, 3] = 0
             Minv = B @ Pinv @ B.T
         if Hfocus == 0:
             Minv = B @ HF @ B.T
