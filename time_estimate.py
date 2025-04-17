@@ -104,7 +104,7 @@ def constetime(flux_Ei, flux_cps, bpe, fixe, hw_cal,h_ini,k_ini,l_ini,h_fin,k_fi
         cps_ef = interp_func(np.array([Ef]))
         
         TE = mcu * cps_ef / cps_ei * len(l_tab)
-    print(len(l_tab),TE)
+    #print(len(l_tab),TE)
     # 60で割った商と余りを計算
     hour, min = divmod(TE, 60)
    

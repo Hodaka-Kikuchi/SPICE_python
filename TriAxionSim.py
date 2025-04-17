@@ -1,6 +1,6 @@
 # cd C:\DATA_HK\python\SPICE_python
 # 右上にバージョン情報を表示
-__version__ = '1.8.0'
+__version__ = '1.9.0'
 """
 セマンティック バージョニング (Semantic Versioning)
 セマンティック バージョニング（セムバ―、SemVer）は、バージョン番号を「MAJOR.MINOR.PATCH」の形式で表します。それぞれの部分には以下のような意味があります：
@@ -391,6 +391,7 @@ from specfigscan import plot_spectrometer #
 from fittingLC import fit_lattice_constants
 from QEresolution import calcresolution
 from QEresolution_scan import calcresolution_scan
+from QEresolution_scan_save import calcresolution_save
 from fig_reciprocal_space import plot_reciprocal_space
 
 from specfigscan_gif import plot_spectrometer_with_gif #画像をgif保存したいとき
@@ -2206,6 +2207,28 @@ def constQscan_show_table():
     Hfocus = calc_hf.get()
     num_ana = float(acna.get())
     
+    global reso_mat_cQ,col_cond_cQ,scan_cond_cQ
+    # Entry ウィジェットの値を辞書にまとめる
+    entry_values_cQ = {
+        #"div_1st_m": div_1st_m.get(),
+        "div_1st_h": div_1st_h.get(),
+        "div_1st_v": div_1st_v.get(),
+        "div_2nd_h": div_2nd_h.get(),
+        "div_2nd_v": div_2nd_v.get(),
+        "div_3rd_h": div_3rd_h.get(),
+        "div_3rd_v": div_3rd_v.get(),
+        "div_4th_h": div_4th_h.get(),
+        "div_4th_v": div_4th_v.get(),
+        "mos_mono_h": mos_mono_h.get(),
+        "mos_mono_v": mos_mono_v.get(),
+        "mos_sam_h": mos_sam_h.get(),
+        "mos_sam_v": mos_sam_v.get(),
+        "mos_ana_h": mos_ana_h.get(),
+        "mos_ana_v": mos_ana_v.get(),
+    }
+    
+    reso_mat_cQ,col_cond_cQ,scan_cond_cQ = calcresolution_save(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values_cQ) # reso matの計算のみ
+    
     if fig_reci.get()==1:
         # 逆格子空間のki,kf,τベクトルを示す。
         params = get_parameters()
@@ -2251,41 +2274,16 @@ def constQscan_show_table():
         cphw = float(acbe.get())
         cp = np.array([cph,cpk,cpl])
         
-        fixe=float(eief.get())
-        bpe = float(Energy.get())
-        bpc2 = float(bp_c2.get())
-        
         plot_reciprocal_space(bpe,bpc2,cphw,cp,fixe,sv1,sv2,RLtable,A_sets,C_sets,QE_sets)
         #plot_reciprocal_space_with_gif(bpe,bpc2,cphw,cp,fixe,sv1,sv2,RLtable,A_sets,C_sets,QE_sets)
     
     if fig_reso.get()==1:
-        bpe = float(Energy.get())
-        fixe=float(eief.get())
-        
-        # Entry ウィジェットの値を辞書にまとめる
-        entry_values = {
-            #"div_1st_m": div_1st_m.get(),
-            "div_1st_h": div_1st_h.get(),
-            "div_1st_v": div_1st_v.get(),
-            "div_2nd_h": div_2nd_h.get(),
-            "div_2nd_v": div_2nd_v.get(),
-            "div_3rd_h": div_3rd_h.get(),
-            "div_3rd_v": div_3rd_v.get(),
-            "div_4th_h": div_4th_h.get(),
-            "div_4th_v": div_4th_v.get(),
-            "mos_mono_h": mos_mono_h.get(),
-            "mos_mono_v": mos_mono_v.get(),
-            "mos_sam_h": mos_sam_h.get(),
-            "mos_sam_v": mos_sam_v.get(),
-            "mos_ana_h": mos_ana_h.get(),
-            "mos_ana_v": mos_ana_v.get(),
-        }
-        calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values)
+        calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values_cQ) # resoグラフ出力
         #calcresolution_scan_with_gif(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values)
 
     plt.show()
     
-    return angletable2
+    return angletable2,reso_mat_cQ,col_cond_cQ,scan_cond_cQ
 
 # ボタンの作成
 button = ttk.Button(tab_002a, text="calc", command=constQscan_show_table)
@@ -2683,6 +2681,29 @@ def conostEscan_show_table():
         tree.heading(col, text=col)
         tree.column(col, width=80, anchor="center")
     
+    Hfocus = calc_hf.get()
+    num_ana = float(acna.get())
+    
+    global reso_mat_cE,col_cond_cE,scan_cond_cE
+    # Entry ウィジェットの値を辞書にまとめる
+    entry_values_cE = {
+        #"div_1st_m": div_1st_m.get(),
+        "div_1st_h": div_1st_h.get(),
+        "div_1st_v": div_1st_v.get(),
+        "div_2nd_h": div_2nd_h.get(),
+        "div_2nd_v": div_2nd_v.get(),
+        "div_3rd_h": div_3rd_h.get(),
+        "div_3rd_v": div_3rd_v.get(),
+        "div_4th_h": div_4th_h.get(),
+        "div_4th_v": div_4th_v.get(),
+        "mos_mono_h": mos_mono_h.get(),
+        "mos_mono_v": mos_mono_v.get(),
+        "mos_sam_h": mos_sam_h.get(),
+        "mos_sam_v": mos_sam_v.get(),
+        "mos_ana_h": mos_ana_h.get(),
+        "mos_ana_v": mos_ana_v.get(),
+    }
+    
     A_sets = []  # A_setsリストを初期化
     QE_sets = []
     C_sets = []
@@ -2743,14 +2764,13 @@ def conostEscan_show_table():
             round(results['nu'],4)>float(hwl9t.get())):
             tree.tag_configure("blue", foreground="blue")  # 'red' タグを設定
             tree.item(item_id, tags=("blue",))  # 行に 'red' タグを適用
-        
+            
+    reso_mat_cE,col_cond_cE,scan_cond_cE = calcresolution_save(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values_cE) # reso matの計算のみ
+    
     if fig_spec.get()==1:
         # プロット関数を呼び出し
         #plot_spectrometer_with_gif(A_sets,QE_sets)
         plot_spectrometer(A_sets,QE_sets)
-    
-    Hfocus = calc_hf.get()
-    num_ana = float(acna.get())
     
     if fig_reci.get()==1:
         # 逆格子空間のki,kf,τベクトルを示す。
@@ -2805,28 +2825,7 @@ def conostEscan_show_table():
         #plot_reciprocal_space_with_gif(bpe,bpc2,cphw,cp,fixe,sv1,sv2,RLtable,A_sets,C_sets,QE_sets)
     
     if fig_reso.get()==1:
-        bpe = float(Energy.get())
-        fixe=float(eief.get())
-        
-        # Entry ウィジェットの値を辞書にまとめる
-        entry_values = {
-            #"div_1st_m": div_1st_m.get(),
-            "div_1st_h": div_1st_h.get(),
-            "div_1st_v": div_1st_v.get(),
-            "div_2nd_h": div_2nd_h.get(),
-            "div_2nd_v": div_2nd_v.get(),
-            "div_3rd_h": div_3rd_h.get(),
-            "div_3rd_v": div_3rd_v.get(),
-            "div_4th_h": div_4th_h.get(),
-            "div_4th_v": div_4th_v.get(),
-            "mos_mono_h": mos_mono_h.get(),
-            "mos_mono_v": mos_mono_v.get(),
-            "mos_sam_h": mos_sam_h.get(),
-            "mos_sam_v": mos_sam_v.get(),
-            "mos_ana_h": mos_ana_h.get(),
-            "mos_ana_v": mos_ana_v.get(),
-        }
-        calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values)
+        calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values_cE)
         #calcresolution_scan_with_gif(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values)
         
     plt.show()
@@ -3370,18 +3369,21 @@ def save_cQ_table():
     )
 
     if file_path:
-        with open(file_path, mode='w', newline='') as file:
-            writer = csv.writer(file)
+        try:
+            with open(file_path, mode='w', newline='') as file:
+                writer = csv.writer(file)
 
-            # ヘッダーを書き込む
-            header = ['hw','h','k','l','C1', 'A1', 'C2', 'A2', 'C3', 'A3', 'mu', 'nu']  # ヘッダー名を必要に応じて調整
-            writer.writerow(header)
+                # ヘッダーを書き込む
+                header = ['hw','h','k','l','C1', 'A1', 'C2', 'A2', 'C3', 'A3', 'mu', 'nu']  # ヘッダー名を必要に応じて調整
+                writer.writerow(header)
 
-            # angletable2 の各結果を CSV に書き込む
-            for results in angletable2:
-                # results は辞書なので、values() で値だけ取り出してタプルにする
-                values = tuple(results.values())
-                writer.writerow(values)
+                # angletable2 の各結果を CSV に書き込む
+                for results in angletable2:
+                    # results は辞書なので、values() で値だけ取り出してタプルにする
+                    values = tuple(results.values())
+                    writer.writerow(values)
+        except Exception as e:
+            messagebox.showerror("保存エラー", f"ファイルの保存中にエラーが発生しました:\n{e}")
 
 def save_cE_table():
 
@@ -3393,26 +3395,101 @@ def save_cE_table():
     )
 
     if file_path:
-        with open(file_path, mode='w', newline='') as file:
-            writer = csv.writer(file)
+        try:
+            with open(file_path, mode='w', newline='') as file:
+                writer = csv.writer(file)
 
-            # ヘッダーを書き込む
-            header = ['hw','h','k','l','C1', 'A1', 'C2', 'A2', 'C3', 'A3', 'mu', 'nu']  # ヘッダー名を必要に応じて調整
-            writer.writerow(header)
+                # ヘッダーを書き込む
+                header = ['hw','h','k','l','C1', 'A1', 'C2', 'A2', 'C3', 'A3', 'mu', 'nu']  # ヘッダー名を必要に応じて調整
+                writer.writerow(header)
 
-            # angletable2 の各結果を CSV に書き込む
-            for results in angletable3:
-                # results は辞書なので、values() で値だけ取り出してタプルにする
-                values = tuple(results.values())
-                writer.writerow(values)
+                # angletable2 の各結果を CSV に書き込む
+                for results in angletable3:
+                    # results は辞書なので、values() で値だけ取り出してタプルにする
+                    values = tuple(results.values())
+                    writer.writerow(values)
+        except Exception as e:
+            messagebox.showerror("保存エラー", f"ファイルの保存中にエラーが発生しました:\n{e}")
+                
+def save_cQ_resomat():
 
+    # 保存ダイアログを表示してファイル名を取得
+    file_path = filedialog.asksaveasfilename(
+        defaultextension=".csv",
+        filetypes=[("CSV files", "*.csv"), ("All files", "*.*")],
+        title="Save as CSV"
+    )
+
+    if file_path:
+        try:
+            with open(file_path, mode='w', newline='') as file:
+                writer = csv.writer(file)
+
+                # ヘッダーを書き込む
+                header1 = ['div_1st_h','div_2nd_h','div_3rd_h','div_4th_h','div_1st_v','div_2nd_v','div_3rd_v','div_4th_v','mos_mono_h','mos_ana_h','mos_sam_h','mos_mono_v','mos_ana_v','mos_sam_v']  # ヘッダー名を必要に応じて調整
+                writer.writerow(header1)
+                writer.writerow(col_cond_cQ)
+
+                # この各結果を CSV に書き込む
+                for i in range(len(scan_cond_cQ[0])):  # または len(scan_cond[0])
+                    header2 = ['A1','A2','A3','Ei','Ef','hw','h','k','l']
+                    writer.writerow(header2)
+                    row = scan_cond_cQ[:, i]  # 1列（スキャン条件1セット）
+                    writer.writerow(row)
+                    header3 = ['resoluation matrix (Qpara, Qperp, hw, Qz)']
+                    writer.writerow(header3)
+                    # 分解能行列を4行4列でCSVに出力
+                    reso = reso_mat_cQ[:, :, i]  # shape: (4, 4)
+                    for row in reso:
+                        writer.writerow(row)  # → [a11, a12, a13, a14] のように1行ずつ書かれる
+        except Exception as e:
+            messagebox.showerror("保存エラー", f"ファイルの保存中にエラーが発生しました:\n{e}")
+
+def save_cE_resomat():
+
+    # 保存ダイアログを表示してファイル名を取得
+    file_path = filedialog.asksaveasfilename(
+        defaultextension=".csv",
+        filetypes=[("CSV files", "*.csv"), ("All files", "*.*")],
+        title="Save as CSV"
+    )
+
+    if file_path:
+        try:
+            with open(file_path, mode='w', newline='') as file:
+                writer = csv.writer(file)
+
+                # ヘッダーを書き込む
+                header1 = ['div_1st_h','div_2nd_h','div_3rd_h','div_4th_h','div_1st_v','div_2nd_v','div_3rd_v','div_4th_v','mos_mono_h','mos_ana_h','mos_sam_h','mos_mono_v','mos_ana_v','mos_sam_v']  # ヘッダー名を必要に応じて調整
+                writer.writerow(header1)
+                writer.writerow(col_cond_cE)
+
+                # この各結果を CSV に書き込む
+                for i in range(len(scan_cond_cE[0])):  # または len(scan_cond[0])
+                    header2 = ['A1','A2','A3','Ei','Ef','hw','h','k','l']
+                    writer.writerow(header2)
+                    row = scan_cond_cE[:, i]  # 1列（スキャン条件1セット）
+                    writer.writerow(row)
+                    header3 = ['resoluation matrix (Qpara, Qperp, hw, Qz)']
+                    writer.writerow(header3)
+                    # 分解能行列を4行4列でCSVに出力
+                    reso = reso_mat_cE[:, :, i]  # shape: (4, 4)
+                    for row in reso:
+                        writer.writerow(row)  # → [a11, a12, a13, a14] のように1行ずつ書かれる
+        except Exception as e:
+            messagebox.showerror("保存エラー", f"ファイルの保存中にエラーが発生しました:\n{e}")
+            
 #fileメニュー(save)
 filemenu2 = tk.Menu(menubar,tearoff=0)
 menubar.add_cascade(label="output",menu=filemenu2)
 #fileメニュー(save)
-filemenu2.add_command(label="const Q scan",command=save_cQ_table)
+filemenu2.add_command(label="const Q scan table",command=save_cQ_table)
 #fileメニュー(save)
-filemenu2.add_command(label="const E scan",command=save_cE_table)
+filemenu2.add_command(label="const E scan table",command=save_cE_table)
+#fileメニュー(save)
+filemenu2.add_command(label="const Q scan resolution matrix",command=save_cQ_resomat)
+#fileメニュー(save)
+filemenu2.add_command(label="const E scan resolution matrix",command=save_cE_resomat)
 
 #fileメニュー(exit)
 filemenu3 = tk.Menu(menubar,tearoff=0)
