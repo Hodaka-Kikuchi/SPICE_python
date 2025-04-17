@@ -12,7 +12,7 @@ from scipy.optimize import minimize
 
 from PIL import Image  # GIF 保存のために必要
 
-def calcresolution_save(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values):
+def calcresolution_save(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values):
     # save_gifがTrueだと保存、falseだと非保存
 
     # INIファイルから設定を読み込む
@@ -30,7 +30,7 @@ def calcresolution_save(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values):
     view_mode = config['settings']['system']
     
     # divergenceの読み出し
-    #div_1st_m = float(entry_values.get("div_1st_m"))
+    div_1st_m = float(entry_values.get("div_1st_m"))
     div_1st_h = float(entry_values.get("div_1st_h"))
     div_1st_v = float(entry_values.get("div_1st_v"))
     div_2nd_h = float(entry_values.get("div_2nd_h"))
@@ -51,6 +51,7 @@ def calcresolution_save(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values):
     analyzer_width = float(config['settings']['analyzer_width'])
 
     reso_mat = np.zeros((4,4,len(A_sets)))
+    col_cond = np.zeros((14,len(A_sets)))
     scan_cond = np.zeros((9,len(A_sets)))
     
     # matrix.shape[0]. shape はタプル (行数, 列数). shape[0] が行数、shape[1] が列数
@@ -93,25 +94,31 @@ def calcresolution_save(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values):
         #lamda = (81.81 / Ei)**(1/2)
         # 0.4246609 = 1/(2*sqrt(2*log(2)))
         #alpha1 = div_1st_m * theta0 * lamda * ((2*np.log(2))**(1/2)) / (3*(1/2)) / 180 * pi * 0.4246609
-        alpha1 = div_1st_h / 60 / 180 * pi * 0.4246609
+        if Ni_mir == 0:
+            alpha1 = div_1st_h / 60 / 180 * pi * 0.4246609
+            beta1 = div_1st_v / 60 / 180 * pi * 0.4246609 
+        elif Ni_mir == 1:
+            alpha1 = div_1st_m*2*arcsin(0.0219*(81.81/Ei)**(1/2)/(4*pi))/pi*180*60*0.4246609 # NiのQcは0.0219
+            div_1st_h = div_1st_m*2*arcsin(0.0219*(81.81/Ei)**(1/2)/(4*pi))/pi*180*60
+            beta1 = alpha1
+            div_1st_v = div_1st_h
         alpha2 = div_2nd_h / 60 / 180 * pi * 0.4246609
         # focusingの場合式が異なる。
         if Hfocus==0:
-            col_cond=[div_1st_h,div_2nd_h,div_3rd_h,div_4th_h,div_1st_v,div_2nd_v,div_3rd_v,div_4th_v,mos_mono_h,mos_ana_h,mos_sam_h,mos_mono_v,mos_ana_v,mos_sam_v]
             alpha3 = div_3rd_h / 60 / 180 * pi * 0.4246609
         elif Hfocus==1:
             L=sample_to_analyzer
             W=analyzer_width*num_ana*np.sin(np.radians(A3))
             af=2 * np.degrees(np.arctan((W / 2) / L))
-            col_cond=[div_1st_h,div_2nd_h,af*60,div_4th_h,div_1st_v,div_2nd_v,div_3rd_v,div_4th_v,mos_mono_h,mos_ana_h,mos_sam_h,mos_mono_v,mos_ana_v,mos_sam_v]
+            div_3rd_h = af*60
             #alpha3 = div_3rd_h / 60 / 180 * pi * 0.4246609 * (8*np.log(2)/12)**(1/2)
             alpha3 = af / 180 * pi * 0.4246609 * (8*np.log(2)/12)**(1/2)
         
+        col_cond[:,index]=[div_1st_h,div_2nd_h,div_3rd_h,div_4th_h,div_1st_v,div_2nd_v,div_3rd_v,div_4th_v,mos_mono_h,mos_ana_h,mos_sam_h,mos_mono_v,mos_ana_v,mos_sam_v]
+        
         scan_cond[:,index]=[A1,A2,A3,Ei,Ef,hw,QE_sets[index][1], QE_sets[index][2], QE_sets[index][3]]
         
-        alpha4 = div_4th_h / 60 / 180 * pi * 0.4246609
-        #beta1 = alpha1
-        beta1 = div_1st_v / 60 / 180 * pi * 0.4246609
+        alpha4 = div_4th_h / 60 / 180 * pi * 0.4246609    
         beta2 = div_2nd_v / 60 / 180 * pi * 0.4246609
         beta3 = div_3rd_v / 60 / 180 * pi * 0.4246609
         beta4 = div_4th_v / 60 / 180 * pi * 0.4246609

@@ -108,7 +108,7 @@ root=tk.Tk()
 root.title(f"TriAxionSim ver: {__version__}")
 # TriAxionSim: 三軸 (triple-axis) と「軌跡」や「軸」 (axion) 、Simulationを意識
 #windowのサイズ指定
-root.geometry("550x840")#550*840
+root.geometry("560x850")#550*840
 
 # ロゴを設定
 # 実行時のリソースパスを設定
@@ -195,11 +195,16 @@ def load_values_from_ini():
     # eiefの初期値を設定
     eief.set(eief_value)
     
+    # ラジオボタンの初期状態を読み込む
+    w_antiw_value = int(config['instrument'].get('w_antiw', '1'))  # 1がデフォルト
+    # w_antiwの初期値を設定
+    w_antiw.set(w_antiw_value)
+    
     # ラベルの自動更新
     update_label()
     # collimator & mosaic
-    #div_1st_m.delete(0, tk.END)  # 既存の値をクリア
-    #div_1st_m.insert(0, config['instrument'].get('div_1st_m', '1.2'))
+    div_1st_m.delete(0, tk.END)  # 既存の値をクリア
+    div_1st_m.insert(0, config['instrument'].get('div_1st_m', '1.2'))
     div_1st_h.delete(0, tk.END)  # 既存の値をクリア
     div_1st_h.insert(0, config['instrument'].get('div_1st_h', '80'))
     div_1st_v.delete(0, tk.END)  # 既存の値をクリア
@@ -277,6 +282,9 @@ def load_values_from_ini():
     calc_hf_value = int(config['option'].get('calc_hf', '1'))  # 1がデフォルト
     # calc_hfの初期値を設定
     calc_hf.set(calc_hf_value)
+    # gmの初期値を設定
+    gm_value = int(config['option'].get('gm', '1'))  # 1がデフォルト
+    gm.set(gm_value)
     
     # fig_resoの初期値を設定
     fig_reci_value = int(config['option'].get('fig_reci', '1'))  # 1がデフォルト
@@ -336,7 +344,8 @@ def save_values_to_ini():
     # 'instrument'セクションを更新
     config['instrument'].update({
         'eief': str(eief.get()),  # ラジオボタンの状態を保存
-        #'div_1st_m': div_1st_m.get(),
+        'w_antiw': str(w_antiw.get()), 
+        'div_1st_m': div_1st_m.get(),
         "div_1st_h": div_1st_h.get(),
         "div_1st_v": div_1st_v.get(),
         'div_2nd_h': div_2nd_h.get(),
@@ -368,12 +377,13 @@ def save_values_to_ini():
         'blade_num': acna.get(),
     })
     
-    # 'sample'セクションを更新
+    # 'option'セクションを更新
     config['option'].update({
         'fig_spec': str(fig_spec.get()),
         'fig_reso': str(fig_reso.get()),
         'fig_reci': str(fig_reci.get()),
         'calc_hf': str(calc_hf.get()),
+        'gm': str(gm.get()),
     })
     
     # INIファイルに書き込み
@@ -861,6 +871,7 @@ frame4.columnconfigure(4, weight=1)
 frame4.columnconfigure(5, weight=1)
 frame4.columnconfigure(6, weight=1)
 frame4.columnconfigure(7, weight=1)
+frame4.columnconfigure(8, weight=1)
 frame4.rowconfigure(0, weight=1)
 frame4.rowconfigure(1, weight=1)
 
@@ -886,40 +897,49 @@ if eief.get()==0:
     bpl1 = tk.Label(frame4,text='Ei (meV)')
 elif eief.get()==1:
     bpl1 = tk.Label(frame4,text='Ef (meV)')
-bpl1.grid(row=0, column=1,sticky="NSEW")
+bpl1.grid(row=0, column=2,sticky="NSEW")
+
+# チェック有無変数
+w_antiw = tk.IntVar()
+# ラジオボタンを作成し、commandにupdate_labelを設定
+rdo_configuration0 = tk.Radiobutton(frame4, value=0, variable=w_antiw, text='W', width=15)
+rdo_configuration0.grid(row=0, column=1, sticky="NSEW")
+
+rdo_configuration1 = tk.Radiobutton(frame4, value=1, variable=w_antiw, text='anti-W', width=15)
+rdo_configuration1.grid(row=1, column=1, sticky="NSEW")
 
 Energy = ttk.Entry(frame4)
-Energy.grid(row=1, column=1,sticky="NSEW")
+Energy.grid(row=1, column=2,sticky="NSEW")
 
 bpl2 = tk.Label(frame4,text='h')
-bpl2.grid(row=0, column=2,sticky="NSEW")
+bpl2.grid(row=0, column=3,sticky="NSEW")
 bp_h = ttk.Entry(frame4)
-bp_h.grid(row=1, column=2,sticky="NSEW")
+bp_h.grid(row=1, column=3,sticky="NSEW")
 
 bpl3 = tk.Label(frame4,text='k')
-bpl3.grid(row=0, column=3,sticky="NSEW")
+bpl3.grid(row=0, column=4,sticky="NSEW")
 bp_k = ttk.Entry(frame4)
-bp_k.grid(row=1, column=3,sticky="NSEW")
+bp_k.grid(row=1, column=4,sticky="NSEW")
 
 bpl4 = tk.Label(frame4,text='l')
-bpl4.grid(row=0, column=4,sticky="NSEW")
+bpl4.grid(row=0, column=5,sticky="NSEW")
 bp_l = ttk.Entry(frame4)
-bp_l.grid(row=1, column=4,sticky="NSEW")
+bp_l.grid(row=1, column=5,sticky="NSEW")
 
 bpl5 = tk.Label(frame4,text='C2')
-bpl5.grid(row=0, column=5,sticky="NSEW")
+bpl5.grid(row=0, column=6,sticky="NSEW")
 bp_c2 = ttk.Entry(frame4)
-bp_c2.grid(row=1, column=5,sticky="NSEW")
+bp_c2.grid(row=1, column=7,sticky="NSEW")
 
 bpl6 = tk.Label(frame4,text='μ')
-bpl6.grid(row=0, column=6,sticky="NSEW")
+bpl6.grid(row=0, column=7,sticky="NSEW")
 bp_mu = ttk.Entry(frame4)
-bp_mu.grid(row=1, column=6,sticky="NSEW")
+bp_mu.grid(row=1, column=7,sticky="NSEW")
 
 bpl7 = tk.Label(frame4,text='ν')
-bpl7.grid(row=0, column=7,sticky="NSEW")
+bpl7.grid(row=0, column=8,sticky="NSEW")
 bp_nu = ttk.Entry(frame4)
-bp_nu.grid(row=1, column=7,sticky="NSEW")
+bp_nu.grid(row=1, column=8,sticky="NSEW")
 
 # select feature
 # ファイル選択のフレームの作成と設置
@@ -1212,9 +1232,12 @@ def on_anglecalc():
     # Ei or Ef fixの判定
     fixe=float(eief.get())
     
+    # W or antiW fixの判定
+    w_config=float(w_antiw.get())
+    
     # angleを計算
     angletable = angle_calc(
-        astar,bstar,cstar,U,B,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe
+        astar,bstar,cstar,U,B,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe,w_config
     )
     
     return angletable
@@ -1389,6 +1412,7 @@ def calculate_angle():
         # プロット関数を呼び出し
         plot_spectrometer(A_sets,QE_sets)
     
+    Ni_mir = gm.get()
     Hfocus = calc_hf.get()
     num_ana = float(acna.get())
     
@@ -1447,7 +1471,7 @@ def calculate_angle():
         fixe=float(eief.get())
         # Entry ウィジェットの値を辞書にまとめる
         entry_values = {
-            #"div_1st_m": div_1st_m.get(),
+            "div_1st_m": div_1st_m.get(),
             "div_1st_h": div_1st_h.get(),
             "div_1st_v": div_1st_v.get(),
             "div_2nd_h": div_2nd_h.get(),
@@ -1463,7 +1487,7 @@ def calculate_angle():
             "mos_ana_h": mos_ana_h.get(),
             "mos_ana_v": mos_ana_v.get(),
         }
-        calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values)
+        calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values)
     
     plt.show()
 
@@ -1576,7 +1600,7 @@ acl10.grid(row=2, column=1,columnspan=7,sticky="NSEW")
 frame6 = ttk.Labelframe(root,text= "instrumental condition")
 frame6.grid(row=5,column=0,sticky="NSEW")
 
-frame6.columnconfigure(0, weight=5)
+frame6.columnconfigure(0, weight=6)
 frame6.columnconfigure(1, weight=4)
 frame6.columnconfigure(2, weight=1)
 frame6.rowconfigure(0, weight=1)
@@ -1589,45 +1613,52 @@ frame6a.columnconfigure(1, weight=1)
 frame6a.columnconfigure(2, weight=1)
 frame6a.columnconfigure(3, weight=1)
 frame6a.columnconfigure(4, weight=1)
+frame6a.columnconfigure(5, weight=1)
 frame6a.rowconfigure(0, weight=1)
 frame6a.rowconfigure(1, weight=1)
 frame6a.rowconfigure(2, weight=1)
 
-label1 = tk.Label(frame6a,text='H',width = 12)
-label1.grid(row=1, column=0,sticky="NSEW")
-label2 = tk.Label(frame6a,text='V',width = 12)
-label2.grid(row=2, column=0,sticky="NSEW")
-#label3 = tk.Label(frame6a,text='guide')
-#label3.grid(row=0, column=0,sticky="NSEW")
-#label3m = tk.Label(frame6a,text='m')
-#label3m.grid(row=1, column=0,sticky="NSEW")
+#チェック有無変数
+gm = tk.IntVar()
+# value=0にチェックを入れる
+gm.set(0)
+#label0 = tk.Label(frame6a,text='guide')
+#label0.grid(row=0, column=0,sticky="NSEW")
+guide_mirror = tk.Checkbutton(frame6a, variable=gm, text='58Ni')
+guide_mirror.grid(row=0, column=0,sticky="NSEW")
+label0m = tk.Label(frame6a,text='m')
+label0m.grid(row=1, column=0,sticky="NSEW")
+label1 = tk.Label(frame6a,text='H',width = 11)
+label1.grid(row=1, column=1,sticky="NSEW")
+label2 = tk.Label(frame6a,text='V',width = 11)
+label2.grid(row=2, column=1,sticky="NSEW")
 label3 = tk.Label(frame6a,text='1st col')
-label3.grid(row=0, column=1,sticky="NSEW")
+label3.grid(row=0, column=2,sticky="NSEW")
 label4 = tk.Label(frame6a,text='2nd col')
-label4.grid(row=0, column=2,sticky="NSEW")
+label4.grid(row=0, column=3,sticky="NSEW")
 label5 = tk.Label(frame6a,text='3rd col')
-label5.grid(row=0, column=3,sticky="NSEW")
+label5.grid(row=0, column=4,sticky="NSEW")
 label6 = tk.Label(frame6a,text='4th col')
-label6.grid(row=0, column=4,sticky="NSEW")
+label6.grid(row=0, column=5,sticky="NSEW")
 
-#div_1st_m = ttk.Entry(frame6a)
-#div_1st_m.grid(row=2, column=0,sticky="NSEW")
+div_1st_m = ttk.Entry(frame6a)
+div_1st_m.grid(row=2, column=0,sticky="NSEW")
 div_1st_h = ttk.Entry(frame6a)
-div_1st_h.grid(row=1, column=1,sticky="NSEW")
+div_1st_h.grid(row=1, column=2,sticky="NSEW")
 div_1st_v = ttk.Entry(frame6a)
-div_1st_v.grid(row=2, column=1,sticky="NSEW")
+div_1st_v.grid(row=2, column=2,sticky="NSEW")
 div_2nd_h = ttk.Entry(frame6a)
-div_2nd_h.grid(row=1, column=2,sticky="NSEW")
+div_2nd_h.grid(row=1, column=3,sticky="NSEW")
 div_2nd_v = ttk.Entry(frame6a)
-div_2nd_v.grid(row=2, column=2,sticky="NSEW")
+div_2nd_v.grid(row=2, column=3,sticky="NSEW")
 div_3rd_h = ttk.Entry(frame6a)
-div_3rd_h.grid(row=1, column=3,sticky="NSEW")
+div_3rd_h.grid(row=1, column=4,sticky="NSEW")
 div_3rd_v = ttk.Entry(frame6a)
-div_3rd_v.grid(row=2, column=3,sticky="NSEW")
+div_3rd_v.grid(row=2, column=4,sticky="NSEW")
 div_4th_h = ttk.Entry(frame6a)
-div_4th_h.grid(row=1, column=4,sticky="NSEW")
+div_4th_h.grid(row=1, column=5,sticky="NSEW")
 div_4th_v = ttk.Entry(frame6a)
-div_4th_v.grid(row=2, column=4,sticky="NSEW")
+div_4th_v.grid(row=2, column=5,sticky="NSEW")
 
 frame6b = ttk.Labelframe(frame6,text= "mosaic (unit : min)")
 frame6b.grid(row=0,column=1,sticky="NSEW")
@@ -1640,15 +1671,15 @@ frame6b.rowconfigure(0, weight=1)
 frame6b.rowconfigure(1, weight=1)
 frame6b.rowconfigure(2, weight=1)
 
-label1 = tk.Label(frame6b,text='H',width = 12)
+label1 = tk.Label(frame6b,text='H',width = 11)
 label1.grid(row=1, column=0,sticky="NSEW")
-label2 = tk.Label(frame6b,text='V',width = 12)
+label2 = tk.Label(frame6b,text='V',width = 11)
 label2.grid(row=2, column=0,sticky="NSEW")
-label7 = tk.Label(frame6b,text='monochro')
+label7 = tk.Label(frame6b,text='mono')
 label7.grid(row=0, column=1,sticky="NSEW")
 label8 = tk.Label(frame6b,text='sample')
 label8.grid(row=0, column=2,sticky="NSEW")
-label8 = tk.Label(frame6b,text='analyzer')
+label8 = tk.Label(frame6b,text='ana')
 label8.grid(row=0, column=3,sticky="NSEW")
 
 mos_mono_h = ttk.Entry(frame6b)
@@ -2079,9 +2110,11 @@ def constQscan_show_table():
                
     # Ei or Ef fixの判定
     fixe=float(eief.get())
+    # W or antiW fixの判定
+    w_config=float(w_antiw.get())
     
     global angletable2
-    angletable2 = angle_calc2(astar, bstar, cstar, U,B,UB, bpe, bpc2, bpmu, bpnu, bp, fixe, hw_ini, hw_fin, hw_inc, h_cal, k_cal, l_cal)
+    angletable2 = angle_calc2(astar, bstar, cstar, U,B,UB, bpe, bpc2, bpmu, bpnu, bp, fixe, w_config, hw_ini, hw_fin, hw_inc, h_cal, k_cal, l_cal)
     
     # mcuの取得
     mcu = float(cqs11.get())
@@ -2203,14 +2236,15 @@ def constQscan_show_table():
         # プロット関数を呼び出し
         #plot_spectrometer_with_gif(A_sets,QE_sets)
         plot_spectrometer(A_sets,QE_sets)
-
+        
+    Ni_mir = gm.get()
     Hfocus = calc_hf.get()
     num_ana = float(acna.get())
     
     global reso_mat_cQ,col_cond_cQ,scan_cond_cQ
     # Entry ウィジェットの値を辞書にまとめる
     entry_values_cQ = {
-        #"div_1st_m": div_1st_m.get(),
+        "div_1st_m": div_1st_m.get(),
         "div_1st_h": div_1st_h.get(),
         "div_1st_v": div_1st_v.get(),
         "div_2nd_h": div_2nd_h.get(),
@@ -2227,7 +2261,7 @@ def constQscan_show_table():
         "mos_ana_v": mos_ana_v.get(),
     }
     
-    reso_mat_cQ,col_cond_cQ,scan_cond_cQ = calcresolution_save(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values_cQ) # reso matの計算のみ
+    reso_mat_cQ,col_cond_cQ,scan_cond_cQ = calcresolution_save(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cQ) # reso matの計算のみ
     
     if fig_reci.get()==1:
         # 逆格子空間のki,kf,τベクトルを示す。
@@ -2278,7 +2312,7 @@ def constQscan_show_table():
         #plot_reciprocal_space_with_gif(bpe,bpc2,cphw,cp,fixe,sv1,sv2,RLtable,A_sets,C_sets,QE_sets)
     
     if fig_reso.get()==1:
-        calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values_cQ) # resoグラフ出力
+        calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cQ) # resoグラフ出力
         #calcresolution_scan_with_gif(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values)
 
     plt.show()
@@ -2646,9 +2680,11 @@ def conostEscan_show_table():
 
     # Ei or Ef fixの判定
     fixe=float(eief.get())
+    # W or antiW fixの判定
+    w_config=float(w_antiw.get())
     
     global angletable3
-    angletable3 = angle_calc3(astar,bstar,cstar,U,B,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,hw_cal,h_ini,k_ini,l_ini,h_fin,k_fin,l_fin,h_inc,k_inc,l_inc)
+    angletable3 = angle_calc3(astar,bstar,cstar,U,B,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,w_config,hw_cal,h_ini,k_ini,l_ini,h_fin,k_fin,l_fin,h_inc,k_inc,l_inc)
     
     # mcuの取得
     mcu = float(ces11.get())
@@ -2681,13 +2717,14 @@ def conostEscan_show_table():
         tree.heading(col, text=col)
         tree.column(col, width=80, anchor="center")
     
+    Ni_mir = gm.get()
     Hfocus = calc_hf.get()
     num_ana = float(acna.get())
     
     global reso_mat_cE,col_cond_cE,scan_cond_cE
     # Entry ウィジェットの値を辞書にまとめる
     entry_values_cE = {
-        #"div_1st_m": div_1st_m.get(),
+        "div_1st_m": div_1st_m.get(),
         "div_1st_h": div_1st_h.get(),
         "div_1st_v": div_1st_v.get(),
         "div_2nd_h": div_2nd_h.get(),
@@ -2765,7 +2802,7 @@ def conostEscan_show_table():
             tree.tag_configure("blue", foreground="blue")  # 'red' タグを設定
             tree.item(item_id, tags=("blue",))  # 行に 'red' タグを適用
             
-    reso_mat_cE,col_cond_cE,scan_cond_cE = calcresolution_save(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values_cE) # reso matの計算のみ
+    reso_mat_cE,col_cond_cE,scan_cond_cE = calcresolution_save(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cE) # reso matの計算のみ
     
     if fig_spec.get()==1:
         # プロット関数を呼び出し
@@ -2825,7 +2862,7 @@ def conostEscan_show_table():
         #plot_reciprocal_space_with_gif(bpe,bpc2,cphw,cp,fixe,sv1,sv2,RLtable,A_sets,C_sets,QE_sets)
     
     if fig_reso.get()==1:
-        calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values_cE)
+        calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cE)
         #calcresolution_scan_with_gif(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values)
         
     plt.show()
@@ -3424,18 +3461,19 @@ def save_cQ_resomat():
         try:
             with open(file_path, mode='w', newline='') as file:
                 writer = csv.writer(file)
-
-                # ヘッダーを書き込む
-                header1 = ['div_1st_h','div_2nd_h','div_3rd_h','div_4th_h','div_1st_v','div_2nd_v','div_3rd_v','div_4th_v','mos_mono_h','mos_ana_h','mos_sam_h','mos_mono_v','mos_ana_v','mos_sam_v']  # ヘッダー名を必要に応じて調整
-                writer.writerow(header1)
-                writer.writerow(col_cond_cQ)
-
                 # この各結果を CSV に書き込む
                 for i in range(len(scan_cond_cQ[0])):  # または len(scan_cond[0])
+                    # ヘッダーを書き込む
+                    header1 = ['div_1st_h','div_2nd_h','div_3rd_h','div_4th_h','div_1st_v','div_2nd_v','div_3rd_v','div_4th_v','mos_mono_h','mos_ana_h','mos_sam_h','mos_mono_v','mos_ana_v','mos_sam_v']  # ヘッダー名を必要に応じて調整
+                    writer.writerow(header1)
+                    row_cond = col_cond_cQ[:, i]
+                    writer.writerow(row_cond)
+                    
                     header2 = ['A1','A2','A3','Ei','Ef','hw','h','k','l']
                     writer.writerow(header2)
-                    row = scan_cond_cQ[:, i]  # 1列（スキャン条件1セット）
-                    writer.writerow(row)
+                    row_scan = scan_cond_cQ[:, i]  # 1列（スキャン条件1セット）
+                    writer.writerow(row_scan)
+                    
                     header3 = ['resoluation matrix (Qpara, Qperp, hw, Qz)']
                     writer.writerow(header3)
                     # 分解能行列を4行4列でCSVに出力
@@ -3459,17 +3497,17 @@ def save_cE_resomat():
             with open(file_path, mode='w', newline='') as file:
                 writer = csv.writer(file)
 
-                # ヘッダーを書き込む
-                header1 = ['div_1st_h','div_2nd_h','div_3rd_h','div_4th_h','div_1st_v','div_2nd_v','div_3rd_v','div_4th_v','mos_mono_h','mos_ana_h','mos_sam_h','mos_mono_v','mos_ana_v','mos_sam_v']  # ヘッダー名を必要に応じて調整
-                writer.writerow(header1)
-                writer.writerow(col_cond_cE)
-
                 # この各結果を CSV に書き込む
                 for i in range(len(scan_cond_cE[0])):  # または len(scan_cond[0])
+                    header1 = ['div_1st_h','div_2nd_h','div_3rd_h','div_4th_h','div_1st_v','div_2nd_v','div_3rd_v','div_4th_v','mos_mono_h','mos_ana_h','mos_sam_h','mos_mono_v','mos_ana_v','mos_sam_v']  # ヘッダー名を必要に応じて調整
+                    writer.writerow(header1)
+                    row_cond = col_cond_cE[:, i]
+                    writer.writerow(row_cond)
+                    
                     header2 = ['A1','A2','A3','Ei','Ef','hw','h','k','l']
                     writer.writerow(header2)
-                    row = scan_cond_cE[:, i]  # 1列（スキャン条件1セット）
-                    writer.writerow(row)
+                    row_scan = scan_cond_cE[:, i]  # 1列（スキャン条件1セット）
+                    writer.writerow(row_scan)
                     header3 = ['resoluation matrix (Qpara, Qperp, hw, Qz)']
                     writer.writerow(header3)
                     # 分解能行列を4行4列でCSVに出力
@@ -3517,6 +3555,23 @@ else:
     messagebox.showerror("Error", "flux.dat does not exist in same directory.")
     flux_Ei = np.array([1, 50, 100]).T
     flux_cps = np.array([1, 1, 1]).T
+    
+# disableの切り替え定義
+def factor_toggle_guide_mirror():
+    if gm.get() == 1:
+        div_1st_m.config(state=tk.NORMAL)
+        div_1st_h.config(state=tk.DISABLED)
+        div_1st_v.config(state=tk.DISABLED)
+    elif gm.get() == 0:
+        div_1st_m.config(state=tk.DISABLED)
+        div_1st_h.config(state=tk.NORMAL)
+        div_1st_v.config(state=tk.NORMAL)
+
+# プログラム開始時に一度だけfactor_toggle_guide_mirrorを呼び出す
+factor_toggle_guide_mirror()
+
+# Radiobutton選択状態の変更時にfactor_toggle_guide_mirror関数を呼び出す
+gm.trace('w', lambda *args: factor_toggle_guide_mirror())
 
 #window状態の維持
 root.mainloop()

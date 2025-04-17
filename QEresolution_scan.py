@@ -12,7 +12,7 @@ from scipy.optimize import minimize
 
 from PIL import Image  # GIF 保存のために必要
 
-def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,initial_index=0,save_gif=False,gif_name="resolution.gif"):
+def calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values,initial_index=0,save_gif=False,gif_name="resolution.gif"):
     # save_gifがTrueだと保存、falseだと非保存
 
     # INIファイルから設定を読み込む
@@ -30,7 +30,7 @@ def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,init
     view_mode = config['settings']['system']
     
     # divergenceの読み出し
-    #div_1st_m = float(entry_values.get("div_1st_m"))
+    div_1st_m = float(entry_values.get("div_1st_m"))
     div_1st_h = float(entry_values.get("div_1st_h"))
     div_1st_v = float(entry_values.get("div_1st_v"))
     div_2nd_h = float(entry_values.get("div_2nd_h"))
@@ -118,8 +118,13 @@ def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,init
         #theta0 = 0.1 #(A^-1)
         #lamda = (81.81 / Ei)**(1/2)
         # 0.4246609 = 1/(2*sqrt(2*log(2)))
-        #alpha1 = div_1st_m * theta0 * lamda * ((2*np.log(2))**(1/2)) / (3*(1/2)) / 180 * pi * 0.4246609
-        alpha1 = div_1st_h / 60 / 180 * pi * 0.4246609
+        if Ni_mir == 0:
+            alpha1 = div_1st_h / 60 / 180 * pi * 0.4246609
+            beta1 = div_1st_v / 60 / 180 * pi * 0.4246609 
+        elif Ni_mir == 1:
+            alpha1 = div_1st_m*2*arcsin(0.0219*(81.81/Ei)**(1/2)/(4*pi))/pi*180*60*0.4246609 # NiのQcは0.0219
+            beta1 = alpha1
+            
         alpha2 = div_2nd_h / 60 / 180 * pi * 0.4246609
         # focusingの場合式が異なる。
         if Hfocus==0:
@@ -132,8 +137,6 @@ def calcresolution_scan(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values,init
             alpha3 = af / 180 * pi * 0.4246609 * (8*np.log(2)/12)**(1/2)
         
         alpha4 = div_4th_h / 60 / 180 * pi * 0.4246609
-        #beta1 = alpha1
-        beta1 = div_1st_v / 60 / 180 * pi * 0.4246609
         beta2 = div_2nd_v / 60 / 180 * pi * 0.4246609
         beta3 = div_3rd_v / 60 / 180 * pi * 0.4246609
         beta4 = div_4th_v / 60 / 180 * pi * 0.4246609
