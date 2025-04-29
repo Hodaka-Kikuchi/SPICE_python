@@ -9,6 +9,7 @@ import sys
 from matplotlib.widgets import Slider
 from scipy.optimize import minimize_scalar
 from scipy.optimize import minimize
+import pandas as pd
 
 from PIL import Image  # GIF 保存のために必要
 
@@ -203,10 +204,7 @@ def calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_valu
             Pinv = np.linalg.inv(P)
             Minv = B @ Pinv @ B.T
         if Hfocus == 0:
-            Minv = B @ HF @ B.T
-        # サンプルモザイクを入れた場合の計算
-        Minv[1, 1] += Q**2 * etaS**2# / (8 * np.log(2))
-        Minv[3, 3] += Q**2 * etaSp**2# / (8 * np.log(2))
+            Minv = B @ HF @ B.T #これもreslibと一致
         M = np.linalg.inv(Minv)
         
         # RM 行列の設定
@@ -220,9 +218,43 @@ def calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_valu
         # 軸 2↔3 をスワップするインデックス
         swap = [0, 1, 3, 2]
         RM = M[np.ix_(swap, swap)]
-
-        # RMは(q//,q⊥,hw,qz)における空間分布
         
+        # サンプルモザイクを入れた場合の計算
+        Minv = np.linalg.inv(RM)
+        Minv[1, 1] += Q**2 * etaS**2# / (8 * np.log(2))
+        Minv[3, 3] += Q**2 * etaSp**2# / (8 * np.log(2))
+        RM = np.linalg.inv(Minv)
+        
+        # RMは(q//,q⊥,hw,qz)における空間分布
+        """
+        # 保存するリスト
+        data_list = []
+
+        # ヘッダーと行列を順に追加する関数
+        def add_matrix_to_list(name, matrix):
+            data_list.append([f"=== {name} ==="])
+            for row in matrix:
+                data_list.append(list(row))
+            data_list.append([])  # 空行を挿入
+
+        # 追加していく
+        add_matrix_to_list('A', A)
+        add_matrix_to_list('B', B)
+        add_matrix_to_list('C', C)
+        #add_matrix_to_list('D', D)
+        add_matrix_to_list('G', G)
+        add_matrix_to_list('F', F)
+        add_matrix_to_list('HF', HF)
+        add_matrix_to_list('M', M)
+        add_matrix_to_list('Minv', Minv)
+        add_matrix_to_list('RM', RM)
+
+        # DataFrameに変換（短い行にはNaNが入る）
+        df = pd.DataFrame(data_list)
+
+        # CSV出力
+        df.to_csv('matrices_output.csv', index=False, header=False)
+        """
         # プロット範囲
         #Xrange_lim = 0.1
         #Zrange_lim = 0.5
@@ -245,6 +277,7 @@ def calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_valu
                 D = 0  # yの線形項
                 E = 0  # zの線形項
 
+
             F = -2 * log2
 
             # 消去された軸（影響を除外）を考慮
@@ -260,7 +293,6 @@ def calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_valu
                     A -= (RM[0, 1]**2) / correction
                     C -= (RM[0, 2]**2) / correction
                     B -= 2 * (RM[0, 1] * RM[0, 2]) / correction
-
             return A, B, C, D, E, F
 
         # 楕円をプロットする関数

@@ -10,11 +10,7 @@ from matplotlib.widgets import Slider
 from scipy.optimize import minimize_scalar
 from scipy.optimize import minimize
 
-from PIL import Image  # GIF 保存のために必要
-
 def calcresolution_save(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values):
-    # save_gifがTrueだと保存、falseだと非保存
-
     # INIファイルから設定を読み込む
     config = configparser.ConfigParser()
     # .exe化した場合に対応する
@@ -186,11 +182,7 @@ def calcresolution_save(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_valu
             Minv = B @ Pinv @ B.T
         if Hfocus == 0:
             Minv = B @ HF @ B.T
-        # サンプルモザイクを入れた場合の計算
-        Minv[1, 1] += Q**2 * etaS**2# / (8 * np.log(2))
-        Minv[3, 3] += Q**2 * etaSp**2# / (8 * np.log(2))
         M = np.linalg.inv(Minv)
-        
         # RM 行列の設定
         #RM = np.zeros((4, 4))  # 4x4 のゼロ行列で初期化
         """
@@ -202,6 +194,12 @@ def calcresolution_save(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_valu
         # 軸 2↔3 をスワップするインデックス
         swap = [0, 1, 3, 2]
         RM = M[np.ix_(swap, swap)]
+        
+        # サンプルモザイクを入れた場合の計算
+        Minv = np.linalg.inv(RM)
+        Minv[1, 1] += Q**2 * etaS**2# / (8 * np.log(2))
+        Minv[3, 3] += Q**2 * etaSp**2# / (8 * np.log(2))
+        RM = np.linalg.inv(Minv)
 
         # RMは(q//,q⊥,hw,qz)における空間分布
         
