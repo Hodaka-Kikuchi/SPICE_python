@@ -51,29 +51,31 @@ def calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_valu
     sample_to_analyzer = float(config['settings']['sample_to_analyzer'])
     analyzer_width = float(config['settings']['analyzer_width'])
     
-    # プロット設定
-    # グラフの描画
-    fig, ax = plt.subplots(figsize=(8, 5))
-    plt.subplots_adjust(left=0.15, bottom=0.25)  # 左の余白を削る
+    fig, axs = plt.subplots(2, 2, figsize=(10, 8))  # 2x2グリッドのサブプロット作成
+    plt.subplots_adjust(left=0.1, bottom=0.25, wspace=0.3, hspace=0.4)
 
-    # スライダー設定
+    # サブプロットの指定：左上 (0, 0)、右上 (0, 1)
+    ax1 = axs[0,0]
+    ax2 = axs[0,1]
+    ax3 = axs[1,0]
+
+    # スライダー設定（描画領域調整が必要）
     ax_slider = plt.axes([0.25, 0.10, 0.65, 0.03], facecolor='lightgoldenrodyellow')
-    slider = Slider(ax_slider, 'scan number', 1, len(A_sets) , valinit=initial_index+1, valstep=1)
+    slider = Slider(ax_slider, 'scan number', 1, len(A_sets), valinit=initial_index + 1, valstep=1)
     
     # フレーム保存用リスト
     frames = []
-    
-    # グラフのタイトル（楕円の説明）
-    ax.set_title("red circle : $Q_{\\parallel}$, blue circle : $Q_{\\perp}$", fontsize=12)
 
-    # 追加情報を ax.text で追加
-    ax.text(
-        0.5, 1.1,  # グラフの外に配置 (x=0.4, y=1.05)
+    # 楕円描画関数の中で ax1, ax2 に描くように変更
+    # 例: Q_parallel を ax1 に、Q_perp を ax2 に描画する
+    ax1.set_title("$Q_{\\parallel}$ vs ℏω ellipse", fontsize=12)
+    ax2.set_title("$Q_{\\perp}$ vs ℏω ellipse", fontsize=12)
+    ax3.set_title("$Q_{\\parallel}$ vs $Q_{\\perp}$ ellipse", fontsize=12)
+
+    # 初期タイトル
+    plt.suptitle(
         f'ℏω: {QE_sets[initial_index][0]} meV, h: {QE_sets[initial_index][1]}, k: {QE_sets[initial_index][2]}, l: {QE_sets[initial_index][3]}',
-        horizontalalignment='center',
-        verticalalignment='center',
-        transform=ax.transAxes,
-        fontsize=10
+        fontsize=12
     )
     
     def update(val):
@@ -83,7 +85,9 @@ def calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_valu
         
         
         # プロットを再描画
-        ax.clear()
+        ax1.clear()
+        ax2.clear()
+        ax3.clear()
         
         # system設定に基づいて角度の係数を変更
         EM = 1
@@ -276,7 +280,12 @@ def calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_valu
                 B = 2 * RM[1, 2]
                 D = 0  # yの線形項
                 E = 0  # zの線形項
-
+            elif plane == "xy":
+                A = RM[0, 0]
+                C = RM[1, 1]
+                B = 2 * RM[0, 1]
+                D = 0  # xの線形項
+                E = 0  # yの線形項
 
             F = -2 * log2
 
@@ -293,10 +302,17 @@ def calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_valu
                     A -= (RM[0, 1]**2) / correction
                     C -= (RM[0, 2]**2) / correction
                     B -= 2 * (RM[0, 1] * RM[0, 2]) / correction
+                    
+            elif plane == "xy":
+                correction = RM[2, 2]  # z軸の影響を除外
+                if correction != 0:
+                    A -= (RM[0, 2]**2) / correction
+                    C -= (RM[1, 2]**2) / correction
+                    B -= 2 * (RM[0, 2] * RM[1, 2]) / correction
             return A, B, C, D, E, F
 
         # 楕円をプロットする関数
-        def plot_ellipse(A, B, C, D, E, F, Xrange_lim, Zrange_lim, label, color,shift_x=0,shift_y=0):
+        def plot_ellipse(A, B, C, D, E, F, Xrange_lim, Zrange_lim, ax, label, color,shift_x=0,shift_y=0):
             x = np.linspace(-Xrange_lim, Xrange_lim, 500)
             z = np.linspace(-Zrange_lim, Zrange_lim, 500)
             X, Z = np.meshgrid(x, z)
@@ -320,6 +336,9 @@ def calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_valu
 
         # yz平面の楕円の係数
         A_yz, B_yz, C_yz, D_yz, E_yz, F_yz = ellipse_coefficients(RM, log2, plane="yz")
+        
+        # xy平面の楕円の係数
+        A_xy, B_xy, C_xy, D_xy, E_xy, F_xy = ellipse_coefficients(RM, log2, plane="xy")
 
         # 楕円球の係数行列 RM と楕円球の方程式
         def fun3(x, y, z, RM):
@@ -375,39 +394,57 @@ def calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_valu
         Zrange_lim=max_z*1.5
         
         # xz平面とyz平面の楕円を描画
-        plot_ellipse(A_xz, B_xz, C_xz, D_xz, E_xz, F_xz, Xrange_lim, Zrange_lim, label = "", color="red",shift_x=0, shift_y=0)
-        plot_ellipse(A_yz, B_yz, C_yz, D_yz, E_yz, F_yz, Xrange_lim, Zrange_lim, label = "", color="blue",shift_x=0, shift_y=0)
+        plot_ellipse(A_xz, B_xz, C_xz, D_xz, E_xz, F_xz, Xrange_lim, Zrange_lim, ax1, label = "", color="red",shift_x=0, shift_y=0)
+        plot_ellipse(A_yz, B_yz, C_yz, D_yz, E_yz, F_yz, Xrange_lim, Zrange_lim, ax2, label = "", color="blue",shift_x=0, shift_y=0)
+        plot_ellipse(A_xy, B_xy, C_xy, D_xy, E_xy, F_xy, Xrange_lim, Xrange_lim, ax3, label = "", color="blue",shift_x=0, shift_y=0)
         
         # 各軸の最大値を2倍した値
         resolution_Q_parallel = 2 * max_x
         resolution_Q_perpendicular = 2 * max_y
         resolution_energy = 2 * max_z
         
-        # 軸やラベルの設定
-        ax.axhline(0, color="black", linestyle="--", linewidth=0.5)
-        ax.axvline(0, color="black", linestyle="--", linewidth=0.5)
-        ax.set_xlabel("$Q$ ($\AA^{-1}$)")
-        ax.set_ylabel("ℏω (meV)")
-        
-        # グラフのタイトル（楕円の説明）
-        ax.set_title("red circle : $Q_{\\parallel}$, blue circle : $Q_{\\perp}$", fontsize=12)
-        #ax.set_title("red circle : $Q_{x}$, blue circle : $Q_{y}$", fontsize=12)
-
-        # 追加情報を ax.text で追加
-        ax.text(
-            0.5, 1.1,  # グラフの外に配置 (x=0.4, y=1.05)
-            f'ℏω: {QE_sets[index][0]} meV, h: {QE_sets[index][1]}, k: {QE_sets[index][2]}, l: {QE_sets[index][3]}, δ$Q_{{\\parallel}}$ = {resolution_Q_parallel:.4f}, δ$Q_{{\\perp}}$ = {resolution_Q_perpendicular:.4f}, δE = {resolution_energy:.4f}',
-            #f'ℏω: {QE_sets[index][0]} meV, h: {QE_sets[index][1]}, k: {QE_sets[index][2]}, l: {QE_sets[index][3]}, δ$Q_{{x}}$ = {resolution_Q_parallel:.4f}, δ$Q_{{y}}$ = {resolution_Q_perpendicular:.4f}, δE = {resolution_energy:.4f}',
-            horizontalalignment='center',
-            verticalalignment='center',
-            transform=ax.transAxes,
-            fontsize=10
+        plt.suptitle(
+            f'ℏω: {QE_sets[index][0]} meV, h: {QE_sets[index][1]}, k: {QE_sets[index][2]}, l: {QE_sets[index][3]}, '
+            f'δ$Q_{{\\parallel}}$ = {resolution_Q_parallel:.4f}, δ$Q_{{\\perp}}$ = {resolution_Q_perpendicular:.4f}, '
+            f'δE = {resolution_energy:.4f}',
+            fontsize=11,
+            y=0.98  # 上の余白を調整したい場合に使用（デフォルトより少し上）
         )
+        
+        # === Q_parallel vs E の楕円描画 ===
+        ax1.axhline(0, color="black", linestyle="--", linewidth=0.5)
+        ax1.axvline(0, color="black", linestyle="--", linewidth=0.5)
+        ax1.set_xlabel("$Q_{\\parallel}$ ($\AA^{-1}$)")
+        ax1.set_ylabel("ℏω (meV)")
+        ax1.set_title("$Q_{\\parallel}$ vs ℏω ellipse", fontsize=12)
 
-        # 軸の表示範囲を明示的に設定
-        ax.set_xlim([-Xrange_lim, Xrange_lim])
-        ax.set_ylim([-Zrange_lim, Zrange_lim])
-        ax.grid(True)
+        ax1.set_xlim([-Xrange_lim, Xrange_lim])
+        ax1.set_ylim([-Zrange_lim, Zrange_lim])
+        ax1.grid(True)
+
+        # === Q_perp vs E の楕円描画===
+        ax2.axhline(0, color="black", linestyle="--", linewidth=0.5)
+        ax2.axvline(0, color="black", linestyle="--", linewidth=0.5)
+        ax2.set_xlabel("$Q_{\\perp}$ ($\AA^{-1}$)")
+        ax2.set_ylabel("ℏω (meV)")
+        ax2.set_title("$Q_{\\perp}$ vs ℏω ellipse", fontsize=12)
+
+        # 必要であれば同様に情報を追加（または省略）
+        ax2.set_xlim([-Xrange_lim, Xrange_lim])
+        ax2.set_ylim([-Zrange_lim, Zrange_lim])
+        ax2.grid(True)
+        
+        # === Q_perp vs Q_parallelの楕円描画===
+        ax3.axhline(0, color="black", linestyle="--", linewidth=0.5)
+        ax3.axvline(0, color="black", linestyle="--", linewidth=0.5)
+        ax3.set_xlabel("$Q_{\\parallel}$ ($\AA^{-1}$)")
+        ax3.set_ylabel("$Q_{\\perp}$ ($\AA^{-1}$)")
+        ax3.set_title("$Q_{\\parallel}$ vs $Q_{\\perp}$ ellipse", fontsize=12)
+
+        # 必要であれば同様に情報を追加（または省略）
+        ax3.set_xlim([-Xrange_lim, Xrange_lim])
+        ax3.set_ylim([-Xrange_lim, Xrange_lim])
+        ax3.grid(True)
         
         # フレーム保存（GIF用）
         if save_gif:
