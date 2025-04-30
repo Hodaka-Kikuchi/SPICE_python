@@ -1,6 +1,6 @@
 # cd C:\DATA_HK\python\SPICE_python
 # 右上にバージョン情報を表示
-__version__ = '1.9.0'
+__version__ = '1.10.0'
 """
 セマンティック バージョニング (Semantic Versioning)
 セマンティック バージョニング（セムバ―、SemVer）は、バージョン番号を「MAJOR.MINOR.PATCH」の形式で表します。それぞれの部分には以下のような意味があります：
@@ -401,6 +401,7 @@ from specfigscan import plot_spectrometer #
 from fittingLC import fit_lattice_constants
 from QEresolution import calcresolution
 from QEresolution_scan import calcresolution_scan
+from QEresolution_scan2 import calcresolution_scan2
 from QEresolution_scan_save import calcresolution_save
 from fig_reciprocal_space import plot_reciprocal_space
 
@@ -1487,7 +1488,19 @@ def calculate_angle():
             "mos_ana_h": mos_ana_h.get(),
             "mos_ana_v": mos_ana_v.get(),
         }
-        calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values)
+        #calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values)
+        
+        # サンプル点の取得
+        sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
+        sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
+        
+        # RLtableを取得し、辞書から必要な変数を取り出す
+        RLtable = on_Rlcalc()
+        astar = RLtable['astar']
+        bstar = RLtable['bstar']
+        cstar = RLtable['cstar']
+        
+        calcresolution_scan2(astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values)
     
     plt.show()
 
@@ -2260,8 +2273,16 @@ def constQscan_show_table():
         "mos_ana_h": mos_ana_h.get(),
         "mos_ana_v": mos_ana_v.get(),
     }
+     # サンプル点の取得
+    sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
+    sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
     
-    reso_mat_cQ,col_cond_cQ,scan_cond_cQ = calcresolution_save(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cQ) # reso matの計算のみ
+    # RLtableを取得し、辞書から必要な変数を取り出す
+    RLtable = on_Rlcalc()
+    astar = RLtable['astar']
+    bstar = RLtable['bstar']
+    cstar = RLtable['cstar']
+    reso_mat_cQ,col_cond_cQ,scan_cond_cQ = calcresolution_save(astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cQ) # reso matの計算のみ
     
     if fig_reci.get()==1:
         # 逆格子空間のki,kf,τベクトルを示す。
@@ -2312,8 +2333,20 @@ def constQscan_show_table():
         #plot_reciprocal_space_with_gif(bpe,bpc2,cphw,cp,fixe,sv1,sv2,RLtable,A_sets,C_sets,QE_sets)
     
     if fig_reso.get()==1:
-        calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cQ) # resoグラフ出力
+        #calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cQ) # resoグラフ出力
         #calcresolution_scan_with_gif(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values)
+        
+        # サンプル点の取得
+        sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
+        sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
+        
+        # RLtableを取得し、辞書から必要な変数を取り出す
+        RLtable = on_Rlcalc()
+        astar = RLtable['astar']
+        bstar = RLtable['bstar']
+        cstar = RLtable['cstar']
+        
+        calcresolution_scan2(astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cQ)
 
     plt.show()
     
@@ -2801,8 +2834,16 @@ def conostEscan_show_table():
             round(results['nu'],4)>float(hwl9t.get())):
             tree.tag_configure("blue", foreground="blue")  # 'red' タグを設定
             tree.item(item_id, tags=("blue",))  # 行に 'red' タグを適用
-            
-    reso_mat_cE,col_cond_cE,scan_cond_cE = calcresolution_save(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cE) # reso matの計算のみ
+     # サンプル点の取得
+    sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
+    sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
+    
+    # RLtableを取得し、辞書から必要な変数を取り出す
+    RLtable = on_Rlcalc()
+    astar = RLtable['astar']
+    bstar = RLtable['bstar']
+    cstar = RLtable['cstar']        
+    reso_mat_cE,col_cond_cE,scan_cond_cE = calcresolution_save(astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cE) # reso matの計算のみ
     
     if fig_spec.get()==1:
         # プロット関数を呼び出し
@@ -2862,8 +2903,20 @@ def conostEscan_show_table():
         #plot_reciprocal_space_with_gif(bpe,bpc2,cphw,cp,fixe,sv1,sv2,RLtable,A_sets,C_sets,QE_sets)
     
     if fig_reso.get()==1:
-        calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cE)
+        #calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cE)
         #calcresolution_scan_with_gif(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values)
+        
+        # サンプル点の取得
+        sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
+        sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
+        
+        # RLtableを取得し、辞書から必要な変数を取り出す
+        RLtable = on_Rlcalc()
+        astar = RLtable['astar']
+        bstar = RLtable['bstar']
+        cstar = RLtable['cstar']
+        
+        calcresolution_scan2(astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cE)
         
     plt.show()
     
@@ -3496,7 +3549,6 @@ def save_cE_resomat():
         try:
             with open(file_path, mode='w', newline='') as file:
                 writer = csv.writer(file)
-
                 # この各結果を CSV に書き込む
                 for i in range(len(scan_cond_cE[0])):  # または len(scan_cond[0])
                     header1 = ['div_1st_h','div_2nd_h','div_3rd_h','div_4th_h','div_1st_v','div_2nd_v','div_3rd_v','div_4th_v','mos_mono_h','mos_ana_h','mos_sam_h','mos_mono_v','mos_ana_v','mos_sam_v']  # ヘッダー名を必要に応じて調整
@@ -3508,7 +3560,7 @@ def save_cE_resomat():
                     writer.writerow(header2)
                     row_scan = scan_cond_cE[:, i]  # 1列（スキャン条件1セット）
                     writer.writerow(row_scan)
-                    header3 = ['resoluation matrix (Qpara, Qperp, hw, Qz)']
+                    header3 = ['resoluation matrix (Qx, Qy, hw, Qz)']
                     writer.writerow(header3)
                     # 分解能行列を4行4列でCSVに出力
                     reso = reso_mat_cE[:, :, i]  # shape: (4, 4)

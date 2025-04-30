@@ -13,8 +13,8 @@ import pandas as pd
 
 from PIL import Image  # GIF 保存のために必要
 
-def calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values,initial_index=0,save_gif=False,gif_name="resolution.gif"):
-    # save_gifがTrueだと保存、falseだと非保存
+def calcresolution_scan2(astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values,initial_index=0,save_gif=False,gif_name="resolution.gif"):
+    # save_gifがTrueだと保存、Falseだと非保存
 
     # INIファイルから設定を読み込む
     config = configparser.ConfigParser()
@@ -84,7 +84,6 @@ def calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_valu
         index = int(val)-1
         A1, A2, A3 = A_sets[index]
         hw = QE_sets[index][0]
-        
         
         # プロットを再描画
         ax1.clear()
@@ -231,7 +230,40 @@ def calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_valu
         Minv[3, 3] += Q**2 * etaSp**2# / (8 * np.log(2))
         RM = np.linalg.inv(Minv)
         
+        # 座標変換
+        Qx = sv1[0]*astar+sv1[1]*bstar+sv1[2]*cstar
+        Qy = sv2[0]*astar+sv2[1]*bstar+sv2[2]*cstar
+        Qvect = QE_sets[index][1]*astar+QE_sets[index][2]*bstar+QE_sets[index][3]*cstar
+        
+        # 行列を作成して連立方程式を解く
+        M = np.column_stack((Qx, Qy))  # 3x2 行列
+        A_B, residuals, rank, s = np.linalg.lstsq(M, Qvect, rcond=None)
+        A, B = A_B
+
+        # 角度の計算(ラジアン)
+        theta_rad = np.arctan2(B, A)
+        """ # 既に象限判定される
+        if A>=0 and B>=0:
+            theta_rad = theta_rad
+        elif A<=0 and B>=0:
+            theta_rad = theta_rad+90
+        elif A<=0 and B<=0:
+            theta_rad = -(theta_rad+90)
+        elif A>=0 and B<=0:
+            theta_rad = -theta_rad
+        """
+        # 散乱面内で回転。
+        rot_mat = np.array([
+                            [np.cos(theta_rad), -np.sin(theta_rad), 0, 0],
+                            [np.sin(theta_rad),  np.cos(theta_rad), 0, 0],
+                            [0, 0, 1, 0],
+                            [0, 0, 0, 1]
+                        ])
+        # 相似変換
+        RM = rot_mat @ RM @ rot_mat.T
+        
         # RMは(q//,q⊥,hw,qz)における空間分布
+        # これを(qx(axis1),qy(axis2),hw,qz)に置ける空間分布に変換する。
         """
         # 保存するリスト
         data_list = []
@@ -314,7 +346,7 @@ def calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_valu
             return A, B, C, D, E, F
 
         # 楕円をプロットする関数
-        def plot_ellipse(A, B, C, D, E, F, Xrange_lim, Zrange_lim, ax, label, color,shift_x=0,shift_y=0):
+        def plot_ellipse1(A, B, C, D, E, F, Xrange_lim, Zrange_lim, ax, label, color,shift_x=0,shift_y=0):
             x = np.linspace(-Xrange_lim, Xrange_lim, 500)
             z = np.linspace(-Zrange_lim, Zrange_lim, 500)
             X, Z = np.meshgrid(x, z)
@@ -326,10 +358,58 @@ def calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_valu
             X_shifted = X + shift_x
             # y方向にhwだけずらす
             Z_shifted = Z + shift_y
+            
+            # 表示用 x軸を Qx のノルムで割る
+            Qx_norm = np.linalg.norm(Qx)
+            X_display = X_shifted / Qx_norm
 
             # 等高線をプロット（楕円の曲線部分）
             #plt.contour(X_shifted, Z_shifted, ellipse, levels=[0], colors=color, label=label)
-            ax.contour(X_shifted, Z_shifted, ellipse, levels=[0], colors=color, label=label)
+            ax.contour(X_display, Z_shifted, ellipse, levels=[0], colors=color, label=label)
+            
+        def plot_ellipse2(A, B, C, D, E, F, Xrange_lim, Zrange_lim, ax, label, color,shift_x=0,shift_y=0):
+            x = np.linspace(-Xrange_lim, Xrange_lim, 500)
+            z = np.linspace(-Zrange_lim, Zrange_lim, 500)
+            X, Z = np.meshgrid(x, z)
+
+            # 楕円の式
+            ellipse = A * X**2 + B * X * Z + C * Z**2 + D * X + E * Z + F
+            
+            # y方向にhwだけずらす
+            X_shifted = X + shift_x
+            # y方向にhwだけずらす
+            Z_shifted = Z + shift_y
+            
+            # 表示用 x軸を Qx のノルムで割る
+            Qy_norm = np.linalg.norm(Qy)
+            X_display = X_shifted / Qy_norm
+
+            # 等高線をプロット（楕円の曲線部分）
+            #plt.contour(X_shifted, Z_shifted, ellipse, levels=[0], colors=color, label=label)
+            ax.contour(X_display, Z_shifted, ellipse, levels=[0], colors=color, label=label)
+            
+        def plot_ellipse3(A, B, C, D, E, F, Xrange_lim, Zrange_lim, ax, label, color,shift_x=0,shift_y=0):
+            x = np.linspace(-Xrange_lim, Xrange_lim, 500)
+            z = np.linspace(-Zrange_lim, Zrange_lim, 500)
+            X, Z = np.meshgrid(x, z)
+
+            # 楕円の式
+            ellipse = A * X**2 + B * X * Z + C * Z**2 + D * X + E * Z + F
+            
+            # y方向にhwだけずらす
+            X_shifted = X + shift_x
+            # y方向にhwだけずらす
+            Z_shifted = Z + shift_y
+            
+            # 表示用 x軸を Qx のノルムで割る
+            Qx_norm = np.linalg.norm(Qx)
+            X_display = X_shifted / Qx_norm
+            Qy_norm = np.linalg.norm(Qy)
+            Y_display = Z_shifted / Qy_norm
+
+            # 等高線をプロット（楕円の曲線部分）
+            #plt.contour(X_shifted, Z_shifted, ellipse, levels=[0], colors=color, label=label)
+            ax.contour(X_display, Y_display, ellipse, levels=[0], colors=color, label=label)
 
         log2 = np.log(2)
 
@@ -387,7 +467,7 @@ def calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_valu
         max_x, coords_x = find_max_along_axis(RM, axis="x")# Q//
         max_y, coords_y = find_max_along_axis(RM, axis="y")# Q⊥
         max_z, coords_z = find_max_along_axis(RM, axis="z")# E
-        
+        """
         if max_y>max_x:
             Xrange_lim=max_y*1.5
         elif max_y<max_x:
@@ -395,10 +475,42 @@ def calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_valu
             
         Zrange_lim=max_z*1.5
         
+        if Hfocus==0:
+            L=sample_to_analyzer
+            W=analyzer_width*np.sin(np.radians(A3))
+            af0=2 * np.degrees(np.arctan((W / 2) / L))
+            Xrange_lim =  np.sqrt(ki**2 + kf**2 - 2 * ki * kf * np.cos(np.radians(af0)))/np.linalg.norm(Qx)
+        elif Hfocus==1:
+            Xrange_lim = np.sqrt(ki**2 + kf**2 - 2 * ki * kf * np.cos(np.radians(af)))/np.linalg.norm(Qx)
+        Zrange_lim = QE_sets[initial_index][-1]*10/100
+        """
+        
+        if fixe==0: # ei fix
+            maxEf = bpe - QE_sets[-1][0]
+            k1=(bpe/2.072)**(1/2)
+            k2=(maxEf/2.072)**(1/2)
+            dE=bpe*10/100
+        elif fixe==1: # ef fix
+            maxEi = bpe + QE_sets[-1][0]
+            k1=(bpe/2.072)**(1/2)
+            k2=(maxEi/2.072)**(1/2)
+            dE=bpe*10/100
+        maxA2 = np.max(np.array(A_sets)[:, 1])
+        if Hfocus==0:
+            L=sample_to_analyzer
+            W=analyzer_width*np.sin(np.radians(A3))
+            af0=2 * np.degrees(np.arctan((W / 2) / L))
+            dQ = np.sqrt(k1**2 + k2**2 - 2 * k1 * k2 * np.cos(np.radians(maxA2+af0)))- np.sqrt(k1**2 + k2**2 - 2 * k1 * k2 * np.cos(np.radians(maxA2-af0)))
+        elif Hfocus==1:
+            dQ = np.sqrt(k1**2 + k2**2 - 2 * k1 * k2 * np.cos(np.radians(maxA2+af)))- np.sqrt(k1**2 + k2**2 - 2 * k1 * k2 * np.cos(np.radians(maxA2-af)))
+        
+        Xrange_lim = np.abs(dQ/(np.linalg.norm(Qx)+np.linalg.norm(Qy))*2)
+        Zrange_lim = dE
+        
         # xz平面とyz平面の楕円を描画
-        plot_ellipse(A_xz, B_xz, C_xz, D_xz, E_xz, F_xz, Xrange_lim, Zrange_lim, ax1, label = "", color="red",shift_x=0, shift_y=0)
-        plot_ellipse(A_yz, B_yz, C_yz, D_yz, E_yz, F_yz, Xrange_lim, Zrange_lim, ax2, label = "", color="blue",shift_x=0, shift_y=0)
-        plot_ellipse(A_xy, B_xy, C_xy, D_xy, E_xy, F_xy, Xrange_lim, Xrange_lim, ax3, label = "", color="blue",shift_x=0, shift_y=0)
+        plot_ellipse1(A_xz, B_xz, C_xz, D_xz, E_xz, F_xz, Xrange_lim, Zrange_lim, ax1, label = "", color="red",shift_x=0, shift_y=0)
+        plot_ellipse2(A_yz, B_yz, C_yz, D_yz, E_yz, F_yz, Xrange_lim, Zrange_lim, ax2, label = "", color="blue",shift_x=0, shift_y=0)
+        plot_ellipse3(A_xy, B_xy, C_xy, D_xy, E_xy, F_xy, Xrange_lim, Xrange_lim, ax3, label = "", color="black",shift_x=0, shift_y=0)
         
         # 各軸の最大値を2倍した値
         resolution_Q_parallel = 2 * max_x
@@ -407,8 +519,9 @@ def calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_valu
         
         plt.suptitle(
             f'ℏω: {QE_sets[index][0]} meV, h: {QE_sets[index][1]}, k: {QE_sets[index][2]}, l: {QE_sets[index][3]}, '
-            f'δ$Q_{{\\parallel}}$ = {resolution_Q_parallel:.4f}, δ$Q_{{\\perp}}$ = {resolution_Q_perpendicular:.4f}, '
-            f'δE = {resolution_energy:.4f}',
+            r'$\delta Q_{x} (\parallel axis1)$ = ' + f'{resolution_Q_parallel/np.linalg.norm(Qx):.4f}' + r' (r.l.u.), '
+            r'$\delta Q_{y} (\parallel axis2)$ = ' + f'{resolution_Q_perpendicular/np.linalg.norm(Qy):.4f}' + r' (r.l.u.), '
+            f'δE = {resolution_energy:.4f}'  + r' (meV)',
             fontsize=11,
             y=0.98  # 上の余白を調整したい場合に使用（デフォルトより少し上）
         )
@@ -416,36 +529,36 @@ def calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_valu
         # === Q_parallel vs E の楕円描画 ===
         ax1.axhline(0, color="black", linestyle="--", linewidth=0.5)
         ax1.axvline(0, color="black", linestyle="--", linewidth=0.5)
-        ax1.set_xlabel("$Q_{\\parallel}$ ($\AA^{-1}$)")
+        ax1.set_xlabel(r"$\delta Q_{x}$ (r.l.u.)")
         ax1.set_ylabel("ℏω (meV)")
-        ax1.set_title("$Q_{\\parallel}$ vs ℏω ellipse", fontsize=12)
+        ax1.set_title(r"$Q_{x} \parallel$" + f"({sv1[0]:.4f}, {sv1[1]:.4f}, {sv1[2]:.4f})", fontsize=12)
 
-        ax1.set_xlim([-Xrange_lim, Xrange_lim])
+        ax1.set_xlim([-Xrange_lim/np.linalg.norm(Qx), Xrange_lim/np.linalg.norm(Qx)])
         ax1.set_ylim([-Zrange_lim, Zrange_lim])
         ax1.grid(True)
 
         # === Q_perp vs E の楕円描画===
         ax2.axhline(0, color="black", linestyle="--", linewidth=0.5)
         ax2.axvline(0, color="black", linestyle="--", linewidth=0.5)
-        ax2.set_xlabel("$Q_{\\perp}$ ($\AA^{-1}$)")
+        ax2.set_xlabel(r"$\delta Q_{y}$ (r.l.u.)")
         ax2.set_ylabel("ℏω (meV)")
-        ax2.set_title("$Q_{\\perp}$ vs ℏω ellipse", fontsize=12)
+        ax2.set_title(r"$Q_{y} \parallel$" + f"({sv2[0]:.4f}, {sv2[1]:.4f}, {sv2[2]:.4f})", fontsize=12)
 
         # 必要であれば同様に情報を追加（または省略）
-        ax2.set_xlim([-Xrange_lim, Xrange_lim])
+        ax2.set_xlim([-Xrange_lim/np.linalg.norm(Qy), Xrange_lim/np.linalg.norm(Qy)])
         ax2.set_ylim([-Zrange_lim, Zrange_lim])
         ax2.grid(True)
         
         # === Q_perp vs Q_parallelの楕円描画===
         ax3.axhline(0, color="black", linestyle="--", linewidth=0.5)
         ax3.axvline(0, color="black", linestyle="--", linewidth=0.5)
-        ax3.set_xlabel("$Q_{\\parallel}$ ($\AA^{-1}$)")
-        ax3.set_ylabel("$Q_{\\perp}$ ($\AA^{-1}$)")
-        ax3.set_title("$Q_{\\parallel}$ vs $Q_{\\perp}$ ellipse", fontsize=12)
+        ax3.set_xlabel(r"$\delta Q_{x}$ (r.l.u.)")
+        ax3.set_ylabel(r"$\delta Q_{y}$ (r.l.u.)")
+        ax3.set_title(r"$\delta Q_{x} ({\parallel}axis1)$ vs $\delta Q_{y} ({\parallel}axis2)$ ellipse", fontsize=12)
 
         # 必要であれば同様に情報を追加（または省略）
-        ax3.set_xlim([-Xrange_lim, Xrange_lim])
-        ax3.set_ylim([-Xrange_lim, Xrange_lim])
+        ax3.set_xlim([-Xrange_lim/np.linalg.norm(Qx), Xrange_lim/np.linalg.norm(Qx)])
+        ax3.set_ylim([-Xrange_lim/np.linalg.norm(Qy), Xrange_lim/np.linalg.norm(Qy)])
         ax3.grid(True)
         
         # フレーム保存（GIF用）

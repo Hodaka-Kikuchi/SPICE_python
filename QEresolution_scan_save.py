@@ -10,7 +10,7 @@ from matplotlib.widgets import Slider
 from scipy.optimize import minimize_scalar
 from scipy.optimize import minimize
 
-def calcresolution_save(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values):
+def calcresolution_save(astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values):
     # INIファイルから設定を読み込む
     config = configparser.ConfigParser()
     # .exe化した場合に対応する
@@ -200,8 +200,33 @@ def calcresolution_save(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_valu
         Minv[1, 1] += Q**2 * etaS**2# / (8 * np.log(2))
         Minv[3, 3] += Q**2 * etaSp**2# / (8 * np.log(2))
         RM = np.linalg.inv(Minv)
+        """
+        # 座標変換
+        Qx = sv1[0]*astar+sv1[1]*bstar+sv1[2]*cstar
+        Qy = sv2[0]*astar+sv2[1]*bstar+sv2[2]*cstar
+        Qvect = QE_sets[index][1]*astar+QE_sets[index][2]*bstar+QE_sets[index][3]*cstar
+        
+        # 行列を作成して連立方程式を解く
+        M = np.column_stack((Qx, Qy))  # 3x2 行列
+        A_B, residuals, rank, s = np.linalg.lstsq(M, Qvect, rcond=None)
+        A, B = A_B
+
+        # 角度の計算(ラジアン)
+        theta_rad = np.arctan2(B, A)
 
         # RMは(q//,q⊥,hw,qz)における空間分布
+        # 散乱面内で回転。
+        rot_mat = np.array([
+                            [np.cos(theta_rad), -np.sin(theta_rad), 0, 0],
+                            [np.sin(theta_rad),  np.cos(theta_rad), 0, 0],
+                            [0, 0, 1, 0],
+                            [0, 0, 0, 1]
+                        ])
+        # 相似変換
+        RM = rot_mat @ RM @ rot_mat.T
         
+        # RMは(q//,q⊥,hw,qz)における空間分布
+        # これを(qx(axis1),qy(axis2),hw,qz)に置ける空間分布に変換する。
+        """
         reso_mat[:,:,index] = RM
     return reso_mat,col_cond,scan_cond
