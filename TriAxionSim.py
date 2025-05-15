@@ -399,15 +399,15 @@ from anglecalc2 import angle_calc2    #
 from anglecalc3 import angle_calc3    #
 from specfigscan import plot_spectrometer #
 from fittingLC import fit_lattice_constants
-from QEresolution import calcresolution
-from QEresolution_scan import calcresolution_scan
+#from QEresolution import calcresolution
+#from QEresolution_scan import calcresolution_scan
 from QEresolution_scan2 import calcresolution_scan2
 from QEresolution_scan_save import calcresolution_save
 from fig_reciprocal_space import plot_reciprocal_space
 
-from specfigscan_gif import plot_spectrometer_with_gif #画像をgif保存したいとき
-from fig_reciprocal_space_gif import plot_reciprocal_space_with_gif #画像をgif保存したいとき
-from QEresolution_scan_gif import calcresolution_scan_with_gif #画像をgif保存したいとき
+#from specfigscan_gif import plot_spectrometer_with_gif #画像をgif保存したいとき
+#from fig_reciprocal_space_gif import plot_reciprocal_space_with_gif #画像をgif保存したいとき
+#from QEresolution_scan_gif import calcresolution_scan_with_gif #画像をgif保存したいとき
 
 from time_estimate import constqtime
 from time_estimate import constetime
