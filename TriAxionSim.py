@@ -3466,14 +3466,40 @@ def save_cQ_table():
                 params = get_parameters()
                 writer.writerow(params.keys())
                 writer.writerow([f'{v:.4f}' for v in params.values()])
+                # サンプル点の取得
+                sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
+                sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
+                # 最初の一行だけ header0 を書く
+                """
+                header0 = [
+                    f'Qx//({float(sv1[0]):.4f},{float(sv1[1]):.4f},{float(sv1[2]):.4f})',f'',f'',f'',
+                    f'Qy//({float(sv2[0]):.4f},{float(sv2[1]):.4f},{float(sv2[2]):.4f})'
+                ]
+                """
+                header01 = [
+                    'Qx//(',
+                    f'{float(sv1[0]):.4f}',
+                    f'{float(sv1[1]):.4f}',
+                    f'{float(sv1[2]):.4f}',
+                    ')',
+                ]
+                writer.writerow(header01)
+                header02 = [
+                    'Qy//(',
+                    f'{float(sv2[0]):.4f}',
+                    f'{float(sv2[1]):.4f}',
+                    f'{float(sv2[2]):.4f}',
+                    ')',
+                ]
+                writer.writerow(header02)
                 # ヘッダーを書き込む
-                header = ['hw','h','k','l','C1', 'A1', 'C2', 'A2', 'C3', 'A3', 'mu', 'nu']  # ヘッダー名を必要に応じて調整
-                writer.writerow(header)
+                # ヘッダーに 'offset' を含めない
+                header_keys = ['hw', 'h', 'k', 'l', 'C1', 'A1', 'C2', 'A2', 'C3', 'A3', 'mu', 'nu']
+                writer.writerow(header_keys)
 
-                # angletable2 の各結果を CSV に書き込む
-                for results in angletable2:
-                    # results は辞書なので、values() で値だけ取り出してタプルにする
-                    values = tuple(results.values())
+                # 各辞書から必要なキーだけ取り出して書き込み
+                for result in angletable2:
+                    values = [result[key] for key in header_keys]
                     writer.writerow(values)
         except Exception as e:
             messagebox.showerror("保存エラー", f"ファイルの保存中にエラーが発生しました:\n{e}")
@@ -3494,15 +3520,41 @@ def save_cE_table():
                 # 格子情報を出力
                 params = get_parameters()
                 writer.writerow(params.keys())
-                writer.writerow([f'{v:.4f}' for v in params.values()])
-                # ヘッダーを書き込む
-                header = ['hw','h','k','l','C1', 'A1', 'C2', 'A2', 'C3', 'A3', 'mu', 'nu']  # ヘッダー名を必要に応じて調整
-                writer.writerow(header)
+                writer.writerow([f'{v:.4f}' for v in params.values()])# 格子情報を出力
+                # サンプル点の取得
+                sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
+                sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
+                # 最初の一行だけ header0 を書く
+                """
+                header0 = [
+                    f'Qx//({float(sv1[0]):.4f},{float(sv1[1]):.4f},{float(sv1[2]):.4f})',f'',f'',f'',
+                    f'Qy//({float(sv2[0]):.4f},{float(sv2[1]):.4f},{float(sv2[2]):.4f})'
+                ]
+                """
+                header01 = [
+                    'Qx//(',
+                    f'{float(sv1[0]):.4f}',
+                    f'{float(sv1[1]):.4f}',
+                    f'{float(sv1[2]):.4f}',
+                    ')',
+                ]
+                writer.writerow(header01)
+                header02 = [
+                    'Qy//(',
+                    f'{float(sv2[0]):.4f}',
+                    f'{float(sv2[1]):.4f}',
+                    f'{float(sv2[2]):.4f}',
+                    ')',
+                ]
+                writer.writerow(header02)
+                
+                # ヘッダーに 'offset' を含めない
+                header_keys = ['hw', 'h', 'k', 'l', 'C1', 'A1', 'C2', 'A2', 'C3', 'A3', 'mu', 'nu']
+                writer.writerow(header_keys)
 
-                # angletable2 の各結果を CSV に書き込む
-                for results in angletable3:
-                    # results は辞書なので、values() で値だけ取り出してタプルにする
-                    values = tuple(results.values())
+                # 各辞書から必要なキーだけ取り出して書き込み
+                for result in angletable3:
+                    values = [result[key] for key in header_keys]
                     writer.writerow(values)
         except Exception as e:
             messagebox.showerror("保存エラー", f"ファイルの保存中にエラーが発生しました:\n{e}")
