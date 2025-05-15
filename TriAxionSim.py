@@ -3518,9 +3518,24 @@ def save_cQ_resomat():
                 sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
                 sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
                 # 最初の一行だけ header0 を書く
+                """
                 header0 = [
                     f'Qx//({float(sv1[0]):.4f},{float(sv1[1]):.4f},{float(sv1[2]):.4f})',f'',f'',f'',
                     f'Qy//({float(sv2[0]):.4f},{float(sv2[1]):.4f},{float(sv2[2]):.4f})'
+                ]
+                """
+                header0 = [
+                    'Qx//(',
+                    f'{float(sv1[0]):.4f}',
+                    f'{float(sv1[1]):.4f}',
+                    f'{float(sv1[2]):.4f}',
+                    ')',
+                    '',  # 空白を入れたいならここに
+                    'Qy//(',
+                    f'{float(sv2[0]):.4f}',
+                    f'{float(sv2[1]):.4f}',
+                    f'{float(sv2[2]):.4f}',
+                    ')'
                 ]
                 writer.writerow(header0)
                 # この各結果を CSV に書き込む
@@ -3562,9 +3577,24 @@ def save_cE_resomat():
                 sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
                 sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
                 # 最初の一行だけ header0 を書く
+                """
                 header0 = [
                     f'Qx//({float(sv1[0]):.4f},{float(sv1[1]):.4f},{float(sv1[2]):.4f})',f'',f'',f'',
                     f'Qy//({float(sv2[0]):.4f},{float(sv2[1]):.4f},{float(sv2[2]):.4f})'
+                ]
+                """
+                header0 = [
+                    'Qx//(',
+                    f'{float(sv1[0]):.4f}',
+                    f'{float(sv1[1]):.4f}',
+                    f'{float(sv1[2]):.4f}',
+                    ')',
+                    '',  # 空白を入れたいならここに
+                    'Qy//(',
+                    f'{float(sv2[0]):.4f}',
+                    f'{float(sv2[1]):.4f}',
+                    f'{float(sv2[2]):.4f}',
+                    ')'
                 ]
                 writer.writerow(header0)
                 # この各結果を CSV に書き込む

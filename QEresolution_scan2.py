@@ -81,6 +81,7 @@ def calcresolution_scan2(astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fix
     )
     
     def update(val):
+        nonlocal div_1st_h, div_1st_v  # ← これを追加
         index = int(val)-1
         A1, A2, A3 = A_sets[index]
         hw = QE_sets[index][0]
