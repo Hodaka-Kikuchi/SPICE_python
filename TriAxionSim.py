@@ -1,6 +1,6 @@
 # cd C:\DATA_HK\python\SPICE_python
 # 右上にバージョン情報を表示
-__version__ = '1.11.1'
+__version__ = '1.11.2'
 """
 セマンティック バージョニング (Semantic Versioning)
 セマンティック バージョニング（セムバ―、SemVer）は、バージョン番号を「MAJOR.MINOR.PATCH」の形式で表します。それぞれの部分には以下のような意味があります：
@@ -930,7 +930,7 @@ bp_l.grid(row=1, column=5,sticky="NSEW")
 bpl5 = tk.Label(frame4,text='C2')
 bpl5.grid(row=0, column=6,sticky="NSEW")
 bp_c2 = ttk.Entry(frame4)
-bp_c2.grid(row=1, column=7,sticky="NSEW")
+bp_c2.grid(row=1, column=6,sticky="NSEW")
 
 bpl6 = tk.Label(frame4,text='μ')
 bpl6.grid(row=0, column=7,sticky="NSEW")
@@ -3476,6 +3476,47 @@ def save_cQ_table():
                     f'Qy//({float(sv2[0]):.4f},{float(sv2[1]):.4f},{float(sv2[2]):.4f})'
                 ]
                 """
+                RLtable = on_Rlcalc()
+                astar = RLtable['astar']
+                bstar = RLtable['bstar']
+                cstar = RLtable['cstar']
+                alpha_star = RLtable['alpha_star']
+                beta_star = RLtable['beta_star']
+                gamma_star = RLtable['gamma_star']
+                n_a = RLtable['n_a']
+                n_b = RLtable['n_b']
+                n_c = RLtable['n_c']
+                
+                header_astar = [
+                    'a*',
+                    f'{float(astar[0]):.4f}',
+                    f'{float(astar[1]):.4f}',
+                    f'{float(astar[2]):.4f}',
+                    '|a*|',
+                    f'{float(n_a):.4f}'
+                ]
+                writer.writerow(header_astar)
+                
+                header_bstar = [
+                    'b*',
+                    f'{float(bstar[0]):.4f}',
+                    f'{float(bstar[1]):.4f}',
+                    f'{float(bstar[2]):.4f}',
+                    '|b*|',
+                    f'{float(n_b):.4f}'
+                ]
+                writer.writerow(header_bstar)
+                
+                header_cstar = [
+                    'c*',
+                    f'{float(cstar[0]):.4f}',
+                    f'{float(cstar[1]):.4f}',
+                    f'{float(cstar[2]):.4f}',
+                    '|c*|',
+                    f'{float(n_c):.4f}'
+                ]
+                writer.writerow(header_cstar)
+                
                 header01 = [
                     'Qx//(',
                     f'{float(sv1[0]):.4f}',
@@ -3531,6 +3572,47 @@ def save_cE_table():
                     f'Qy//({float(sv2[0]):.4f},{float(sv2[1]):.4f},{float(sv2[2]):.4f})'
                 ]
                 """
+                RLtable = on_Rlcalc()
+                astar = RLtable['astar']
+                bstar = RLtable['bstar']
+                cstar = RLtable['cstar']
+                alpha_star = RLtable['alpha_star']
+                beta_star = RLtable['beta_star']
+                gamma_star = RLtable['gamma_star']
+                n_a = RLtable['n_a']
+                n_b = RLtable['n_b']
+                n_c = RLtable['n_c']
+                
+                header_astar = [
+                    'a*',
+                    f'{float(astar[0]):.4f}',
+                    f'{float(astar[1]):.4f}',
+                    f'{float(astar[2]):.4f}',
+                    '|a*|',
+                    f'{float(n_a):.4f}'
+                ]
+                writer.writerow(header_astar)
+                
+                header_bstar = [
+                    'b*',
+                    f'{float(bstar[0]):.4f}',
+                    f'{float(bstar[1]):.4f}',
+                    f'{float(bstar[2]):.4f}',
+                    '|b*|',
+                    f'{float(n_b):.4f}'
+                ]
+                writer.writerow(header_bstar)
+                
+                header_cstar = [
+                    'c*',
+                    f'{float(cstar[0]):.4f}',
+                    f'{float(cstar[1]):.4f}',
+                    f'{float(cstar[2]):.4f}',
+                    '|c*|',
+                    f'{float(n_c):.4f}'
+                ]
+                writer.writerow(header_cstar)
+                
                 header01 = [
                     'Qx//(',
                     f'{float(sv1[0]):.4f}',
@@ -3586,6 +3668,47 @@ def save_cQ_resomat():
                     f'Qy//({float(sv2[0]):.4f},{float(sv2[1]):.4f},{float(sv2[2]):.4f})'
                 ]
                 """
+                RLtable = on_Rlcalc()
+                astar = RLtable['astar']
+                bstar = RLtable['bstar']
+                cstar = RLtable['cstar']
+                alpha_star = RLtable['alpha_star']
+                beta_star = RLtable['beta_star']
+                gamma_star = RLtable['gamma_star']
+                n_a = RLtable['n_a']
+                n_b = RLtable['n_b']
+                n_c = RLtable['n_c']
+                
+                header_astar = [
+                    'a*',
+                    f'{float(astar[0]):.4f}',
+                    f'{float(astar[1]):.4f}',
+                    f'{float(astar[2]):.4f}',
+                    '|a*|',
+                    f'{float(n_a):.4f}'
+                ]
+                writer.writerow(header_astar)
+                
+                header_bstar = [
+                    'b*',
+                    f'{float(bstar[0]):.4f}',
+                    f'{float(bstar[1]):.4f}',
+                    f'{float(bstar[2]):.4f}',
+                    '|b*|',
+                    f'{float(n_b):.4f}'
+                ]
+                writer.writerow(header_bstar)
+                
+                header_cstar = [
+                    'c*',
+                    f'{float(cstar[0]):.4f}',
+                    f'{float(cstar[1]):.4f}',
+                    f'{float(cstar[2]):.4f}',
+                    '|c*|',
+                    f'{float(n_c):.4f}'
+                ]
+                writer.writerow(header_cstar)
+                
                 header01 = [
                     'Qx//(',
                     f'{float(sv1[0]):.4f}',
@@ -3651,6 +3774,47 @@ def save_cE_resomat():
                     f'Qy//({float(sv2[0]):.4f},{float(sv2[1]):.4f},{float(sv2[2]):.4f})'
                 ]
                 """
+                RLtable = on_Rlcalc()
+                astar = RLtable['astar']
+                bstar = RLtable['bstar']
+                cstar = RLtable['cstar']
+                alpha_star = RLtable['alpha_star']
+                beta_star = RLtable['beta_star']
+                gamma_star = RLtable['gamma_star']
+                n_a = RLtable['n_a']
+                n_b = RLtable['n_b']
+                n_c = RLtable['n_c']
+                
+                header_astar = [
+                    'a*',
+                    f'{float(astar[0]):.4f}',
+                    f'{float(astar[1]):.4f}',
+                    f'{float(astar[2]):.4f}',
+                    '|a*|',
+                    f'{float(n_a):.4f}'
+                ]
+                writer.writerow(header_astar)
+                
+                header_bstar = [
+                    'b*',
+                    f'{float(bstar[0]):.4f}',
+                    f'{float(bstar[1]):.4f}',
+                    f'{float(bstar[2]):.4f}',
+                    '|b*|',
+                    f'{float(n_b):.4f}'
+                ]
+                writer.writerow(header_bstar)
+                
+                header_cstar = [
+                    'c*',
+                    f'{float(cstar[0]):.4f}',
+                    f'{float(cstar[1]):.4f}',
+                    f'{float(cstar[2]):.4f}',
+                    '|c*|',
+                    f'{float(n_c):.4f}'
+                ]
+                writer.writerow(header_cstar)
+                
                 header01 = [
                     'Qx//(',
                     f'{float(sv1[0]):.4f}',
