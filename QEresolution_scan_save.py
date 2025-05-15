@@ -100,7 +100,9 @@ def calcresolution_save(astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fixe
             bc = 1.03*10**(-12) # cm
             lamda=sqrt(81.81/Ei)*10**(-8) # cm
             Qc = 0.0219 # = sqrt(16*pi*po)
-            alpha1 = div_1st_m*2*np.degrees(arcsin(lamda*sqrt(NA*ro/M*bc/pi)))*60  / 60 / 180 * pi * 0.4246609 
+            div_1st_h = div_1st_m*2*np.degrees(arcsin(lamda*sqrt(NA*ro/M*bc/pi)))*60
+            div_1st_v = div_1st_h
+            alpha1 = div_1st_m*2*np.degrees(arcsin(lamda*sqrt(NA*ro/M*bc/pi)))*60  / 60 / 180 * pi * 0.4246609
             beta1 = alpha1
         alpha2 = div_2nd_h / 60 / 180 * pi * 0.4246609
         # focusingの場合式が異なる。
