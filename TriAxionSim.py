@@ -3514,6 +3514,15 @@ def save_cQ_resomat():
         try:
             with open(file_path, mode='w', newline='') as file:
                 writer = csv.writer(file)
+                # サンプル点の取得
+                sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
+                sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
+                # 最初の一行だけ header0 を書く
+                header0 = [
+                    f'Qx//({float(sv1[0]):.4f},{float(sv1[1]):.4f},{float(sv1[2]):.4f})',f'',f'',f'',
+                    f'Qy//({float(sv2[0]):.4f},{float(sv2[1]):.4f},{float(sv2[2]):.4f})'
+                ]
+                writer.writerow(header0)
                 # この各結果を CSV に書き込む
                 for i in range(len(scan_cond_cQ[0])):  # または len(scan_cond[0])
                     # ヘッダーを書き込む
@@ -3549,8 +3558,18 @@ def save_cE_resomat():
         try:
             with open(file_path, mode='w', newline='') as file:
                 writer = csv.writer(file)
+                # サンプル点の取得
+                sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
+                sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
+                # 最初の一行だけ header0 を書く
+                header0 = [
+                    f'Qx//({float(sv1[0]):.4f},{float(sv1[1]):.4f},{float(sv1[2]):.4f})',f'',f'',f'',
+                    f'Qy//({float(sv2[0]):.4f},{float(sv2[1]):.4f},{float(sv2[2]):.4f})'
+                ]
+                writer.writerow(header0)
                 # この各結果を CSV に書き込む
                 for i in range(len(scan_cond_cE[0])):  # または len(scan_cond[0])
+                    
                     header1 = ['div_1st_h','div_2nd_h','div_3rd_h','div_4th_h','div_1st_v','div_2nd_v','div_3rd_v','div_4th_v','mos_mono_h','mos_ana_h','mos_sam_h','mos_mono_v','mos_ana_v','mos_sam_v']  # ヘッダー名を必要に応じて調整
                     writer.writerow(header1)
                     row_cond = col_cond_cE[:, i]

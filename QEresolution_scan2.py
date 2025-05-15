@@ -521,7 +521,7 @@ def calcresolution_scan2(astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fix
             f'ℏω: {QE_sets[index][0]} meV, h: {QE_sets[index][1]}, k: {QE_sets[index][2]}, l: {QE_sets[index][3]}, '
             r'$\delta Q_{x} (\parallel axis1)$ = ' + f'{resolution_Q_parallel/np.linalg.norm(Qx):.4f}' + r' (r.l.u.), '
             r'$\delta Q_{y} (\parallel axis2)$ = ' + f'{resolution_Q_perpendicular/np.linalg.norm(Qy):.4f}' + r' (r.l.u.), '
-            f'δE = {resolution_energy:.4f}'  + r' (meV)',
+            f'δℏω = {resolution_energy:.4f}'  + r' (meV)',
             fontsize=11,
             y=0.98  # 上の余白を調整したい場合に使用（デフォルトより少し上）
         )
@@ -530,7 +530,7 @@ def calcresolution_scan2(astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fix
         ax1.axhline(0, color="black", linestyle="--", linewidth=0.5)
         ax1.axvline(0, color="black", linestyle="--", linewidth=0.5)
         ax1.set_xlabel(r"$\delta Q_{x}$ (r.l.u.)")
-        ax1.set_ylabel("ℏω (meV)")
+        ax1.set_ylabel("δℏω (meV)")
         ax1.set_title(r"$Q_{x} \parallel$" + f"({sv1[0]:.4f}, {sv1[1]:.4f}, {sv1[2]:.4f})", fontsize=12)
 
         ax1.set_xlim([-Xrange_lim/np.linalg.norm(Qx), Xrange_lim/np.linalg.norm(Qx)])
@@ -541,7 +541,7 @@ def calcresolution_scan2(astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fix
         ax2.axhline(0, color="black", linestyle="--", linewidth=0.5)
         ax2.axvline(0, color="black", linestyle="--", linewidth=0.5)
         ax2.set_xlabel(r"$\delta Q_{y}$ (r.l.u.)")
-        ax2.set_ylabel("ℏω (meV)")
+        ax2.set_ylabel("δℏω (meV)")
         ax2.set_title(r"$Q_{y} \parallel$" + f"({sv2[0]:.4f}, {sv2[1]:.4f}, {sv2[2]:.4f})", fontsize=12)
 
         # 必要であれば同様に情報を追加（または省略）

@@ -200,7 +200,7 @@ def calcresolution_save(astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fixe
         Minv[1, 1] += Q**2 * etaS**2# / (8 * np.log(2))
         Minv[3, 3] += Q**2 * etaSp**2# / (8 * np.log(2))
         RM = np.linalg.inv(Minv)
-        """
+        
         # 座標変換
         Qx = sv1[0]*astar+sv1[1]*bstar+sv1[2]*cstar
         Qy = sv2[0]*astar+sv2[1]*bstar+sv2[2]*cstar
@@ -227,6 +227,6 @@ def calcresolution_save(astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fixe
         
         # RMは(q//,q⊥,hw,qz)における空間分布
         # これを(qx(axis1),qy(axis2),hw,qz)に置ける空間分布に変換する。
-        """
+        
         reso_mat[:,:,index] = RM
     return reso_mat,col_cond,scan_cond
