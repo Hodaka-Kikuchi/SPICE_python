@@ -1,6 +1,6 @@
 # cd C:\DATA_HK\python\SPICE_python
 # 右上にバージョン情報を表示
-__version__ = '1.11.0'
+__version__ = '1.11.1'
 """
 セマンティック バージョニング (Semantic Versioning)
 セマンティック バージョニング（セムバ―、SemVer）は、バージョン番号を「MAJOR.MINOR.PATCH」の形式で表します。それぞれの部分には以下のような意味があります：
@@ -3462,7 +3462,10 @@ def save_cQ_table():
         try:
             with open(file_path, mode='w', newline='') as file:
                 writer = csv.writer(file)
-
+                # 格子情報を出力
+                params = get_parameters()
+                writer.writerow(params.keys())
+                writer.writerow([f'{v:.4f}' for v in params.values()])
                 # ヘッダーを書き込む
                 header = ['hw','h','k','l','C1', 'A1', 'C2', 'A2', 'C3', 'A3', 'mu', 'nu']  # ヘッダー名を必要に応じて調整
                 writer.writerow(header)
@@ -3488,7 +3491,10 @@ def save_cE_table():
         try:
             with open(file_path, mode='w', newline='') as file:
                 writer = csv.writer(file)
-
+                # 格子情報を出力
+                params = get_parameters()
+                writer.writerow(params.keys())
+                writer.writerow([f'{v:.4f}' for v in params.values()])
                 # ヘッダーを書き込む
                 header = ['hw','h','k','l','C1', 'A1', 'C2', 'A2', 'C3', 'A3', 'mu', 'nu']  # ヘッダー名を必要に応じて調整
                 writer.writerow(header)
@@ -3514,6 +3520,10 @@ def save_cQ_resomat():
         try:
             with open(file_path, mode='w', newline='') as file:
                 writer = csv.writer(file)
+                # 格子情報を出力
+                params = get_parameters()
+                writer.writerow(params.keys())
+                writer.writerow([f'{v:.4f}' for v in params.values()])
                 # サンプル点の取得
                 sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
                 sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
@@ -3524,20 +3534,22 @@ def save_cQ_resomat():
                     f'Qy//({float(sv2[0]):.4f},{float(sv2[1]):.4f},{float(sv2[2]):.4f})'
                 ]
                 """
-                header0 = [
+                header01 = [
                     'Qx//(',
                     f'{float(sv1[0]):.4f}',
                     f'{float(sv1[1]):.4f}',
                     f'{float(sv1[2]):.4f}',
                     ')',
-                    '',  # 空白を入れたいならここに
+                ]
+                writer.writerow(header01)
+                header02 = [
                     'Qy//(',
                     f'{float(sv2[0]):.4f}',
                     f'{float(sv2[1]):.4f}',
                     f'{float(sv2[2]):.4f}',
-                    ')'
+                    ')',
                 ]
-                writer.writerow(header0)
+                writer.writerow(header02)
                 # この各結果を CSV に書き込む
                 for i in range(len(scan_cond_cQ[0])):  # または len(scan_cond[0])
                     # ヘッダーを書き込む
@@ -3573,6 +3585,10 @@ def save_cE_resomat():
         try:
             with open(file_path, mode='w', newline='') as file:
                 writer = csv.writer(file)
+                # 格子情報を出力
+                params = get_parameters()
+                writer.writerow(params.keys())
+                writer.writerow([f'{v:.4f}' for v in params.values()])
                 # サンプル点の取得
                 sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
                 sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
@@ -3583,20 +3599,22 @@ def save_cE_resomat():
                     f'Qy//({float(sv2[0]):.4f},{float(sv2[1]):.4f},{float(sv2[2]):.4f})'
                 ]
                 """
-                header0 = [
+                header01 = [
                     'Qx//(',
                     f'{float(sv1[0]):.4f}',
                     f'{float(sv1[1]):.4f}',
                     f'{float(sv1[2]):.4f}',
                     ')',
-                    '',  # 空白を入れたいならここに
+                ]
+                writer.writerow(header01)
+                header02 = [
                     'Qy//(',
                     f'{float(sv2[0]):.4f}',
                     f'{float(sv2[1]):.4f}',
                     f'{float(sv2[2]):.4f}',
-                    ')'
+                    ')',
                 ]
-                writer.writerow(header0)
+                writer.writerow(header02)
                 # この各結果を CSV に書き込む
                 for i in range(len(scan_cond_cE[0])):  # または len(scan_cond[0])
                     
@@ -3694,5 +3712,4 @@ pyinstaller TriAxionSim.py --noconsole
 --clean
 ビルド前に前回のキャッシュと出力ディレクトリを削除
 """
-#############
-# %%
+""
