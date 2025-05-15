@@ -128,7 +128,13 @@ def calcresolution_scan2(astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fix
             alpha1 = div_1st_h / 60 / 180 * pi * 0.4246609
             beta1 = div_1st_v / 60 / 180 * pi * 0.4246609 
         elif Ni_mir == 1:
-            alpha1 = div_1st_m*2*arcsin(0.0219*(81.81/Ei)**(1/2)/(4*pi))/pi*180*60*0.4246609 # NiのQcは0.0219
+            NA = 6.022*10**(23) # mol^(-1)
+            ro = 8.908 # g/cm^2
+            M = 58.69 # g/mol
+            bc = 1.03*10**(-12) # cm
+            lamda=sqrt(81.81/Ei)*10**(-8) # cm
+            Qc = 0.0219 # = sqrt(16*pi*po)
+            alpha1 = div_1st_m*2*np.degrees(arcsin(lamda*sqrt(NA*ro/M*bc/pi)))*60  / 60 / 180 * pi * 0.4246609 
             beta1 = alpha1
             
         alpha2 = div_2nd_h / 60 / 180 * pi * 0.4246609
