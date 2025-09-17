@@ -1,6 +1,6 @@
 # cd C:\DATA_HK\python\SPICE_python
 # 右上にバージョン情報を表示
-__version__ = '1.11.2'
+__version__ = '1.12.0'
 """
 セマンティック バージョニング (Semantic Versioning)
 セマンティック バージョニング（セムバ―、SemVer）は、バージョン番号を「MAJOR.MINOR.PATCH」の形式で表します。それぞれの部分には以下のような意味があります：
@@ -108,7 +108,7 @@ root=tk.Tk()
 root.title(f"TriAxionSim ver: {__version__}")
 # TriAxionSim: 三軸 (triple-axis) と「軌跡」や「軸」 (axion) 、Simulationを意識
 #windowのサイズ指定
-root.geometry("560x850")#550*840
+root.geometry("565x850")#550*840
 
 # ロゴを設定
 # 実行時のリソースパスを設定
@@ -235,6 +235,12 @@ def load_values_from_ini():
     mos_ana_v.delete(0, tk.END)  # 既存の値をクリア
     mos_ana_v.insert(0, config['instrument'].get('mos_ana_v', '50'))
     
+    # monochromatorとanalyzerのd値
+    d_mono.delete(0, tk.END)  # 既存の値をクリア
+    d_mono.insert(0, config['instrument'].get('d_mono', '3.355'))
+    d_ana.delete(0, tk.END)  # 既存の値をクリア
+    d_ana.insert(0, config['instrument'].get('d_ana', '3.355'))
+    
     # hardware limit
     hwl2f.delete(0, tk.END)  # 既存の値をクリア
     hwl2f.insert(0, config['instrument'].get('maxC1', '19.9305'))
@@ -354,6 +360,8 @@ def save_values_to_ini():
         'div_3rd_v': div_3rd_v.get(),
         'div_4th_h': div_4th_h.get(),
         'div_4th_v': div_4th_v.get(),
+        'd_mono': d_mono.get(),
+        'd_ana': d_ana.get(),
         'mos_mono_h': mos_mono_h.get(),
         'mos_mono_v': mos_mono_v.get(),
         'mos_ana_h': mos_ana_h.get(),
@@ -1149,6 +1157,10 @@ def on_anglecalc():
     txt_ub_33.insert(0, round(UBtable['UB'][2,2],4))
     txt_ub_33.config(state="readonly") # 編集不可に設定
     
+    # d-spaceの取得
+    dmono = float(d_mono.get())
+    dana = float(d_ana.get())
+    
     # Bragg peak positionの取得
     bpe = float(Energy.get())
     bpc2 = float(bp_c2.get())
@@ -1238,7 +1250,7 @@ def on_anglecalc():
     
     # angleを計算
     angletable = angle_calc(
-        astar,bstar,cstar,U,B,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe,w_config
+        dmono,dana,astar,bstar,cstar,U,B,UB,bpe,bpc2,bpmu,bpnu,bp,cphw,cp,fixe,w_config
     )
     
     return angletable
@@ -1610,124 +1622,146 @@ acl10.grid(row=2, column=1,columnspan=7,sticky="NSEW")
 
 # collimator information
 # ファイル選択のフレームの作成と設置
-frame6 = ttk.Labelframe(root,text= "instrumental condition")
-frame6.grid(row=5,column=0,sticky="NSEW")
+frame7 = ttk.Labelframe(root,text= "instrumental condition")
+frame7.grid(row=5,column=0,sticky="NSEW")
 
-frame6.columnconfigure(0, weight=6)
-frame6.columnconfigure(1, weight=4)
-frame6.columnconfigure(2, weight=1)
-frame6.rowconfigure(0, weight=1)
+# Notebookウィジェットの作成
+notebook11 = ttk.Notebook(frame7,style="example.TNotebook")
 
-frame6a = ttk.Labelframe(frame6,text= "divergence (unit : min)")
-frame6a.grid(row=0,column=0,sticky="NSEW")
+# grid配分
+frame7.columnconfigure(0, weight=5)
+frame7.columnconfigure(1, weight=3)
+frame7.columnconfigure(2, weight=1)
+frame7.columnconfigure(3, weight=1)
+frame7.rowconfigure(0, weight=1)
 
-frame6a.columnconfigure(0, weight=1)
-frame6a.columnconfigure(1, weight=1)
-frame6a.columnconfigure(2, weight=1)
-frame6a.columnconfigure(3, weight=1)
-frame6a.columnconfigure(4, weight=1)
-frame6a.columnconfigure(5, weight=1)
-frame6a.rowconfigure(0, weight=1)
-frame6a.rowconfigure(1, weight=1)
-frame6a.rowconfigure(2, weight=1)
+frame7a = ttk.Labelframe(frame7,text= "collimator divergence (unit : min)")
+frame7a.grid(row=0,column=0,sticky="NSEW")
+
+frame7a.columnconfigure(0, weight=1)
+frame7a.columnconfigure(1, weight=1)
+frame7a.columnconfigure(2, weight=1)
+frame7a.columnconfigure(3, weight=1)
+frame7a.columnconfigure(4, weight=1)
+frame7a.columnconfigure(5, weight=1)
+frame7a.rowconfigure(0, weight=1)
+frame7a.rowconfigure(1, weight=1)
+frame7a.rowconfigure(2, weight=1)
 
 #チェック有無変数
 gm = tk.IntVar()
 # value=0にチェックを入れる
 gm.set(0)
-#label0 = tk.Label(frame6a,text='guide')
+#label0 = tk.Label(frame7a,text='guide')
 #label0.grid(row=0, column=0,sticky="NSEW")
-guide_mirror = tk.Checkbutton(frame6a, variable=gm, text='58Ni')
+guide_mirror = tk.Checkbutton(frame7a, variable=gm, text='supermirror',width = 15)
 guide_mirror.grid(row=0, column=0,sticky="NSEW")
-label0m = tk.Label(frame6a,text='m')
+label0m = tk.Label(frame7a,text='m-value')
 label0m.grid(row=1, column=0,sticky="NSEW")
-label1 = tk.Label(frame6a,text='H',width = 11)
+label1 = tk.Label(frame7a,text='Hol',width = 11)
 label1.grid(row=1, column=1,sticky="NSEW")
-label2 = tk.Label(frame6a,text='V',width = 11)
+label2 = tk.Label(frame7a,text='Ver',width = 11)
 label2.grid(row=2, column=1,sticky="NSEW")
-label3 = tk.Label(frame6a,text='1st col')
+label3 = tk.Label(frame7a,text='1st',width = 11)
 label3.grid(row=0, column=2,sticky="NSEW")
-label4 = tk.Label(frame6a,text='2nd col')
+label4 = tk.Label(frame7a,text='2nd',width = 11)
 label4.grid(row=0, column=3,sticky="NSEW")
-label5 = tk.Label(frame6a,text='3rd col')
+label5 = tk.Label(frame7a,text='3rd',width = 11)
 label5.grid(row=0, column=4,sticky="NSEW")
-label6 = tk.Label(frame6a,text='4th col')
+label6 = tk.Label(frame7a,text='4th',width = 11)
 label6.grid(row=0, column=5,sticky="NSEW")
 
-div_1st_m = ttk.Entry(frame6a)
+div_1st_m = ttk.Entry(frame7a,width = 11)
 div_1st_m.grid(row=2, column=0,sticky="NSEW")
-div_1st_h = ttk.Entry(frame6a)
+div_1st_h = ttk.Entry(frame7a,width = 11)
 div_1st_h.grid(row=1, column=2,sticky="NSEW")
-div_1st_v = ttk.Entry(frame6a)
+div_1st_v = ttk.Entry(frame7a,width = 11)
 div_1st_v.grid(row=2, column=2,sticky="NSEW")
-div_2nd_h = ttk.Entry(frame6a)
+div_2nd_h = ttk.Entry(frame7a,width = 11)
 div_2nd_h.grid(row=1, column=3,sticky="NSEW")
-div_2nd_v = ttk.Entry(frame6a)
+div_2nd_v = ttk.Entry(frame7a,width = 11)
 div_2nd_v.grid(row=2, column=3,sticky="NSEW")
-div_3rd_h = ttk.Entry(frame6a)
+div_3rd_h = ttk.Entry(frame7a,width = 11)
 div_3rd_h.grid(row=1, column=4,sticky="NSEW")
-div_3rd_v = ttk.Entry(frame6a)
+div_3rd_v = ttk.Entry(frame7a,width = 11)
 div_3rd_v.grid(row=2, column=4,sticky="NSEW")
-div_4th_h = ttk.Entry(frame6a)
+div_4th_h = ttk.Entry(frame7a,width = 11)
 div_4th_h.grid(row=1, column=5,sticky="NSEW")
-div_4th_v = ttk.Entry(frame6a)
+div_4th_v = ttk.Entry(frame7a,width = 11)
 div_4th_v.grid(row=2, column=5,sticky="NSEW")
 
-frame6b = ttk.Labelframe(frame6,text= "mosaic (unit : min)")
-frame6b.grid(row=0,column=1,sticky="NSEW")
+frame7b = ttk.Labelframe(frame7,text= "mosaic (unit : min)")
+frame7b.grid(row=0,column=1,sticky="NSEW")
 
-frame6b.columnconfigure(0, weight=1)
-frame6b.columnconfigure(1, weight=1)
-frame6b.columnconfigure(2, weight=1)
-frame6b.columnconfigure(3, weight=1)
-frame6b.rowconfigure(0, weight=1)
-frame6b.rowconfigure(1, weight=1)
-frame6b.rowconfigure(2, weight=1)
+frame7b.columnconfigure(0, weight=1)
+frame7b.columnconfigure(1, weight=1)
+frame7b.columnconfigure(2, weight=1)
+frame7b.columnconfigure(3, weight=1)
+frame7b.rowconfigure(0, weight=1)
+frame7b.rowconfigure(1, weight=1)
+frame7b.rowconfigure(2, weight=1)
 
-label1 = tk.Label(frame6b,text='H',width = 11)
+label1 = tk.Label(frame7b,text='Hol',width = 11)
 label1.grid(row=1, column=0,sticky="NSEW")
-label2 = tk.Label(frame6b,text='V',width = 11)
+label2 = tk.Label(frame7b,text='Ver',width = 11)
 label2.grid(row=2, column=0,sticky="NSEW")
-label7 = tk.Label(frame6b,text='mono')
+label7 = tk.Label(frame7b,text='mono',width = 11)
 label7.grid(row=0, column=1,sticky="NSEW")
-label8 = tk.Label(frame6b,text='sample')
+label8 = tk.Label(frame7b,text='sam',width = 11)
 label8.grid(row=0, column=2,sticky="NSEW")
-label8 = tk.Label(frame6b,text='ana')
+label8 = tk.Label(frame7b,text='ana',width = 11)
 label8.grid(row=0, column=3,sticky="NSEW")
 
-mos_mono_h = ttk.Entry(frame6b)
+mos_mono_h = ttk.Entry(frame7b,width = 11)
 mos_mono_h.grid(row=1, column=1,sticky="NSEW")
-mos_mono_v = ttk.Entry(frame6b)
+mos_mono_v = ttk.Entry(frame7b,width = 11)
 mos_mono_v.grid(row=2, column=1,sticky="NSEW")
 
-mos_sam_h = ttk.Entry(frame6b)
+mos_sam_h = ttk.Entry(frame7b,width = 11)
 mos_sam_h.grid(row=1, column=2,sticky="NSEW")
-mos_sam_v = ttk.Entry(frame6b)
+mos_sam_v = ttk.Entry(frame7b,width = 11)
 mos_sam_v.grid(row=2, column=2,sticky="NSEW")
 
-mos_ana_h = ttk.Entry(frame6b)
+mos_ana_h = ttk.Entry(frame7b,width = 11)
 mos_ana_h.grid(row=1, column=3,sticky="NSEW")
-mos_ana_v = ttk.Entry(frame6b)
+mos_ana_v = ttk.Entry(frame7b,width = 11)
 mos_ana_v.grid(row=2, column=3,sticky="NSEW")
 
-frame6c = ttk.Labelframe(frame6,text= "focusing")
-frame6c.grid(row=0,column=2,sticky="NSEW")
-frame6c.columnconfigure(0, weight=1)
-frame6c.rowconfigure(0, weight=1)
-frame6c.rowconfigure(1, weight=1)
-frame6c.rowconfigure(2, weight=1)
+frame7d = ttk.Labelframe(frame7,text= "d (unit : Å)")
+frame7d.grid(row=0,column=2,sticky="NSEW")
+
+frame7d.columnconfigure(0, weight=1)
+frame7d.columnconfigure(1, weight=1)
+frame7d.rowconfigure(0, weight=1)
+frame7d.rowconfigure(1, weight=1)
+
+label_d_mono = tk.Label(frame7d,text='mono',width = 11)
+label_d_mono.grid(row=0, column=0,sticky="NSEW")
+d_mono = ttk.Entry(frame7d,width = 11)
+d_mono.grid(row=1, column=0,sticky="NSEW")
+label_d_ana = tk.Label(frame7d,text='ana',width = 11)
+label_d_ana.grid(row=0, column=1,sticky="NSEW")
+d_ana = ttk.Entry(frame7d,width = 11)
+d_ana.grid(row=1, column=1,sticky="NSEW")
+
+frame7c = ttk.Labelframe(frame7,text= "focusing")
+frame7c.grid(row=0,column=3,sticky="NSEW")
+frame7c.columnconfigure(0, weight=1)
+frame7c.rowconfigure(0, weight=1)
+frame7c.rowconfigure(1, weight=1)
+frame7c.rowconfigure(2, weight=1)
 
 #チェック有無変数
 calc_hf = tk.IntVar()
 # value=0にチェックを入れる
 calc_hf.set(0)
 
-calc_HF = tk.Checkbutton(frame6c, variable=calc_hf, text='on')
+calc_HF = tk.Checkbutton(frame7c, variable=calc_hf, text='on')
 calc_HF.grid(row=0, column=0,sticky="NSEW")
 
-aclna = tk.Label(frame6c,text='blade num')
+aclna = tk.Label(frame7c,text='blade num')
 aclna.grid(row=1, column=0,sticky="NSEW")
-acna = ttk.Entry(frame6c)
+acna = ttk.Entry(frame7c)
 acna.grid(row=2, column=0,sticky="NSEW")
 acna.insert(0,'7')
 
@@ -2071,6 +2105,10 @@ def constQscan_show_table():
     txt_ub_33.insert(0, round(UBtable['UB'][2,2],4))
     txt_ub_33.config(state="readonly") # 編集不可に設定
     
+    # d-spaceの取得
+    dmono = float(d_mono.get())
+    dana = float(d_ana.get())
+    
     # Bragg peak positionの取得
     bpe = float(Energy.get())
     bpc2 = float(bp_c2.get())
@@ -2127,7 +2165,7 @@ def constQscan_show_table():
     w_config=float(w_antiw.get())
     
     global angletable2
-    angletable2 = angle_calc2(astar, bstar, cstar, U,B,UB, bpe, bpc2, bpmu, bpnu, bp, fixe, w_config, hw_ini, hw_fin, hw_inc, h_cal, k_cal, l_cal)
+    angletable2 = angle_calc2(dmono,dana,astar, bstar, cstar, U,B,UB, bpe, bpc2, bpmu, bpnu, bp, fixe, w_config, hw_ini, hw_fin, hw_inc, h_cal, k_cal, l_cal)
     
     # mcuの取得
     mcu = float(cqs11.get())
@@ -2569,6 +2607,10 @@ def conostEscan_show_table():
     txt_ub_33.insert(0, round(UBtable['UB'][2,2],4))
     txt_ub_33.config(state="readonly") # 編集不可に設定
     
+    # d-spaceの取得
+    dmono = float(d_mono.get())
+    dana = float(d_ana.get())
+    
     # Bragg peak positionの取得
     bpe = float(Energy.get())
     bpc2 = float(bp_c2.get())
@@ -2717,7 +2759,7 @@ def conostEscan_show_table():
     w_config=float(w_antiw.get())
     
     global angletable3
-    angletable3 = angle_calc3(astar,bstar,cstar,U,B,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,w_config,hw_cal,h_ini,k_ini,l_ini,h_fin,k_fin,l_fin,h_inc,k_inc,l_inc)
+    angletable3 = angle_calc3(dmono,dana,astar,bstar,cstar,U,B,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,w_config,hw_cal,h_ini,k_ini,l_ini,h_fin,k_fin,l_fin,h_inc,k_inc,l_inc)
     
     # mcuの取得
     mcu = float(ces11.get())

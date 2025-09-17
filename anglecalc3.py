@@ -7,7 +7,7 @@ import sys
 
 from fit_initinal_angle import initial_value_with_multiple_planes
 
-def angle_calc3(astar,bstar,cstar,U,B,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,w_config,hw_cal,h_ini,k_ini,l_ini,h_fin,k_fin,l_fin,h_inc,k_inc,l_inc):
+def angle_calc3(dmono,dana,astar,bstar,cstar,U,B,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,w_config,hw_cal,h_ini,k_ini,l_ini,h_fin,k_fin,l_fin,h_inc,k_inc,l_inc):
     # bragg peakの位置からoffsetを算出
     hkl_bp=bp[0]*astar+bp[1]*bstar+bp[2]*cstar
     #計算されたrlu
@@ -182,9 +182,11 @@ def angle_calc3(astar,bstar,cstar,U,B,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,w_config,hw_
         else:
             ini_path = os.path.join(os.path.dirname(__file__), 'config.ini')
         config.read(ini_path)
-        d_mono = float(config['instrument']['d_mono'])
-        d_ana = float(config['instrument']['d_ana'])
+        #d_mono = float(config['instrument']['d_mono'])
+        #d_ana = float(config['instrument']['d_ana'])
         #d = 3.355  # PGの場合
+        d_mono = dmono
+        d_ana = dana
 
         # C1とA1の計算
         C1 = np.degrees(np.arcsin((2 * np.pi / d_mono) / (2 * np.sqrt(Ei / 2.072))))
