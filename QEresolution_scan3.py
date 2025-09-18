@@ -13,7 +13,7 @@ import pandas as pd
 
 from PIL import Image  # GIF 保存のために必要
 
-def calcresolution_scan3(astar,bstar,cstar,U,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values,initial_index=0,save_gif=False,gif_name="resolution.gif"):
+def calcresolution_scan3(astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values,initial_index=0,save_gif=False,gif_name="resolution.gif"):
     # save_gifがTrueだと保存、Falseだと非保存
 
     # INIファイルから設定を読み込む
@@ -257,9 +257,6 @@ def calcresolution_scan3(astar,bstar,cstar,U,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfoc
                             [0, 0, 0, 1]
                         ])
         """
-        sv1=U[0]
-        sv2=U[1]
-        sv3=U[2]
 
         Qx = sv1[0]*astar+sv1[1]*bstar+sv1[2]*cstar
         Qy = sv2[0]*astar+sv2[1]*bstar+sv2[2]*cstar
@@ -270,22 +267,22 @@ def calcresolution_scan3(astar,bstar,cstar,U,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfoc
         uq = Qvect / np.linalg.norm(Qvect)
 
         # MATLABの scalar(u,v) に対応 → 普通の内積でOK (すでに直交座標系に変換済みなので)
-        xq = np.dot(sv1, uq) / np.linalg.norm(sv1)
-        yq = np.dot(sv2, uq) / np.linalg.norm(sv2)
+        xq = np.dot(Qx, uq) / np.linalg.norm(Qx)
+        yq = np.dot(Qy, uq) / np.linalg.norm(Qy)
 
         # 回転角度
         theta_rad = np.arctan2(yq, xq)
 
         # 回転行列（MATLABの tmat と同じ形）
         rot_mat = np.array([
-            [ np.cos(theta_rad),  np.sin(theta_rad), 0, 0],
-            [-np.sin(theta_rad),  np.cos(theta_rad), 0, 0],
+            [ np.cos(theta_rad), -np.sin(theta_rad), 0, 0],
+            [ np.sin(theta_rad),  np.cos(theta_rad), 0, 0],
             [0,                  0,                  1, 0],
             [0,                  0,                  0, 1]
         ])
         
         # 相似変換
-        RM = rot_mat.T @ RM @ rot_mat
+        RM = rot_mat @ RM @ rot_mat.T
         
         # RMは(q//,q⊥,hw,qz)における空間分布
         # これを(qx(axis1),qy(axis2),hw,qz)に置ける空間分布に変換する。
@@ -559,22 +556,23 @@ def calcresolution_scan3(astar,bstar,cstar,U,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfoc
         uq = Qvect / np.linalg.norm(Qvect)
 
         # MATLABの scalar(u,v) に対応 → 普通の内積でOK (すでに直交座標系に変換済みなので)
-        xq = np.dot(sv1, uq) / np.linalg.norm(sv1)
-        yq = np.dot(sv2, uq) / np.linalg.norm(sv2)
+        xq = np.dot(Qx, uq) / np.linalg.norm(Qx)
+        yq = np.dot(Qy, uq) / np.linalg.norm(Qy)
 
         # 回転角度
         theta_rad = np.arctan2(yq, xq)
+        
         #print(theta_rad/pi*180)
         # 回転行列（MATLABの tmat と同じ形）
         rot_mat = np.array([
-            [ np.cos(theta_rad),  np.sin(theta_rad), 0, 0],
-            [-np.sin(theta_rad),  np.cos(theta_rad), 0, 0],
+            [ np.cos(theta_rad), -np.sin(theta_rad), 0, 0],
+            [ np.sin(theta_rad),  np.cos(theta_rad), 0, 0],
             [0,                  0,                  1, 0],
             [0,                  0,                  0, 1]
         ])
         
         # 相似変換
-        RM = rot_mat.T @ RM @ rot_mat
+        RM = rot_mat @ RM @ rot_mat.T
         
         # RMは(q//,q⊥,hw,qz)における空間分布
         # これを(qx(axis1),qy(axis2),hw,qz)に置ける空間分布に変換する。

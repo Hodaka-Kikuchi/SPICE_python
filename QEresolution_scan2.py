@@ -13,7 +13,7 @@ import pandas as pd
 
 from PIL import Image  # GIF 保存のために必要
 
-def calcresolution_scan2(astar,bstar,cstar,U,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values,initial_index=0,save_gif=False,gif_name="resolution.gif"):
+def calcresolution_scan2(astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values,initial_index=0,save_gif=False,gif_name="resolution.gif"):
     # save_gifがTrueだと保存、Falseだと非保存
 
     # INIファイルから設定を読み込む
@@ -257,8 +257,6 @@ def calcresolution_scan2(astar,bstar,cstar,U,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfoc
                             [0, 0, 0, 1]
                         ])
         """
-        sv1=U[0]
-        sv2=U[1]
         
         Qx = sv1[0]*astar+sv1[1]*bstar+sv1[2]*cstar
         Qy = sv2[0]*astar+sv2[1]*bstar+sv2[2]*cstar
@@ -865,7 +863,7 @@ def calcresolution_scan2(astar,bstar,cstar,U,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfoc
         # 必要であれば同様に情報を追加（または省略）
         ax3.set_xlim([-Xrange_lim/np.linalg.norm(Qx), Xrange_lim/np.linalg.norm(Qx)])
         ax3.set_ylim([-Yrange_lim/np.linalg.norm(Qy), Yrange_lim/np.linalg.norm(Qy)])
-        ax3.set_aspect(np.linalg.norm(Qy)/np.linalg.norm(Qx))  # ここで縦横比を1:1に固定
+        #ax3.set_aspect(np.linalg.norm(Qy)/np.linalg.norm(Qx))  # ここで縦横比を1:1に固定
         ax3.grid(True)
         
         # フレーム保存（GIF用）

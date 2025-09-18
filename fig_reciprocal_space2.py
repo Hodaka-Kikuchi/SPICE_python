@@ -59,46 +59,49 @@ def plot_reciprocal_space(bpe, bpc2, cphw, cp, fixe, sv1, sv2, RLtable,A_sets, C
     U2 = uu2 / np.linalg.norm(uu2)
     """
     
-    # sp1v, sp2vベクトルの計算
+    # --- 3D格子ベクトルを計算 ---
     sp1v = sv1[0] * astar + sv1[1] * bstar + sv1[2] * cstar
     sp2v = sv2[0] * astar + sv2[1] * bstar + sv2[2] * cstar
-    
-    # 角度計算 (cosθ = (sp1v ⋅ sp2v) / (||sp1v|| * ||sp2v||))
-    dot_product = np.dot(sp1v, sp2v)
-    norm_sp1v = np.linalg.norm(sp1v)
-    norm_sp2v = np.linalg.norm(sp2v)
-    cosine_theta = dot_product / (norm_sp1v * norm_sp2v)
-    angle_deg = np.degrees(np.arccos(np.clip(cosine_theta, -1.0, 1.0)))  # 角度を度で計算
-    
-    # XY空間上にベクトルを投影   
-    sp1v_2d = [norm_sp1v,0]
-    sp2v_2d = [norm_sp2v * np.cos(np.radians(angle_deg)),norm_sp2v * np.sin(np.radians(angle_deg))]
 
-    # 格子点の計算 (整数倍で描画)
-    n_points1 = int(2*ki_cal/norm_sp1v)+1  # 格子点の数
+    # --- 2D基底を構築 ---
+    # e1: sp1v を正規化したベクトル (x軸方向)
+    e1 = sp1v / np.linalg.norm(sp1v)
+
+    # e2: sp2v を e1 に直交化 (Gram-Schmidt法)
+    proj = np.dot(sp2v, e1) * e1
+    orth = sp2v - proj
+    e2 = orth / np.linalg.norm(orth)
+
+    # --- 3D→2D変換行列 ---
+    basis2D = np.vstack([e1, e2])  # shape (2,3)
+
+    def project_to_2d(vec3):
+        """3Dベクトルを2D平面に射影"""
+        return basis2D @ vec3
+
+    # --- 2D座標に変換 ---
+    sp1v_2d = project_to_2d(sp1v)
+    sp2v_2d = project_to_2d(sp2v)
+
+    # --- 格子点生成 ---
+    n_points1 = int(2*ki_cal/np.linalg.norm(sp1v))+1
+    n_points2 = int(2*ki_cal/np.linalg.norm(sp2v))+1
+
     grid_points = []
-
-     # 格子点の生成 (i, j は整数)
-    n_points2 = int(2*ki_cal/norm_sp2v)+1  # 格子点の数
-    grid_points = []
-
-    # 格子点の生成 (sp1v_2d と sp2v_2d の線形和)
     for i in range(-n_points1, n_points1+1):
         for j in range(-n_points2, n_points2+1):
-            grid_point = i * np.array(sp1v_2d) + j * np.array(sp2v_2d)  # 格子点は2次元ベクトルとして計算
-            grid_points.append(grid_point)
+            grid_points.append(i*sp1v_2d + j*sp2v_2d)
 
-    grid_points = np.array(grid_points)  # 格子点をnumpy配列に変換
-    
-    # hkl_calベクトルの計算 (sp1v_2d と sp2v_2d の線形和)
-    hkl_cal = QE_sets[initial_index][1] * astar + QE_sets[initial_index][2] * bstar + QE_sets[initial_index][3] * cstar
-    
-    # 線形結合を解く
-    c1, c2 = solve_linear_combination(sp1v, sp2v, hkl_cal)
-    
-    # プロットの準備
-    fig, ax = plt.subplots(figsize=(8, 5))  # 図のサイズを縮小
-    plt.subplots_adjust(left=0.01, bottom=0.25)
+    grid_points = np.array(grid_points)
+
+    # --- hklベクトルを2Dへ ---
+    hkl_cal = QE_sets[initial_index][1]*astar + QE_sets[initial_index][2]*bstar + QE_sets[initial_index][3]*cstar
+    hkl_cal_2d = project_to_2d(hkl_cal)
+
+    # --- プロット ---
+    fig, ax = plt.subplots(figsize=(8, 5))
+    ax.scatter(grid_points[:,0], grid_points[:,1], s=10, color="blue", alpha=0.5)
+    ax.scatter(hkl_cal_2d[0], hkl_cal_2d[1], color="red", marker="x", s=100)
     
     # スライダー設定
     ax_slider = plt.axes([0.25, 0.10, 0.65, 0.03], facecolor='lightgoldenrodyellow')
@@ -134,7 +137,6 @@ def plot_reciprocal_space(bpe, bpc2, cphw, cp, fixe, sv1, sv2, RLtable,A_sets, C
         
         hkl_x = c1 * sp1v_2d[0] + c2 * sp2v_2d[0]
         hkl_y = c1 * sp1v_2d[1] + c2 * sp2v_2d[1]
-        
         # hkl_calベクトルを描画
         ax.quiver(0, 0, hkl_x, hkl_y, angles='xy', scale_units='xy', scale=1, color='red', label='τ (ki-kf)')
         
