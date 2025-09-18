@@ -233,13 +233,14 @@ def calcresolution_scan4(astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe
 
     # 初期タイトル
     plt.suptitle(
-        f'h: {QE_sets[initial_index][1]}, k: {QE_sets[initial_index][2]}, l: {QE_sets[initial_index][3]}',
+        f'ℏω: {QE_sets[0][0]} meV, h: {QE_sets[0][1]}, k: {QE_sets[0][2]}, l: {QE_sets[0][3]} ~ ℏω: {QE_sets[0][0]} meV, h: {QE_sets[-1][1]}, k: {QE_sets[-1][2]}, l: {QE_sets[-1][3]}',
         fontsize=12
     )
     
     # ここでscanの最初と最後のポイントの分解能の計算する。
     # 空リストに格納
     X_vals, Y_vals, Z_vals, W_vals = [], [], [], []
+    c1_list,c2_list,c3_list = [],[],[]
     for index in range(len(A_sets)):
         A1, A2, A3 = A_sets[index]
         hw = QE_sets[index][0]
@@ -424,6 +425,10 @@ def calcresolution_scan4(astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe
 
         # 線形方程式を解く
         c1, c2, c3 = np.linalg.solve(M, Qvect)
+        # リストに追加
+        c1_list.append(c1)
+        c2_list.append(c2)
+        c3_list.append(c3)
         
         # RMは(q//,q⊥,hw,qz)における空間分布
         # これを(qx(axis1),qy(axis2),hw,qz)に置ける空間分布に変換する。
@@ -469,42 +474,42 @@ def calcresolution_scan4(astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe
         plot_ellipse4(Qz,A_wz, B_wz, C_wz, D_wz, E_wz, F_wz, Wrange_lim, Zrange_lim, ax4, label = "", color="green",shift_x=np.linalg.norm(Qz)*c3, shift_y=QE_sets[index][0])
         
         
-        # === Q_parallel vs E の楕円描画 ===
-        ax1.axhline(0, color="black", linestyle="--", linewidth=0.5)
-        ax1.axvline(0, color="black", linestyle="--", linewidth=0.5)
-        ax1.set_xlabel(r"$\delta Q_{x}$ (r.l.u.)")
-        ax1.set_ylabel("δℏω (meV)")
-        ax1.set_title(r"$Q_{x} \parallel$" + f"({sv1[0]:.4f}, {sv1[1]:.4f}, {sv1[2]:.4f})", fontsize=12)
-        ax1.set_xlim([c1-Xrange_lim/np.linalg.norm(Qx), c1+Xrange_lim/np.linalg.norm(Qx)])
-        ax1.set_ylim([min([qe[0] for qe in QE_sets])-Zrange_lim, max([qe[0] for qe in QE_sets])+Zrange_lim])
-        ax1.grid(True)
+    # === Q_parallel vs E の楕円描画 ===
+    ax1.axhline(0, color="black", linestyle="--", linewidth=0.5)
+    ax1.axvline(0, color="black", linestyle="--", linewidth=0.5)
+    ax1.set_xlabel(r"$\delta Q_{x}$ (r.l.u.)")
+    ax1.set_ylabel("δℏω (meV)")
+    ax1.set_title(r"$Q_{x} \parallel$" + f"({sv1[0]:.4f}, {sv1[1]:.4f}, {sv1[2]:.4f})", fontsize=12)
+    ax1.set_xlim([min(c1_list)-Xrange_lim/np.linalg.norm(Qx), max(c1_list)+Xrange_lim/np.linalg.norm(Qx)])
+    ax1.set_ylim([min([qe[0] for qe in QE_sets])-Zrange_lim, max([qe[0] for qe in QE_sets])+Zrange_lim])
+    ax1.grid(True)
 
-        # === Q_perp vs E の楕円描画===
-        ax2.axhline(0, color="black", linestyle="--", linewidth=0.5)
-        ax2.axvline(0, color="black", linestyle="--", linewidth=0.5)
-        ax2.set_xlabel(r"$\delta Q_{y}$ (r.l.u.)")
-        ax2.set_ylabel("δℏω (meV)")
-        ax2.set_title(r"$Q_{y} \parallel$" + f"({sv2[0]:.4f}, {sv2[1]:.4f}, {sv2[2]:.4f})", fontsize=12)
-        ax2.set_xlim([c2-Yrange_lim/np.linalg.norm(Qy), c2+Yrange_lim/np.linalg.norm(Qy)])
-        ax2.set_ylim([min([qe[0] for qe in QE_sets])-Zrange_lim, max([qe[0] for qe in QE_sets])+Zrange_lim])
-        ax2.grid(True)
-        
-        # === Q_perp vs Q_parallelの楕円描画===
-        ax3.axhline(0, color="black", linestyle="--", linewidth=0.5)
-        ax3.axvline(0, color="black", linestyle="--", linewidth=0.5)
-        ax3.set_xlabel(r"$\delta Q_{x}$ (r.l.u.)")
-        ax3.set_ylabel(r"$\delta Q_{y}$ (r.l.u.)")
-        ax3.set_title(r"$\delta Q_{x} ({\parallel}axis1)$ vs $\delta Q_{y} ({\parallel}axis2)$ ellipse", fontsize=12)
-        ax3.set_xlim([c1-Xrange_lim/np.linalg.norm(Qx), c1+Xrange_lim/np.linalg.norm(Qx)])
-        ax3.set_ylim([c2-Yrange_lim/np.linalg.norm(Qy), c2+Yrange_lim/np.linalg.norm(Qy)])
-        ax3.grid(True)
-        
-        # === Q_perp vs E の楕円描画===
-        ax4.axhline(0, color="green", linestyle="--", linewidth=0.5)
-        ax4.axvline(0, color="green", linestyle="--", linewidth=0.5)
-        ax4.set_xlabel(r"$\delta Q_{z}$ (r.l.u.)")
-        ax4.set_ylabel("δℏω (meV)")
-        ax4.set_title(r"$Q_{z} \parallel$" + f"({sv3[0]:.4f}, {sv3[1]:.4f}, {sv3[2]:.4f})", fontsize=12)
-        ax4.set_xlim([c3-Wrange_lim/np.linalg.norm(Qz), c3+Wrange_lim/np.linalg.norm(Qz)])
-        ax4.set_ylim([min([qe[0] for qe in QE_sets])-Zrange_lim, max([qe[0] for qe in QE_sets])+Zrange_lim])
-        ax4.grid(True)
+    # === Q_perp vs E の楕円描画===
+    ax2.axhline(0, color="black", linestyle="--", linewidth=0.5)
+    ax2.axvline(0, color="black", linestyle="--", linewidth=0.5)
+    ax2.set_xlabel(r"$\delta Q_{y}$ (r.l.u.)")
+    ax2.set_ylabel("δℏω (meV)")
+    ax2.set_title(r"$Q_{y} \parallel$" + f"({sv2[0]:.4f}, {sv2[1]:.4f}, {sv2[2]:.4f})", fontsize=12)
+    ax2.set_xlim([min(c2_list)-Yrange_lim/np.linalg.norm(Qy), max(c2_list)+Yrange_lim/np.linalg.norm(Qy)])
+    ax2.set_ylim([min([qe[0] for qe in QE_sets])-Zrange_lim, max([qe[0] for qe in QE_sets])+Zrange_lim])
+    ax2.grid(True)
+    
+    # === Q_perp vs Q_parallelの楕円描画===
+    ax3.axhline(0, color="black", linestyle="--", linewidth=0.5)
+    ax3.axvline(0, color="black", linestyle="--", linewidth=0.5)
+    ax3.set_xlabel(r"$\delta Q_{x}$ (r.l.u.)")
+    ax3.set_ylabel(r"$\delta Q_{y}$ (r.l.u.)")
+    ax3.set_title(r"$\delta Q_{x} ({\parallel}axis1)$ vs $\delta Q_{y} ({\parallel}axis2)$ ellipse", fontsize=12)
+    ax3.set_xlim([min(c1_list)-Xrange_lim/np.linalg.norm(Qx), max(c1_list)+Xrange_lim/np.linalg.norm(Qx)])
+    ax3.set_ylim([min(c2_list)-Yrange_lim/np.linalg.norm(Qy), max(c2_list)+Yrange_lim/np.linalg.norm(Qy)])
+    ax3.grid(True)
+    
+    # === Q_perp vs E の楕円描画===
+    ax4.axhline(0, color="green", linestyle="--", linewidth=0.5)
+    ax4.axvline(0, color="green", linestyle="--", linewidth=0.5)
+    ax4.set_xlabel(r"$\delta Q_{z}$ (r.l.u.)")
+    ax4.set_ylabel("δℏω (meV)")
+    ax4.set_title(r"$Q_{z} \parallel$" + f"({sv3[0]:.4f}, {sv3[1]:.4f}, {sv3[2]:.4f})", fontsize=12)
+    ax4.set_xlim([min(c3_list)-Wrange_lim/np.linalg.norm(Qz), max(c3_list)+Wrange_lim/np.linalg.norm(Qz)])
+    ax4.set_ylim([min([qe[0] for qe in QE_sets])-Zrange_lim, max([qe[0] for qe in QE_sets])+Zrange_lim])
+    ax4.grid(True)
