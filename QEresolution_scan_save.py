@@ -207,29 +207,30 @@ def calcresolution_save(astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fixe
         Minv[3, 3] += Q**2 * etaSp**2# / (8 * np.log(2))
         RM = np.linalg.inv(Minv)
         
-        # 座標変換
         Qx = sv1[0]*astar+sv1[1]*bstar+sv1[2]*cstar
         Qy = sv2[0]*astar+sv2[1]*bstar+sv2[2]*cstar
         Qvect = QE_sets[index][1]*astar+QE_sets[index][2]*bstar+QE_sets[index][3]*cstar
         
-        # 行列を作成して連立方程式を解く
-        M = np.column_stack((Qx, Qy))  # 3x2 行列
-        A_B, residuals, rank, s = np.linalg.lstsq(M, Qvect, rcond=None)
-        A, B = A_B
+        # Q方向の単位ベクトル
+        uq = Qvect / np.linalg.norm(Qvect)
 
-        # 角度の計算(ラジアン)
-        theta_rad = np.arctan2(B, A)
+        # MATLABの scalar(u,v) に対応 → 普通の内積でOK (すでに直交座標系に変換済みなので)
+        xq = np.dot(sv1, uq) / np.linalg.norm(sv1)
+        yq = np.dot(sv2, uq) / np.linalg.norm(sv2)
 
-        # RMは(q//,q⊥,hw,qz)における空間分布
-        # 散乱面内で回転。
+        # 回転角度
+        theta_rad = np.arctan2(yq, xq)
+
+        # 回転行列（MATLABの tmat と同じ形）
         rot_mat = np.array([
-                            [np.cos(theta_rad), -np.sin(theta_rad), 0, 0],
-                            [np.sin(theta_rad),  np.cos(theta_rad), 0, 0],
-                            [0, 0, 1, 0],
-                            [0, 0, 0, 1]
-                        ])
+            [ np.cos(theta_rad),  np.sin(theta_rad), 0, 0],
+            [-np.sin(theta_rad),  np.cos(theta_rad), 0, 0],
+            [0,                  0,                  1, 0],
+            [0,                  0,                  0, 1]
+        ])
+        
         # 相似変換
-        RM = rot_mat @ RM @ rot_mat.T
+        RM = rot_mat.T @ RM @ rot_mat
         
         # RMは(q//,q⊥,hw,qz)における空間分布
         # これを(qx(axis1),qy(axis2),hw,qz)に置ける空間分布に変換する。

@@ -1,6 +1,6 @@
 # cd C:\DATA_HK\python\SPICE_python
 # 右上にバージョン情報を表示
-__version__ = '1.12.0'
+__version__ = '1.12.1'
 """
 セマンティック バージョニング (Semantic Versioning)
 セマンティック バージョニング（セムバ―、SemVer）は、バージョン番号を「MAJOR.MINOR.PATCH」の形式で表します。それぞれの部分には以下のような意味があります：
@@ -410,6 +410,7 @@ from fittingLC import fit_lattice_constants
 #from QEresolution import calcresolution
 #from QEresolution_scan import calcresolution_scan
 from QEresolution_scan2 import calcresolution_scan2
+from QEresolution_scan3 import calcresolution_scan3
 from QEresolution_scan_save import calcresolution_save
 from fig_reciprocal_space import plot_reciprocal_space
 
@@ -1011,9 +1012,11 @@ def on_anglecalc():
     """angleを計算して返す"""
     params = get_parameters()
     
-    # サンプル点の取得
-    sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
-    sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
+    # UBtableを取得し、辞書から必要な変数を取り出す
+    UBtable = on_UBcalc()
+    U=UBtable['U']
+    sv1=U[0]
+    sv2=U[1]
     
     # RLtableを取得し、辞書から必要な変数を取り出す
     RLtable = on_Rlcalc()
@@ -1026,11 +1029,6 @@ def on_anglecalc():
     n_a = RLtable['n_a']
     n_b = RLtable['n_b']
     n_c = RLtable['n_c']
-    
-    # UBtableを取得し、辞書から必要な変数を取り出す
-    UBtable = on_UBcalc()
-    sv1 = UBtable['sv1']
-    sv2 = UBtable['sv2']
     
     # ノルムの計算
     axis1 = sv1[0]*astar+sv1[1]*bstar+sv1[2]*cstar
@@ -1435,8 +1433,10 @@ def calculate_angle():
         RLtable = RL_calc(**params)  # RL_calcに辞書を展開して渡す
         
         # 散乱面の取得
-        sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
-        sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
+        UBtable = on_UBcalc()
+        U=UBtable['U']
+        sv1=U[0]
+        sv2=U[1]
         
         cp_h_entry = acbh.get()
         try:
@@ -1503,8 +1503,10 @@ def calculate_angle():
         #calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values)
         
         # サンプル点の取得
-        sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
-        sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
+        UBtable = on_UBcalc()
+        U=UBtable['U']
+        sv1=U[0]
+        sv2=U[1]
         
         # RLtableを取得し、辞書から必要な変数を取り出す
         RLtable = on_Rlcalc()
@@ -1512,7 +1514,11 @@ def calculate_angle():
         bstar = RLtable['bstar']
         cstar = RLtable['cstar']
         
-        calcresolution_scan2(astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values)
+        UBtable = on_UBcalc()
+        U=UBtable['U']
+        B=UBtable['B']
+        UB=UBtable['UB']
+        calcresolution_scan3(astar,bstar,cstar,U,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values)
     
     plt.show()
 
@@ -1985,7 +1991,6 @@ def constQscan_show_table():
     
     # UBtableを取得し、辞書から必要な変数を取り出す
     UBtable = on_UBcalc()
-    
     U=UBtable['U']
     B=UBtable['B']
     UB=UBtable['UB']
@@ -2311,9 +2316,11 @@ def constQscan_show_table():
         "mos_ana_h": mos_ana_h.get(),
         "mos_ana_v": mos_ana_v.get(),
     }
-     # サンプル点の取得
-    sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
-    sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
+    # サンプル点の取得
+    UBtable = on_UBcalc()
+    U=UBtable['U']
+    sv1=U[0]
+    sv2=U[1]
     
     # RLtableを取得し、辞書から必要な変数を取り出す
     RLtable = on_Rlcalc()
@@ -2328,8 +2335,10 @@ def constQscan_show_table():
         RLtable = RL_calc(**params)  # RL_calcに辞書を展開して渡す
         
         # 散乱面の取得
-        sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
-        sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
+        UBtable = on_UBcalc()
+        U=UBtable['U']
+        sv1=U[0]
+        sv2=U[1]
         
         cp_h_entry = acbh.get()
         try:
@@ -2375,8 +2384,10 @@ def constQscan_show_table():
         #calcresolution_scan_with_gif(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values)
         
         # サンプル点の取得
-        sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
-        sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
+        UBtable = on_UBcalc()
+        U=UBtable['U']
+        sv1=U[0]
+        sv2=U[1]
         
         # RLtableを取得し、辞書から必要な変数を取り出す
         RLtable = on_Rlcalc()
@@ -2384,7 +2395,7 @@ def constQscan_show_table():
         bstar = RLtable['bstar']
         cstar = RLtable['cstar']
         
-        calcresolution_scan2(astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cQ)
+        calcresolution_scan3(astar,bstar,cstar,U,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cQ)
 
     plt.show()
     
@@ -2487,7 +2498,6 @@ def conostEscan_show_table():
     
     # UBtableを取得し、辞書から必要な変数を取り出す
     UBtable = on_UBcalc()
-    
     U=UBtable['U']
     B=UBtable['B']
     UB=UBtable['UB']
@@ -2877,8 +2887,10 @@ def conostEscan_show_table():
             tree.tag_configure("blue", foreground="blue")  # 'red' タグを設定
             tree.item(item_id, tags=("blue",))  # 行に 'red' タグを適用
      # サンプル点の取得
-    sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
-    sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
+    UBtable = on_UBcalc()
+    U=UBtable['U']
+    sv1=U[0]
+    sv2=U[1]
     
     # RLtableを取得し、辞書から必要な変数を取り出す
     RLtable = on_Rlcalc()
@@ -2898,8 +2910,10 @@ def conostEscan_show_table():
         RLtable = RL_calc(**params)  # RL_calcに辞書を展開して渡す
         
         # 散乱面の取得
-        sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
-        sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
+        UBtable = on_UBcalc()
+        U=UBtable['U']
+        sv1=U[0]
+        sv2=U[1]
         
         cp_h_entry = acbh.get()
         try:
@@ -2949,8 +2963,10 @@ def conostEscan_show_table():
         #calcresolution_scan_with_gif(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values)
         
         # サンプル点の取得
-        sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
-        sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
+        UBtable = on_UBcalc()
+        U=UBtable['U']
+        sv1=U[0]
+        sv2=U[1]
         
         # RLtableを取得し、辞書から必要な変数を取り出す
         RLtable = on_Rlcalc()
@@ -2958,7 +2974,7 @@ def conostEscan_show_table():
         bstar = RLtable['bstar']
         cstar = RLtable['cstar']
         
-        calcresolution_scan2(astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cE)
+        calcresolution_scan3(astar,bstar,cstar,U,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cE)
         
     plt.show()
     
@@ -3509,8 +3525,11 @@ def save_cQ_table():
                 writer.writerow(params.keys())
                 writer.writerow([f'{v:.4f}' for v in params.values()])
                 # サンプル点の取得
-                sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
-                sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
+                UBtable = on_UBcalc()
+                U=UBtable['U']
+                sv1=U[0]
+                sv2=U[1]
+                sv3=U[2]
                 # 最初の一行だけ header0 を書く
                 """
                 header0 = [
@@ -3575,6 +3594,14 @@ def save_cQ_table():
                     ')',
                 ]
                 writer.writerow(header02)
+                header03 = [
+                    'Qz//(',
+                    f'{float(sv3[0]):.4f}',
+                    f'{float(sv3[1]):.4f}',
+                    f'{float(sv3[2]):.4f}',
+                    ')',
+                ]
+                writer.writerow(header03)
                 # ヘッダーを書き込む
                 # ヘッダーに 'offset' を含めない
                 header_keys = ['hw', 'h', 'k', 'l', 'C1', 'A1', 'C2', 'A2', 'C3', 'A3', 'mu', 'nu']
@@ -3605,8 +3632,11 @@ def save_cE_table():
                 writer.writerow(params.keys())
                 writer.writerow([f'{v:.4f}' for v in params.values()])# 格子情報を出力
                 # サンプル点の取得
-                sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
-                sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
+                UBtable = on_UBcalc()
+                U=UBtable['U']
+                sv1=U[0]
+                sv2=U[1]
+                sv3=U[2]
                 # 最初の一行だけ header0 を書く
                 """
                 header0 = [
@@ -3671,6 +3701,14 @@ def save_cE_table():
                     ')',
                 ]
                 writer.writerow(header02)
+                header03 = [
+                    'Qz//(',
+                    f'{float(sv3[0]):.4f}',
+                    f'{float(sv3[1]):.4f}',
+                    f'{float(sv3[2]):.4f}',
+                    ')',
+                ]
+                writer.writerow(header03)
                 
                 # ヘッダーに 'offset' を含めない
                 header_keys = ['hw', 'h', 'k', 'l', 'C1', 'A1', 'C2', 'A2', 'C3', 'A3', 'mu', 'nu']
@@ -3701,8 +3739,11 @@ def save_cQ_resomat():
                 writer.writerow(params.keys())
                 writer.writerow([f'{v:.4f}' for v in params.values()])
                 # サンプル点の取得
-                sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
-                sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
+                UBtable = on_UBcalc()
+                U=UBtable['U']
+                sv1=U[0]
+                sv2=U[1]
+                sv3=U[2]
                 # 最初の一行だけ header0 を書く
                 """
                 header0 = [
@@ -3767,6 +3808,14 @@ def save_cQ_resomat():
                     ')',
                 ]
                 writer.writerow(header02)
+                header03 = [
+                    'Qz//(',
+                    f'{float(sv3[0]):.4f}',
+                    f'{float(sv3[1]):.4f}',
+                    f'{float(sv3[2]):.4f}',
+                    ')',
+                ]
+                writer.writerow(header03)
                 # この各結果を CSV に書き込む
                 for i in range(len(scan_cond_cQ[0])):  # または len(scan_cond[0])
                     # ヘッダーを書き込む
@@ -3807,8 +3856,11 @@ def save_cE_resomat():
                 writer.writerow(params.keys())
                 writer.writerow([f'{v:.4f}' for v in params.values()])
                 # サンプル点の取得
-                sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
-                sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
+                UBtable = on_UBcalc()
+                U=UBtable['U']
+                sv1=U[0]
+                sv2=U[1]
+                sv3=U[2]
                 # 最初の一行だけ header0 を書く
                 """
                 header0 = [
@@ -3873,6 +3925,14 @@ def save_cE_resomat():
                     ')',
                 ]
                 writer.writerow(header02)
+                header03 = [
+                    'Qz//(',
+                    f'{float(sv3[0]):.4f}',
+                    f'{float(sv3[1]):.4f}',
+                    f'{float(sv3[2]):.4f}',
+                    ')',
+                ]
+                writer.writerow(header03)
                 # この各結果を CSV に書き込む
                 for i in range(len(scan_cond_cE[0])):  # または len(scan_cond[0])
                     
