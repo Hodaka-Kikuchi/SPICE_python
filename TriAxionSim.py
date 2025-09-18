@@ -1,6 +1,6 @@
 # cd C:\DATA_HK\python\SPICE_python
 # 右上にバージョン情報を表示
-__version__ = '1.12.1'
+__version__ = '1.13.0'
 """
 セマンティック バージョニング (Semantic Versioning)
 セマンティック バージョニング（セムバ―、SemVer）は、バージョン番号を「MAJOR.MINOR.PATCH」の形式で表します。それぞれの部分には以下のような意味があります：
@@ -301,6 +301,10 @@ def load_values_from_ini():
     # fig_resoの初期値を設定
     fig_reci_value = int(config['option'].get('fig_reci', '1'))  # 1がデフォルト
     fig_reci.set(fig_reci_value)
+    
+    # グラフの表示方法
+    mode_value = config['option'].get('mode', 'slider')
+    mode_var.set(mode_value)
 
 def save_values_to_ini():
     """
@@ -401,6 +405,7 @@ def save_values_to_ini():
         'fig_reci': str(fig_reci.get()),
         'calc_hf': str(calc_hf.get()),
         'gm': str(gm.get()),
+        'mode': mode_var.get(),
     })
     
     # INIファイルに書き込み
@@ -420,6 +425,7 @@ from fittingLC import fit_lattice_constants
 #from QEresolution_scan import calcresolution_scan
 #from QEresolution_scan2 import calcresolution_scan2
 from QEresolution_scan3 import calcresolution_scan3 # Qz方向にも拡張
+from QEresolution_scan4 import calcresolution_scan4 # 一覧表示に対応
 from QEresolution_scan_save import calcresolution_save
 from fig_reciprocal_space import plot_reciprocal_space
 
@@ -1548,7 +1554,13 @@ def calculate_angle():
         bstar = RLtable['bstar']
         cstar = RLtable['cstar']
         
-        calcresolution_scan3(astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values)
+        if mode_var.get() == "slider":
+            # slider用処理
+            calcresolution_scan3(astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values)
+        elif mode_var.get() == "overview":
+            # overview用処理
+            calcresolution_scan4(astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values)
+        
     
     plt.show()
 
@@ -1806,7 +1818,7 @@ frame5 = ttk.Labelframe(root)
 frame5.grid(row=6,column=0,sticky="NSEW")
 
 frame5.columnconfigure(0, weight=9)
-frame5.columnconfigure(1, weight=1)
+frame5.columnconfigure(1, weight=2)
 frame5.rowconfigure(0, weight=1)
 
 # hardware limit
@@ -1908,6 +1920,7 @@ frame5b = ttk.Labelframe(frame5,text= "figure")
 frame5b.grid(row=0,column=1,sticky="NSEW")
 
 frame5b.columnconfigure(0, weight=1)
+frame5b.columnconfigure(1, weight=1)
 frame5b.rowconfigure(0, weight=1)
 frame5b.rowconfigure(1, weight=1)
 frame5b.rowconfigure(2, weight=1)
@@ -1926,16 +1939,25 @@ fig_reci = tk.IntVar()
 # value=0にチェックを入れる
 fig_reci.set(1)
 
-show_fig_reci = tk.Checkbutton(frame5b, variable=fig_reci, text='reci')
-show_fig_reci.grid(row=1, column=0,sticky="NSEW")
+show_fig_reci = tk.Checkbutton(frame5b, variable=fig_reci, text='reci',width=14)
+show_fig_reci.grid(row=0, column=1,sticky="NSEW")
 
 # チェック有無変数
 fig_reso = tk.IntVar()
 # value=0にチェックを入れる
 fig_reso.set(1)
 
-show_fig_reso = tk.Checkbutton(frame5b, variable=fig_reso, text='reso')
-show_fig_reso.grid(row=2, column=0,sticky="NSEW")
+show_fig_reso = tk.Checkbutton(frame5b, variable=fig_reso, text='reso',width=14)
+show_fig_reso.grid(row=1, column=0,rowspan=2,sticky="NSEW")
+
+# グラフの表示方法の選択
+# ラジオボタンの作成
+mode_var = tk.StringVar(value="slider")  # デフォルトを"slider"に
+rb_slider = ttk.Radiobutton(frame5b, text="slider", variable=mode_var, value="slider",width=21)
+rb_slider.grid(row=1, column=1,sticky="NSEW")
+rb_overview = ttk.Radiobutton(frame5b, text="overview", variable=mode_var, value="overview",width=21)
+rb_overview.grid(row=2, column=1,sticky="NSEW")
+# mode_var.get()で値を取得
 
 # グリッドの重みを設定
 tab_002.columnconfigure(0, weight=1)
@@ -2421,8 +2443,12 @@ def constQscan_show_table():
         bstar = RLtable['bstar']
         cstar = RLtable['cstar']
         
-        calcresolution_scan3(astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cQ)
-
+        if mode_var.get() == "slider":
+            # slider用処理
+            calcresolution_scan3(astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cQ)
+        elif mode_var.get() == "overview":
+            # overview用処理
+            calcresolution_scan4(astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cQ)
     plt.show()
     
     return angletable2,reso_mat_cQ,col_cond_cQ,scan_cond_cQ
@@ -2998,7 +3024,12 @@ def conostEscan_show_table():
         bstar = RLtable['bstar']
         cstar = RLtable['cstar']
         
-        calcresolution_scan3(astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cE)
+        if mode_var.get() == "slider":
+            # slider用処理
+            calcresolution_scan3(astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cE)
+        elif mode_var.get() == "overview":
+            # overview用処理
+            calcresolution_scan4(astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cE)
         
     plt.show()
     

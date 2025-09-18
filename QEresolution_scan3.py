@@ -52,7 +52,7 @@ def calcresolution_scan3(astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe
     analyzer_width = float(config['settings']['analyzer_width'])
     
     fig, axs = plt.subplots(2, 2, figsize=(10, 8))  # 2x2グリッドのサブプロット作成
-    plt.subplots_adjust(left=0.1, bottom=0.25, wspace=0.3, hspace=0.4)
+    plt.subplots_adjust(left=0.1, bottom=0.15, wspace=0.3, hspace=0.4)
 
     # サブプロットの指定：左上 (0, 0)、右上 (0, 1)
     ax1 = axs[0,0]
@@ -61,19 +61,20 @@ def calcresolution_scan3(astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe
     ax4 = axs[1,1]
 
     # スライダー設定（描画領域調整が必要）
-    ax_slider = plt.axes([0.20, 0.10, 0.60, 0.03], facecolor='lightgoldenrodyellow')
+    ax_slider = plt.axes([0.20, 0.05, 0.60, 0.03], facecolor='lightgoldenrodyellow')
     slider = Slider(ax_slider, 'scan number', 1, len(A_sets), valinit=initial_index + 1, valstep=1)
     
     # フレーム保存用リスト
     frames = []
 
     # 楕円描画関数の中で ax1, ax2 に描くように変更
+    """
     # 例: Q_parallel を ax1 に、Q_perp を ax2 に描画する
     ax1.set_title("$Q_{\\parallel}$ vs ℏω ellipse", fontsize=12)
     ax2.set_title("$Q_{\\perp}$ vs ℏω ellipse", fontsize=12)
     ax3.set_title("$Q_{\\parallel}$ vs $Q_{\\perp}$ ellipse", fontsize=12)
     ax4.set_title("$Q_{out of plane}$ vs ℏω ellipse", fontsize=12)
-
+    """
     # 初期タイトル
     plt.suptitle(
         f'ℏω: {QE_sets[initial_index][0]} meV, h: {QE_sets[initial_index][1]}, k: {QE_sets[initial_index][2]}, l: {QE_sets[initial_index][3]}',
