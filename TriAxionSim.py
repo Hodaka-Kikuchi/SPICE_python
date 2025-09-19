@@ -1,6 +1,6 @@
 # cd C:\DATA_HK\python\SPICE_python
 # 右上にバージョン情報を表示
-__version__ = '1.14.0'
+__version__ = '1.14.1'
 """
 セマンティック バージョニング (Semantic Versioning)
 セマンティック バージョニング（セムバ―、SemVer）は、バージョン番号を「MAJOR.MINOR.PATCH」の形式で表します。それぞれの部分には以下のような意味があります：
@@ -918,21 +918,34 @@ UBcalculate_button.grid(row=1, column=1,sticky="NSEW")
 
 # ブラッグピーク位置を入力
 # ファイル選択のフレームの作成と設置
-frame4 = ttk.Labelframe(root,text= "observed bragg peak position")
+frame4 = ttk.Frame(root)
 frame4.grid(row=3,column=0,sticky="NSEW")
 
 frame4.columnconfigure(0, weight=1)
-frame4.columnconfigure(1, weight=1)
-frame4.columnconfigure(2, weight=1)
-frame4.columnconfigure(3, weight=1)
-frame4.columnconfigure(4, weight=1)
-frame4.columnconfigure(5, weight=1)
-frame4.columnconfigure(6, weight=1)
-frame4.columnconfigure(7, weight=1)
-frame4.columnconfigure(8, weight=1)
-frame4.columnconfigure(9, weight=1)
+frame4.columnconfigure(1, weight=5)
 frame4.rowconfigure(0, weight=1)
-frame4.rowconfigure(1, weight=1)
+
+frame4a = ttk.Labelframe(frame4,text= "configuration of spectromter")
+frame4a.grid(row=0,column=0,sticky="NSEW")
+
+frame4a.columnconfigure(0, weight=1)
+frame4a.columnconfigure(1, weight=1)
+frame4a.columnconfigure(2, weight=1)
+frame4a.rowconfigure(0, weight=1)
+frame4a.rowconfigure(1, weight=1)
+
+frame4b = ttk.Labelframe(frame4,text= "observed bragg peak position")
+frame4b.grid(row=0,column=1,sticky="NSEW")
+
+frame4b.columnconfigure(0, weight=1)
+frame4b.columnconfigure(1, weight=1)
+frame4b.columnconfigure(2, weight=1)
+frame4b.columnconfigure(3, weight=1)
+frame4b.columnconfigure(4, weight=1)
+frame4b.columnconfigure(5, weight=1)
+frame4b.columnconfigure(6, weight=1)
+frame4b.rowconfigure(0, weight=1)
+frame4b.rowconfigure(1, weight=1)
 
 def update_label():
     if eief.get() == 0:
@@ -946,68 +959,68 @@ eief = tk.IntVar()
 #eief.set(1)
 
 # ラジオボタンを作成し、commandにupdate_labelを設定
-rdo_eief0 = tk.Radiobutton(frame4, value=0, variable=eief, text='Ei fix', command=update_label, width=15)
+rdo_eief0 = ttk.Radiobutton(frame4a, value=0, variable=eief, text='Ei fix', command=update_label, width=12)
 rdo_eief0.grid(row=0, column=0, sticky="NSEW")
 
-rdo_eief1 = tk.Radiobutton(frame4, value=1, variable=eief, text='Ef fix', command=update_label, width=15)
+rdo_eief1 = ttk.Radiobutton(frame4a, value=1, variable=eief, text='Ef fix', command=update_label, width=12)
 rdo_eief1.grid(row=1, column=0, sticky="NSEW")
 
 if eief.get()==0:
-    bpl1 = tk.Label(frame4,text='Ei (meV)')
+    bpl1 = tk.Label(frame4b,text='Ei (meV)')
 elif eief.get()==1:
-    bpl1 = tk.Label(frame4,text='Ef (meV)')
-bpl1.grid(row=0, column=3,sticky="NSEW")
+    bpl1 = tk.Label(frame4b,text='Ef (meV)')
+bpl1.grid(row=0, column=0,sticky="NSEW")
 
 # チェック有無変数
 w_antiw = tk.IntVar()
 # ラジオボタンを作成し、commandにupdate_labelを設定
-rdo_configuration0 = tk.Radiobutton(frame4, value=0, variable=w_antiw, text='W', width=15)
+rdo_configuration0 = ttk.Radiobutton(frame4a, value=0, variable=w_antiw, text='W', width=12)
 rdo_configuration0.grid(row=0, column=1, sticky="NSEW")
 
-rdo_configuration1 = tk.Radiobutton(frame4, value=1, variable=w_antiw, text='anti-W', width=15)
+rdo_configuration1 = ttk.Radiobutton(frame4a, value=1, variable=w_antiw, text='anti-W', width=12)
 rdo_configuration1.grid(row=1, column=1, sticky="NSEW")
 
 # チェック有無変数
 RorL = tk.IntVar()
 # ラジオボタンを作成し、commandにupdate_labelを設定
-rdo_sense0 = tk.Radiobutton(frame4, value=0, variable=RorL, text='+-+', width=15)
+rdo_sense0 = ttk.Radiobutton(frame4a, value=0, variable=RorL, text='+-+', width=12)
 rdo_sense0.grid(row=0, column=2, sticky="NSEW")
 
-rdo_sense1 = tk.Radiobutton(frame4, value=1, variable=RorL, text='-+-', width=15)
+rdo_sense1 = ttk.Radiobutton(frame4a, value=1, variable=RorL, text='-+-', width=12)
 rdo_sense1.grid(row=1, column=2, sticky="NSEW")
 
-Energy = ttk.Entry(frame4)
-Energy.grid(row=1, column=3,sticky="NSEW")
+Energy = ttk.Entry(frame4b)
+Energy.grid(row=1, column=0,sticky="NSEW")
 
-bpl2 = tk.Label(frame4,text='h')
-bpl2.grid(row=0, column=4,sticky="NSEW")
-bp_h = ttk.Entry(frame4)
-bp_h.grid(row=1, column=4,sticky="NSEW")
+bpl2 = tk.Label(frame4b,text='h')
+bpl2.grid(row=0, column=1,sticky="NSEW")
+bp_h = ttk.Entry(frame4b)
+bp_h.grid(row=1, column=1,sticky="NSEW")
 
-bpl3 = tk.Label(frame4,text='k')
-bpl3.grid(row=0, column=5,sticky="NSEW")
-bp_k = ttk.Entry(frame4)
-bp_k.grid(row=1, column=5,sticky="NSEW")
+bpl3 = tk.Label(frame4b,text='k')
+bpl3.grid(row=0, column=2,sticky="NSEW")
+bp_k = ttk.Entry(frame4b)
+bp_k.grid(row=1, column=2,sticky="NSEW")
 
-bpl4 = tk.Label(frame4,text='l')
-bpl4.grid(row=0, column=6,sticky="NSEW")
-bp_l = ttk.Entry(frame4)
-bp_l.grid(row=1, column=6,sticky="NSEW")
+bpl4 = tk.Label(frame4b,text='l')
+bpl4.grid(row=0, column=3,sticky="NSEW")
+bp_l = ttk.Entry(frame4b)
+bp_l.grid(row=1, column=3,sticky="NSEW")
 
-bpl5 = tk.Label(frame4,text='C2')
-bpl5.grid(row=0, column=7,sticky="NSEW")
-bp_c2 = ttk.Entry(frame4)
-bp_c2.grid(row=1, column=7,sticky="NSEW")
+bpl5 = tk.Label(frame4b,text='C2')
+bpl5.grid(row=0, column=4,sticky="NSEW")
+bp_c2 = ttk.Entry(frame4b)
+bp_c2.grid(row=1, column=4,sticky="NSEW")
 
-bpl6 = tk.Label(frame4,text='μ')
-bpl6.grid(row=0, column=8,sticky="NSEW")
-bp_mu = ttk.Entry(frame4)
-bp_mu.grid(row=1, column=8,sticky="NSEW")
+bpl6 = tk.Label(frame4b,text='μ')
+bpl6.grid(row=0, column=5,sticky="NSEW")
+bp_mu = ttk.Entry(frame4b)
+bp_mu.grid(row=1, column=5,sticky="NSEW")
 
-bpl7 = tk.Label(frame4,text='ν')
-bpl7.grid(row=0, column=9,sticky="NSEW")
-bp_nu = ttk.Entry(frame4)
-bp_nu.grid(row=1, column=9,sticky="NSEW")
+bpl7 = tk.Label(frame4b,text='ν')
+bpl7.grid(row=0, column=6,sticky="NSEW")
+bp_nu = ttk.Entry(frame4b)
+bp_nu.grid(row=1, column=6,sticky="NSEW")
 
 # select feature
 # ファイル選択のフレームの作成と設置
