@@ -182,7 +182,7 @@ def ellipse_coefficients(RM, log2, plane=("x", "z")):
 
     return A, Bc, Cc, D, E, F
 
-def calcresolution_scan4(astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values,initial_index=0,save_gif=False,gif_name="resolution.gif"):
+def calcresolution_scan4(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values,initial_index=0,save_gif=False,gif_name="resolution.gif"):
     # save_gifがTrueだと保存、Falseだと非保存
 
     # INIファイルから設定を読み込む
@@ -196,8 +196,6 @@ def calcresolution_scan4(astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe
         ini_path = os.path.join(os.path.dirname(__file__), 'config.ini')
 
     config.read(ini_path)
-    
-    view_mode = config['settings']['system']
     
     # divergenceの読み出し
     div_1st_m = float(entry_values.get("div_1st_m"))
@@ -419,6 +417,16 @@ def calcresolution_scan4(astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe
         
         # 相似変換
         RM = rot_mat @ RM @ rot_mat.T
+        
+        if sense == 1:
+            # 上下反転
+            # rightではそのまま、leftでaxis2をaxis1に対してミラーさせる。
+            S = np.diag([1.0, -1.0, 1.0, 1.0])   # y軸のみ反転
+            RM_flipped = S @ RM @ S.T
+            
+            RM = RM_flipped
+        elif sense == 0:
+            pass
         
         # 行列 M を作成（各列が基底ベクトル）
         M = np.column_stack([Qx, Qy, Qz])

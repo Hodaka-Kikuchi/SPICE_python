@@ -13,7 +13,7 @@ import pandas as pd
 
 from PIL import Image  # GIF 保存のために必要
 
-def calcresolution_scan3(astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values,initial_index=0,save_gif=False,gif_name="resolution.gif"):
+def calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values,initial_index=0,save_gif=False,gif_name="resolution.gif"):
     # save_gifがTrueだと保存、Falseだと非保存
 
     # INIファイルから設定を読み込む
@@ -27,8 +27,6 @@ def calcresolution_scan3(astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe
         ini_path = os.path.join(os.path.dirname(__file__), 'config.ini')
 
     config.read(ini_path)
-    
-    view_mode = config['settings']['system']
     
     # divergenceの読み出し
     div_1st_m = float(entry_values.get("div_1st_m"))
@@ -88,10 +86,6 @@ def calcresolution_scan3(astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe
         A1, A2, A3 = A_sets[index]
         hw = QE_sets[index][0]
         
-        # system設定に基づいて角度の係数を変更
-        EM = 1
-        EA = 1 #anti-W配置の場合-1 
-
         if fixe==0: # ei fix
             Ei = bpe
             Ef = bpe - hw
@@ -110,9 +104,9 @@ def calcresolution_scan3(astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe
         # C3とA3の計算
         C3 = A3/2
 
-        thetaM = C1 * EM
+        thetaM = C1
         thetaS = A2 / 2
-        thetaA = C3 * EA
+        thetaA = C3
         
         phi = np.degrees(np.arctan2(-kf * np.sin(np.radians(2 * thetaS)), ki - kf * np.cos(np.radians(2 * thetaS))))
 
@@ -285,6 +279,16 @@ def calcresolution_scan3(astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe
         # 相似変換
         RM = rot_mat @ RM @ rot_mat.T
         
+        if sense == 1:
+            # 上下反転
+            # rightではそのまま、leftでaxis2をaxis1に対してミラーさせる。
+            S = np.diag([1.0, -1.0, 1.0, 1.0])   # y軸のみ反転
+            RM_flipped = S @ RM @ S.T
+            
+            RM = RM_flipped
+        elif sense == 0:
+            pass
+        
         # RMは(q//,q⊥,hw,qz)における空間分布
         # これを(qx(axis1),qy(axis2),hw,qz)に置ける空間分布に変換する。
         
@@ -366,10 +370,6 @@ def calcresolution_scan3(astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe
         ax2.clear()
         ax3.clear()
         ax4.clear()
-        
-        # system設定に基づいて角度の係数を変更
-        EM = 1
-        EA = 1 #anti-W配置の場合-1 
 
         if fixe==0: # ei fix
             Ei = bpe
@@ -380,20 +380,20 @@ def calcresolution_scan3(astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe
 
         ki=(Ei/2.072)**(1/2)
         kf=(Ef/2.072)**(1/2)
-
         Q = np.sqrt(ki**2 + kf**2 - 2 * ki * kf * np.cos(np.radians(A2))) 
-
+        
         # C1とA1の計算
         C1 = A1/2
 
         # C3とA3の計算
         C3 = A3/2
 
-        thetaM = C1 * EM
+        # A2は既に負の値, reslibとは異なる定義
+        thetaM = C1
+        thetaA = C3
         thetaS = A2 / 2
-        thetaA = C3 * EA
         
-        phi = np.degrees(np.arctan2(-kf * np.sin(np.radians(2 * thetaS)), ki - kf * np.cos(np.radians(2 * thetaS))))
+        phi = np.degrees(np.arctan2((-kf * np.sin(np.radians(2 * thetaS))), (ki - kf * np.cos(np.radians(2 * thetaS)))))
 
         # Define constants for the resolution matrices
         # ここでαi とβi は、コリメータの水平方向と鉛直方向における発散角を表している。η とη′をモノクロメータとアナライザの水平方向と鉛直方向のモザイクのFWHM
@@ -574,6 +574,16 @@ def calcresolution_scan3(astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe
         
         # 相似変換
         RM = rot_mat @ RM @ rot_mat.T
+        
+        if sense == 1:
+            # 上下反転
+            # rightではそのまま、leftでaxis2をaxis1に対してミラーさせる。
+            S = np.diag([1.0, -1.0, 1.0, 1.0])   # y軸のみ反転
+            RM_flipped = S @ RM @ S.T
+            
+            RM = RM_flipped
+        elif sense == 0:
+            pass
         
         # RMは(q//,q⊥,hw,qz)における空間分布
         # これを(qx(axis1),qy(axis2),hw,qz)に置ける空間分布に変換する。

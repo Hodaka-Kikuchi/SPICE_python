@@ -1,6 +1,6 @@
 # cd C:\DATA_HK\python\SPICE_python
 # 右上にバージョン情報を表示
-__version__ = '1.13.1'
+__version__ = '1.14.0'
 """
 セマンティック バージョニング (Semantic Versioning)
 セマンティック バージョニング（セムバ―、SemVer）は、バージョン番号を「MAJOR.MINOR.PATCH」の形式で表します。それぞれの部分には以下のような意味があります：
@@ -202,9 +202,14 @@ def load_values_from_ini():
     eief.set(eief_value)
     
     # ラジオボタンの初期状態を読み込む
-    w_antiw_value = int(config['instrument'].get('w_antiw', '1'))  # 1がデフォルト
+    w_antiw_value = int(config['instrument'].get('w_antiw', '0'))  # 0がデフォルト
     # w_antiwの初期値を設定
     w_antiw.set(w_antiw_value)
+    
+    # ラジオボタンの初期状態を読み込む
+    rl_value = int(config['instrument'].get('sense', '0'))  # 1がデフォルト
+    # eiefの初期値を設定
+    RorL.set(rl_value)
     
     # ラベルの自動更新
     update_label()
@@ -364,6 +369,7 @@ def save_values_to_ini():
     config['instrument'].update({
         'eief': str(eief.get()),  # ラジオボタンの状態を保存
         'w_antiw': str(w_antiw.get()), 
+        'sense' : str(RorL.get()),
         'div_1st_m': div_1st_m.get(),
         "div_1st_h": div_1st_h.get(),
         "div_1st_v": div_1st_v.get(),
@@ -924,6 +930,7 @@ frame4.columnconfigure(5, weight=1)
 frame4.columnconfigure(6, weight=1)
 frame4.columnconfigure(7, weight=1)
 frame4.columnconfigure(8, weight=1)
+frame4.columnconfigure(9, weight=1)
 frame4.rowconfigure(0, weight=1)
 frame4.rowconfigure(1, weight=1)
 
@@ -949,7 +956,7 @@ if eief.get()==0:
     bpl1 = tk.Label(frame4,text='Ei (meV)')
 elif eief.get()==1:
     bpl1 = tk.Label(frame4,text='Ef (meV)')
-bpl1.grid(row=0, column=2,sticky="NSEW")
+bpl1.grid(row=0, column=3,sticky="NSEW")
 
 # チェック有無変数
 w_antiw = tk.IntVar()
@@ -960,38 +967,47 @@ rdo_configuration0.grid(row=0, column=1, sticky="NSEW")
 rdo_configuration1 = tk.Radiobutton(frame4, value=1, variable=w_antiw, text='anti-W', width=15)
 rdo_configuration1.grid(row=1, column=1, sticky="NSEW")
 
+# チェック有無変数
+RorL = tk.IntVar()
+# ラジオボタンを作成し、commandにupdate_labelを設定
+rdo_sense0 = tk.Radiobutton(frame4, value=0, variable=RorL, text='+-+', width=15)
+rdo_sense0.grid(row=0, column=2, sticky="NSEW")
+
+rdo_sense1 = tk.Radiobutton(frame4, value=1, variable=RorL, text='-+-', width=15)
+rdo_sense1.grid(row=1, column=2, sticky="NSEW")
+
 Energy = ttk.Entry(frame4)
-Energy.grid(row=1, column=2,sticky="NSEW")
+Energy.grid(row=1, column=3,sticky="NSEW")
 
 bpl2 = tk.Label(frame4,text='h')
-bpl2.grid(row=0, column=3,sticky="NSEW")
+bpl2.grid(row=0, column=4,sticky="NSEW")
 bp_h = ttk.Entry(frame4)
-bp_h.grid(row=1, column=3,sticky="NSEW")
+bp_h.grid(row=1, column=4,sticky="NSEW")
 
 bpl3 = tk.Label(frame4,text='k')
-bpl3.grid(row=0, column=4,sticky="NSEW")
+bpl3.grid(row=0, column=5,sticky="NSEW")
 bp_k = ttk.Entry(frame4)
-bp_k.grid(row=1, column=4,sticky="NSEW")
+bp_k.grid(row=1, column=5,sticky="NSEW")
 
 bpl4 = tk.Label(frame4,text='l')
-bpl4.grid(row=0, column=5,sticky="NSEW")
+bpl4.grid(row=0, column=6,sticky="NSEW")
 bp_l = ttk.Entry(frame4)
-bp_l.grid(row=1, column=5,sticky="NSEW")
+bp_l.grid(row=1, column=6,sticky="NSEW")
 
 bpl5 = tk.Label(frame4,text='C2')
-bpl5.grid(row=0, column=6,sticky="NSEW")
+bpl5.grid(row=0, column=7,sticky="NSEW")
 bp_c2 = ttk.Entry(frame4)
-bp_c2.grid(row=1, column=6,sticky="NSEW")
+bp_c2.grid(row=1, column=7,sticky="NSEW")
 
 bpl6 = tk.Label(frame4,text='μ')
-bpl6.grid(row=0, column=7,sticky="NSEW")
+bpl6.grid(row=0, column=8,sticky="NSEW")
 bp_mu = ttk.Entry(frame4)
-bp_mu.grid(row=1, column=7,sticky="NSEW")
+bp_mu.grid(row=1, column=8,sticky="NSEW")
 
 bpl7 = tk.Label(frame4,text='ν')
-bpl7.grid(row=0, column=8,sticky="NSEW")
+bpl7.grid(row=0, column=9,sticky="NSEW")
 bp_nu = ttk.Entry(frame4)
-bp_nu.grid(row=1, column=8,sticky="NSEW")
+bp_nu.grid(row=1, column=9,sticky="NSEW")
 
 # select feature
 # ファイル選択のフレームの作成と設置
@@ -1464,7 +1480,8 @@ def calculate_angle():
 
     if fig_spec.get()==1:
         # プロット関数を呼び出し
-        plot_spectrometer(A_sets,QE_sets)
+        sense = RorL.get()
+        plot_spectrometer(sense,A_sets,QE_sets)
     
     Ni_mir = gm.get()
     Hfocus = calc_hf.get()
@@ -1553,13 +1570,13 @@ def calculate_angle():
         astar = RLtable['astar']
         bstar = RLtable['bstar']
         cstar = RLtable['cstar']
-        
+        sense = RorL.get()
         if mode_var.get() == "slider":
             # slider用処理
-            calcresolution_scan3(astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values)
+            calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values)
         elif mode_var.get() == "overview":
             # overview用処理
-            calcresolution_scan4(astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values)
+            calcresolution_scan4(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values)
         
     
     plt.show()
@@ -2220,7 +2237,6 @@ def constQscan_show_table():
     fixe=float(eief.get())
     # W or antiW fixの判定
     w_config=float(w_antiw.get())
-    
     global angletable2
     angletable2 = angle_calc2(dmono,dana,astar, bstar, cstar, U,B,UB, bpe, bpc2, bpmu, bpnu, bp, fixe, w_config, hw_ini, hw_fin, hw_inc, h_cal, k_cal, l_cal)
     
@@ -2343,7 +2359,8 @@ def constQscan_show_table():
     if fig_spec.get()==1:
         # プロット関数を呼び出し
         #plot_spectrometer_with_gif(A_sets,QE_sets)
-        plot_spectrometer(A_sets,QE_sets)
+        sense = RorL.get()
+        plot_spectrometer(sense,A_sets,QE_sets)
         
     Ni_mir = gm.get()
     Hfocus = calc_hf.get()
@@ -2377,7 +2394,8 @@ def constQscan_show_table():
     astar = RLtable['astar']
     bstar = RLtable['bstar']
     cstar = RLtable['cstar']
-    reso_mat_cQ,col_cond_cQ,scan_cond_cQ = calcresolution_save(astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cQ) # reso matの計算のみ
+    sense = RorL.get()
+    reso_mat_cQ,col_cond_cQ,scan_cond_cQ = calcresolution_save(sense,astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cQ) # reso matの計算のみ
     
     if fig_reci.get()==1:
         # 逆格子空間のki,kf,τベクトルを示す。
@@ -2442,13 +2460,13 @@ def constQscan_show_table():
         astar = RLtable['astar']
         bstar = RLtable['bstar']
         cstar = RLtable['cstar']
-        
+        sense = RorL.get()
         if mode_var.get() == "slider":
             # slider用処理
-            calcresolution_scan3(astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cQ)
+            calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cQ)
         elif mode_var.get() == "overview":
             # overview用処理
-            calcresolution_scan4(astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cQ)
+            calcresolution_scan4(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cQ)
     plt.show()
     
     return angletable2,reso_mat_cQ,col_cond_cQ,scan_cond_cQ
@@ -2947,13 +2965,15 @@ def conostEscan_show_table():
     RLtable = on_Rlcalc()
     astar = RLtable['astar']
     bstar = RLtable['bstar']
-    cstar = RLtable['cstar']        
-    reso_mat_cE,col_cond_cE,scan_cond_cE = calcresolution_save(astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cE) # reso matの計算のみ
+    cstar = RLtable['cstar']    
+    sense = RorL.get()
+    reso_mat_cE,col_cond_cE,scan_cond_cE = calcresolution_save(sense, astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cE) # reso matの計算のみ
     
     if fig_spec.get()==1:
         # プロット関数を呼び出し
         #plot_spectrometer_with_gif(A_sets,QE_sets)
-        plot_spectrometer(A_sets,QE_sets)
+        sense = RorL.get()
+        plot_spectrometer(sense,A_sets,QE_sets)
     
     if fig_reci.get()==1:
         # 逆格子空間のki,kf,τベクトルを示す。
@@ -3023,13 +3043,13 @@ def conostEscan_show_table():
         astar = RLtable['astar']
         bstar = RLtable['bstar']
         cstar = RLtable['cstar']
-        
+        sense = RorL.get()
         if mode_var.get() == "slider":
             # slider用処理
-            calcresolution_scan3(astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cE)
+            calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cE)
         elif mode_var.get() == "overview":
             # overview用処理
-            calcresolution_scan4(astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cE)
+            calcresolution_scan4(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cE)
         
     plt.show()
     

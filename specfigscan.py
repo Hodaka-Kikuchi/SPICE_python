@@ -7,7 +7,7 @@ from matplotlib.widgets import Slider
 import os
 import sys
 
-def plot_spectrometer(A_sets,QE_sets, initial_index=0):
+def plot_spectrometer(sense,A_sets,QE_sets, initial_index=0):
     """
     三軸分光器のXY平面図を描く
     :param A_sets: A1, A2, A3 の角度セットのリスト
@@ -28,7 +28,6 @@ def plot_spectrometer(A_sets,QE_sets, initial_index=0):
     
     # 設定を変数に代入
     # systemセクションのview設定を読み込む
-    view_mode = config['settings']['system']
     monochromator_radius = float(config['settings']['monochromator_radius'])
     monochromator_to_sample = float(config['settings']['monochromator_to_sample'])
     sample_goniometer_radius = float(config['settings']['sample_goniometer_radius'])
@@ -102,9 +101,9 @@ def plot_spectrometer(A_sets,QE_sets, initial_index=0):
         ax.set_xlim(-max_L, max_L)
         
         # system設定に基づいてy軸の設定を変更
-        if view_mode == 'left':
+        if sense == 1:
             ax.set_ylim(max_L * 1.25, -monochromator_radius)  # 上下反転
-        elif view_mode == 'right':
+        elif sense == 0:
             ax.set_ylim(-monochromator_radius, max_L * 1.25)  # 通常の範囲
 
         ax.set_xlabel('x [m]')  # 横軸ラベル

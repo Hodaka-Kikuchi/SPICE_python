@@ -10,7 +10,7 @@ from matplotlib.widgets import Slider
 from scipy.optimize import minimize_scalar
 from scipy.optimize import minimize
 
-def calcresolution_save(astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values):
+def calcresolution_save(sense,astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values):
     # INIファイルから設定を読み込む
     config = configparser.ConfigParser()
     # .exe化した場合に対応する
@@ -22,8 +22,6 @@ def calcresolution_save(astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fixe
         ini_path = os.path.join(os.path.dirname(__file__), 'config.ini')
 
     config.read(ini_path)
-    
-    view_mode = config['settings']['system']
     
     # divergenceの読み出し
     div_1st_m = float(entry_values.get("div_1st_m"))
@@ -231,6 +229,16 @@ def calcresolution_save(astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fixe
         
         # 相似変換
         RM = rot_mat @ RM @ rot_mat.T
+        
+        if sense == 1:
+            # 上下反転
+            # rightではそのまま、leftでaxis2をaxis1に対してミラーさせる。
+            S = np.diag([1.0, -1.0, 1.0, 1.0])   # y軸のみ反転
+            RM_flipped = S @ RM @ S.T
+            
+            RM = RM_flipped
+        elif sense == 0:
+            pass
         
         # RMは(q//,q⊥,hw,qz)における空間分布
         # これを(qx(axis1),qy(axis2),hw,qz)に置ける空間分布に変換する。
