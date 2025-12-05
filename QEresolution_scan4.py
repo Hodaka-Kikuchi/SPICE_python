@@ -231,7 +231,7 @@ def calcresolution_scan4(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_m
 
     # 初期タイトル
     plt.suptitle(
-        f'ℏω: {QE_sets[0][0]} meV, h: {QE_sets[0][1]}, k: {QE_sets[0][2]}, l: {QE_sets[0][3]} ~ ℏω: {QE_sets[0][0]} meV, h: {QE_sets[-1][1]}, k: {QE_sets[-1][2]}, l: {QE_sets[-1][3]}',
+        f'ℏω: {QE_sets[0][0]} meV, h: {QE_sets[0][1]}, k: {QE_sets[0][2]}, l: {QE_sets[0][3]} ~ ℏω: {QE_sets[-1][0]} meV, h: {QE_sets[-1][1]}, k: {QE_sets[-1][2]}, l: {QE_sets[-1][3]}',
         fontsize=12
     )
     
