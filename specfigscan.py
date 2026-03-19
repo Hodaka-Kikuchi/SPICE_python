@@ -98,13 +98,13 @@ def plot_spectrometer(sense,A_sets,QE_sets, initial_index=0):
 
         # 軸設定
         ax.set_aspect('equal', adjustable='box')
-        ax.set_xlim(-max_L, max_L)
+        ax.set_xlim(-floor_length/2 * 1.1, floor_length/2 * 1.1)
         
         # system設定に基づいてy軸の設定を変更
-        if sense == 1:
-            ax.set_ylim(max_L * 1.25, -monochromator_radius)  # 上下反転
-        elif sense == 0:
-            ax.set_ylim(-monochromator_radius, max_L * 1.25)  # 通常の範囲
+        if sense == '-+-':
+            ax.set_ylim((floor_width+monochromator_radius) * 1.1, -monochromator_radius * 1.1)  # 上下反転
+        elif sense == '+-+':
+            ax.set_ylim(-(floor_width+monochromator_radius) * 1.1, floor_width * 1.1)  # 通常の範囲
 
         ax.set_xlabel('x [m]')  # 横軸ラベル
         ax.set_ylabel('y [m]')  # 縦軸ラベル

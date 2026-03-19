@@ -58,7 +58,7 @@ def find_max_along_axis(RM, axis="x"):
     return result.x[idx], result.x  # 軸方向の最大値と座標
 
 # 楕円をプロットする関数
-def plot_ellipse1(Qx,A, B, C, D, E, F, Xrange_lim, Zrange_lim, ax, label, color,shift_x,shift_y,ls):
+def plot_ellipse1(Qx,A, B, C, D, E, F, Xrange_lim, Zrange_lim, ax, label, color,shift_x,shift_y):
     x = np.linspace(-Xrange_lim, Xrange_lim, 500)
     z = np.linspace(-Zrange_lim, Zrange_lim, 500)
     X, Z = np.meshgrid(x, z)
@@ -77,9 +77,9 @@ def plot_ellipse1(Qx,A, B, C, D, E, F, Xrange_lim, Zrange_lim, ax, label, color,
 
     # 等高線をプロット（楕円の曲線部分）
     #plt.contour(X_shifted, Z_shifted, ellipse, levels=[0], colors=color, label=label)
-    ax.contour(X_display, Z_shifted, ellipse, levels=[0], colors=color, label=label,linestyles=ls)
+    ax.contour(X_display, Z_shifted, ellipse, levels=[0], colors=color, label=label)
 
-def plot_ellipse2(Qy,A, B, C, D, E, F, Xrange_lim, Zrange_lim, ax, label, color,shift_x,shift_y,ls):
+def plot_ellipse2(Qy,A, B, C, D, E, F, Xrange_lim, Zrange_lim, ax, label, color,shift_x,shift_y):
     x = np.linspace(-Xrange_lim, Xrange_lim, 500)
     z = np.linspace(-Zrange_lim, Zrange_lim, 500)
     X, Z = np.meshgrid(x, z)
@@ -98,9 +98,9 @@ def plot_ellipse2(Qy,A, B, C, D, E, F, Xrange_lim, Zrange_lim, ax, label, color,
 
     # 等高線をプロット（楕円の曲線部分）
     #plt.contour(X_shifted, Z_shifted, ellipse, levels=[0], colors=color, label=label)
-    ax.contour(X_display, Z_shifted, ellipse, levels=[0], colors=color, label=label,linestyles=ls)
+    ax.contour(X_display, Z_shifted, ellipse, levels=[0], colors=color, label=label)
     
-def plot_ellipse3(Qx,Qy,A, B, C, D, E, F, Xrange_lim, Zrange_lim, ax, label, color,shift_x,shift_y,ls):
+def plot_ellipse3(Qx,Qy,A, B, C, D, E, F, Xrange_lim, Zrange_lim, ax, label, color,shift_x,shift_y):
     x = np.linspace(-Xrange_lim, Xrange_lim, 500)
     z = np.linspace(-Zrange_lim, Zrange_lim, 500)
     X, Z = np.meshgrid(x, z)
@@ -121,9 +121,9 @@ def plot_ellipse3(Qx,Qy,A, B, C, D, E, F, Xrange_lim, Zrange_lim, ax, label, col
 
     # 等高線をプロット（楕円の曲線部分）
     #plt.contour(X_shifted, Z_shifted, ellipse, levels=[0], colors=color, label=label)
-    ax.contour(X_display, Y_display, ellipse, levels=[0], colors=color, label=label,linestyles=ls)
+    ax.contour(X_display, Y_display, ellipse, levels=[0], colors=color, label=label)
     
-def plot_ellipse4(Qz,A, B, C, D, E, F, Wrange_lim, Zrange_lim, ax, label, color,shift_x,shift_y,ls):
+def plot_ellipse4(Qz,A, B, C, D, E, F, Wrange_lim, Zrange_lim, ax, label, color,shift_x,shift_y):
     x = np.linspace(-Wrange_lim, Wrange_lim, 500)
     z = np.linspace(-Zrange_lim, Zrange_lim, 500)
     X, Z = np.meshgrid(x, z)
@@ -142,7 +142,7 @@ def plot_ellipse4(Qz,A, B, C, D, E, F, Wrange_lim, Zrange_lim, ax, label, color,
 
     # 等高線をプロット（楕円の曲線部分）
     #plt.contour(X_shifted, Z_shifted, ellipse, levels=[0], colors=color, label=label)
-    ax.contour(X_display, Z_shifted, ellipse, levels=[0], colors=color, label=label,linestyles=ls)
+    ax.contour(X_display, Z_shifted, ellipse, levels=[0], colors=color, label=label)
 
 # 投影図の楕円の係数を計算する関数
 # fun4=@(x,y,z) RM(1,1).*x.^2+RM(2,2).*y.^2+RM(3,3).*z.^2+2*RM(1,2).*x.*y+2*RM(1,3).*x.*z+2*RM(2,3).*y.*z-2*log(2);
@@ -181,24 +181,6 @@ def ellipse_coefficients(RM, log2, plane=("x", "z")):
     F = -2 * log2
 
     return A, Bc, Cc, D, E, F
-
-def ellipse_slice_coefficients(RM, free_axes):
-    """
-    free_axes: ("x","z") のように残す2軸
-    他の軸は0で固定（slice）
-    """
-    # 軸マップ（x=Q//, y=Q⊥, z=E, w=out-of-plane）
-    axes_map = {"x":0, "y":1, "z":2, "w":3}
-    
-    i, j = axes_map[free_axes[0]], axes_map[free_axes[1]]
-    
-    A = RM[np.ix_([i,j],[i,j])]
-    
-    A_xx = A[0,0]
-    A_xy = 2*A[0,1]
-    A_yy = A[1,1]
-    
-    return A_xx, A_xy, A_yy, 0, 0, -2*np.log(2)
 
 def calcresolution_scan4(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values,initial_index=0,save_gif=False,gif_name="resolution.gif"):
     # save_gifがTrueだと保存、Falseだと非保存
@@ -493,43 +475,16 @@ def calcresolution_scan4(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_m
         # wz平面の楕円の係数
         A_wz, B_wz, C_wz, D_wz, E_wz, F_wz = ellipse_coefficients(RM, log2=np.log(2), plane=("w","z"))
 
-        # x=Q//,y=Q⊥,z=E,w=out of plane, projection
-        plot_ellipse1(Qx,A_xz, B_xz, C_xz, D_xz, E_xz, F_xz, Xrange_lim, Zrange_lim, ax1, label = "", color="red",shift_x=np.linalg.norm(Qx)*c1, shift_y=QE_sets[index][0],ls=["-"])
-        plot_ellipse2(Qy,A_yz, B_yz, C_yz, D_yz, E_yz, F_yz, Yrange_lim, Zrange_lim, ax2, label = "", color="blue",shift_x=np.linalg.norm(Qy)*c2, shift_y=QE_sets[index][0],ls=["-"])
-        plot_ellipse3(Qx,Qy,A_xy, B_xy, C_xy, D_xy, E_xy, F_xy, Xrange_lim, Yrange_lim, ax3, label = "", color="black",shift_x=np.linalg.norm(Qx)*c1, shift_y=np.linalg.norm(Qy)*c2,ls=["-"])
-        plot_ellipse4(Qz,A_wz, B_wz, C_wz, D_wz, E_wz, F_wz, Wrange_lim, Zrange_lim, ax4, label = "", color="green",shift_x=np.linalg.norm(Qz)*c3, shift_y=QE_sets[index][0],ls=["-"])
-        # cut at 0 for each direction
-        # slice（y=0, w=0）
-        A_xz_s, B_xz_s, C_xz_s, D_xz_s, E_xz_s, F_xz_s = ellipse_slice_coefficients(RM, ("x","z"))
-        plot_ellipse1(Qx, A_xz_s, B_xz_s, C_xz_s, D_xz_s, E_xz_s, F_xz_s,
-              Xrange_lim, Zrange_lim, ax1,
-              color="red", label = "",
-              shift_x=np.linalg.norm(Qx)*c1,
-              shift_y=QE_sets[index][0],ls=["--"])
-        A_yz_s, B_yz_s, C_yz_s, D_yz_s, E_yz_s, F_yz_s = ellipse_slice_coefficients(RM, ("y","z"))
-        plot_ellipse2(Qy, A_yz_s, B_yz_s, C_yz_s, D_yz_s, E_yz_s, F_yz_s,
-              Yrange_lim, Zrange_lim, ax2,
-              color="blue", label = "",
-              shift_x=np.linalg.norm(Qy)*c2,
-              shift_y=QE_sets[index][0],ls=["--"])
-        A_xy_s, B_xy_s, C_xy_s, D_xy_s, E_xy_s, F_xy_s = ellipse_slice_coefficients(RM, ("x","y"))
-        plot_ellipse3(Qx, Qy, A_xy_s, B_xy_s, C_xy_s, D_xy_s, E_xy_s, F_xy_s,
-              Xrange_lim, Yrange_lim, ax3,
-              color="black", label = "",
-              shift_x=np.linalg.norm(Qx)*c1,
-              shift_y=np.linalg.norm(Qy)*c2,ls=["--"])
-        A_wz_s, B_wz_s, C_wz_s, D_wz_s, E_wz_s, F_wz_s = ellipse_slice_coefficients(RM, ("w","z"))
-        plot_ellipse4(Qz, A_wz_s, B_wz_s, C_wz_s, D_wz_s, E_wz_s, F_wz_s,
-              Wrange_lim, Zrange_lim, ax4,
-              color="green", label = "",
-              shift_x=np.linalg.norm(Qz)*c3,
-              shift_y=QE_sets[index][0],ls=["--"])
-
+        # x=Q//,y=Q⊥,z=E,w=out of plane
+        plot_ellipse1(Qx,A_xz, B_xz, C_xz, D_xz, E_xz, F_xz, Xrange_lim, Zrange_lim, ax1, label = "", color="red",shift_x=np.linalg.norm(Qx)*c1, shift_y=QE_sets[index][0])
+        plot_ellipse2(Qy,A_yz, B_yz, C_yz, D_yz, E_yz, F_yz, Yrange_lim, Zrange_lim, ax2, label = "", color="blue",shift_x=np.linalg.norm(Qy)*c2, shift_y=QE_sets[index][0])
+        plot_ellipse3(Qx,Qy,A_xy, B_xy, C_xy, D_xy, E_xy, F_xy, Xrange_lim, Yrange_lim, ax3, label = "", color="black",shift_x=np.linalg.norm(Qx)*c1, shift_y=np.linalg.norm(Qy)*c2)
+        plot_ellipse4(Qz,A_wz, B_wz, C_wz, D_wz, E_wz, F_wz, Wrange_lim, Zrange_lim, ax4, label = "", color="green",shift_x=np.linalg.norm(Qz)*c3, shift_y=QE_sets[index][0])
+        
         
     # === Q_parallel vs E の楕円描画 ===
     ax1.axhline(0, color="black", linestyle="--", linewidth=0.5)
     ax1.axvline(0, color="black", linestyle="--", linewidth=0.5)
-    # 直後に最後に描かれた線の線種を変更
     ax1.set_xlabel(r"$\delta Q_{x}$ (r.l.u.)")
     ax1.set_ylabel("δℏω (meV)")
     ax1.set_title(r"$Q_{x} \parallel$" + f"({sv1[0]:.4f}, {sv1[1]:.4f}, {sv1[2]:.4f})", fontsize=12)

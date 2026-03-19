@@ -230,14 +230,14 @@ def calcresolution_save(sense,astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bp
         # 相似変換
         RM = rot_mat @ RM @ rot_mat.T
         
-        if sense == 1:
+        if sense == '-+-':
             # 上下反転
             # rightではそのまま、leftでaxis2をaxis1に対してミラーさせる。
             S = np.diag([1.0, -1.0, 1.0, 1.0])   # y軸のみ反転
             RM_flipped = S @ RM @ S.T
             
             RM = RM_flipped
-        elif sense == 0:
+        elif sense == '+-+':
             pass
         
         # RMは(q//,q⊥,hw,qz)における空間分布

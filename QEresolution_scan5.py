@@ -10,7 +10,7 @@ from matplotlib.widgets import Slider
 from scipy.optimize import minimize_scalar
 from scipy.optimize import minimize
 import pandas as pd
-
+from scipy.linalg import block_diag
 from PIL import Image  # GIF 保存のために必要
 
 def calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values,initial_index=0,save_gif=False,gif_name="resolution.gif"):
@@ -196,6 +196,130 @@ def calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_m
         C[3, 6] = 1 / (2 * sin(np.radians(thetaA)))
         C[3, 7] = -C[3, 6]
         
+        # popoviciの場合
+        # ==== Beam shape ====
+        beamw = 100/1000**2
+        beamh = 200/1000**2
+        # if you want:
+        #beamw = beam.width**2
+        #beamh = beam.height**2
+        bshape = np.diag([beamw, beamh])
+
+        # ==== Mono shape ====
+        monow = 140/1000**2
+        monoh = 140/1000**2
+        monod = 2/1000**2
+        # if you want:
+        #monow = mono.width**2
+        #monoh = mono.height**2
+        #monod = mono.depth**2
+        mshape = np.diag([monod, monow, monoh])
+
+        # ==== Monitor shape ====
+        monitorw = 1
+        monitorh = 1
+        # if you want:
+        #monitorw = monitor.width**2
+        #monitorh = monitor.height**2
+        monitorshape = np.diag([monitorw, monitorh])
+
+        # ==== Sample shape ====
+        sshape = np.eye(3)
+
+        # ==== Analyzer shape ====
+        anaw = 140/1000**2
+        anah = 140/1000**2
+        anad = 2/1000**2
+        # if you want:
+        #anaw = ana.width**2
+        #anah = ana.height**2
+        #anad = ana.depth**2
+        ashape = np.diag([anad, anaw, anah])
+
+        # ==== Detector shape ====
+        detectorw = 25.4/1000**2
+        detectorh = 300/1000**2
+        # if you want:
+        #detectorw = detector.width**2
+        #detectorh = detector.height**2
+        dshape = np.diag([detectorw, detectorh])
+
+        # ==== S matrix ====
+        Sinv = block_diag(bshape, mshape, sshape, ashape, dshape)  # S^-1
+        S = np.linalg.inv(Sinv)
+
+        # ==== Distances ====
+        L0 = 30
+        L1 = 1.6
+        L1mon = 1
+        L2 = 0.8
+        L3 = 0.6
+
+        monorv = 1e6
+        monorh = 1e6
+        anarv = 1e6
+        anarh = 1e6
+
+        # ==== T matrix ====
+        T = np.zeros((4, 13))
+
+        T[0, 0] = -1/(2*L0)
+        T[0, 2] = np.cos(thetaM)*(1/L1 - 1/L0)/2
+        T[0, 3] = np.sin(thetaM)*(1/L0 + 1/L1 - 2/(monorh*np.sin(thetaM)))/2
+        T[0, 5] = np.sin(thetaS)/(2*L1)
+        T[0, 6] = np.cos(thetaS)/(2*L1)
+
+        T[1, 1] = -1/(2*L0*np.sin(thetaM))
+        T[1, 4] = (1/L0 + 1/L1 - 2*np.sin(thetaM)/monorv)/(2*np.sin(thetaM))
+        T[1, 7] = -1/(2*L1*np.sin(thetaM))
+
+        T[2, 5] = np.sin(thetaS)/(2*L2)
+        T[2, 6] = -np.cos(thetaS)/(2*L2)
+        T[2, 8] = np.cos(thetaA)*(1/L3 - 1/L2)/2
+        T[2, 9] = np.sin(thetaA)*(1/L2 + 1/L3 - 2/(anarh*np.sin(thetaA)))/2
+        T[2, 11] = 1/(2*L3)
+
+        T[3, 7] = -1/(2*L2*np.sin(thetaA))
+        T[3, 10] = (1/L2 + 1/L3 - 2*np.sin(thetaA)/anarv)/(2*np.sin(thetaA))
+        T[3, 12] = -1/(2*L3*np.sin(thetaA))
+
+        # ==== D matrix ====
+        D = np.zeros((8, 13))
+
+        D[0, 0] = -1/L0
+        D[0, 2] = -np.cos(thetaM)/L0
+        D[0, 3] = np.sin(thetaM)/L0
+
+        D[2, 1] = D[0, 0]
+        D[2, 4] = -D[0, 0]
+
+        D[1, 2] = np.cos(thetaM)/L1
+        D[1, 3] = np.sin(thetaM)/L1
+        D[1, 5] = np.sin(thetaS)/L1
+        D[1, 6] = np.cos(thetaS)/L1
+
+        D[3, 4] = -1/L1
+        D[3, 7] = -D[3, 4]
+
+        D[4, 5] = np.sin(thetaS)/L2
+        D[4, 6] = -np.cos(thetaS)/L2
+        D[4, 8] = -np.cos(thetaA)/L2
+        D[4, 9] = np.sin(thetaA)/L2
+
+        D[6, 7] = -1/L2
+        D[6, 10] = -D[6, 7]
+
+        D[5, 8] = np.cos(thetaA)/L3
+        D[5, 9] = np.sin(thetaA)/L3
+        D[5, 11] = 1/L3
+
+        D[7, 10] = -D[5, 11]
+        D[7, 12] = D[5, 11]
+
+        # ==== Popovici formula ====
+        # Minv = B*A*((D*(S+T'*F*T)^(-1)*D')^(-1)+G)^(-1)*A'*B'
+        Minv = (B @ A @ np.linalg.inv(np.linalg.inv(D @ np.linalg.inv(S + T.T @ F @ T) @ D.T) + G) @ A.T @ B.T)
+        """
         # 計算
         term = np.linalg.inv(G + C.T @ F @ C)  # G + C' * F * C の逆行列
         HF = A @ term @ A.T  # A * (G + C' * F * C)^(-1) * A'
@@ -210,6 +334,7 @@ def calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_m
             Minv = B @ Pinv @ B.T
         if Hfocus == 0:
             Minv = B @ HF @ B.T #これもreslibと一致
+        """
         M = np.linalg.inv(Minv)
         
         # RM 行列の設定
@@ -288,7 +413,7 @@ def calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_m
             RM = RM_flipped
         elif sense == '+-+':
             pass
-
+        
         # RMは(q//,q⊥,hw,qz)における空間分布
         # これを(qx(axis1),qy(axis2),hw,qz)に置ける空間分布に変換する。
         
@@ -481,6 +606,131 @@ def calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_m
         C[3, 6] = 1 / (2 * sin(np.radians(thetaA)))
         C[3, 7] = -C[3, 6]
         
+        # popoviciの場合
+        # ==== Beam shape ====
+        beamw = 100/1000**2
+        beamh = 200/1000**2
+        # if you want:
+        #beamw = beam.width**2
+        #beamh = beam.height**2
+        bshape = np.diag([beamw, beamh])
+
+        # ==== Mono shape ====
+        monow = 140/1000**2
+        monoh = 140/1000**2
+        monod = 2/1000**2
+        # if you want:
+        #monow = mono.width**2
+        #monoh = mono.height**2
+        #monod = mono.depth**2
+        mshape = np.diag([monod, monow, monoh])
+
+        # ==== Monitor shape ====
+        monitorw = 1
+        monitorh = 1
+        # if you want:
+        #monitorw = monitor.width**2
+        #monitorh = monitor.height**2
+        monitorshape = np.diag([monitorw, monitorh])
+
+        # ==== Sample shape ====
+        sshape = np.eye(3)
+
+        # ==== Analyzer shape ====
+        anaw = 140/1000**2
+        anah = 140/1000**2
+        anad = 2/1000**2
+        # if you want:
+        #anaw = ana.width**2
+        #anah = ana.height**2
+        #anad = ana.depth**2
+        ashape = np.diag([anad, anaw, anah])
+
+        # ==== Detector shape ====
+        detectorw = 25.4/1000**2
+        detectorh = 300/1000**2
+        # if you want:
+        #detectorw = detector.width**2
+        #detectorh = detector.height**2
+        dshape = np.diag([detectorw, detectorh])
+
+        # ==== S matrix ====
+        Sinv = block_diag(bshape, mshape, sshape, ashape, dshape)  # S^-1
+        S = np.linalg.inv(Sinv)
+
+        # ==== Distances ====
+        L0 = 30
+        L1 = 1.6
+        L1mon = 1
+        L2 = 0.8
+        L3 = 0.6
+
+        monorv = 1e6
+        monorh = 1e6
+        anarv = 1e6
+        anarh = 1e6
+
+        # ==== T matrix ====
+        T = np.zeros((4, 13))
+
+        T[0, 0] = -1/(2*L0)
+        T[0, 2] = np.cos(thetaM)*(1/L1 - 1/L0)/2
+        T[0, 3] = np.sin(thetaM)*(1/L0 + 1/L1 - 2/(monorh*np.sin(thetaM)))/2
+        T[0, 5] = np.sin(thetaS)/(2*L1)
+        T[0, 6] = np.cos(thetaS)/(2*L1)
+
+        T[1, 1] = -1/(2*L0*np.sin(thetaM))
+        T[1, 4] = (1/L0 + 1/L1 - 2*np.sin(thetaM)/monorv)/(2*np.sin(thetaM))
+        T[1, 7] = -1/(2*L1*np.sin(thetaM))
+
+        T[2, 5] = np.sin(thetaS)/(2*L2)
+        T[2, 6] = -np.cos(thetaS)/(2*L2)
+        T[2, 8] = np.cos(thetaA)*(1/L3 - 1/L2)/2
+        T[2, 9] = np.sin(thetaA)*(1/L2 + 1/L3 - 2/(anarh*np.sin(thetaA)))/2
+        T[2, 11] = 1/(2*L3)
+
+        T[3, 7] = -1/(2*L2*np.sin(thetaA))
+        T[3, 10] = (1/L2 + 1/L3 - 2*np.sin(thetaA)/anarv)/(2*np.sin(thetaA))
+        T[3, 12] = -1/(2*L3*np.sin(thetaA))
+
+        # ==== D matrix ====
+        D = np.zeros((8, 13))
+
+        D[0, 0] = -1/L0
+        D[0, 2] = -np.cos(thetaM)/L0
+        D[0, 3] = np.sin(thetaM)/L0
+
+        D[2, 1] = D[0, 0]
+        D[2, 4] = -D[0, 0]
+
+        D[1, 2] = np.cos(thetaM)/L1
+        D[1, 3] = np.sin(thetaM)/L1
+        D[1, 5] = np.sin(thetaS)/L1
+        D[1, 6] = np.cos(thetaS)/L1
+
+        D[3, 4] = -1/L1
+        D[3, 7] = -D[3, 4]
+
+        D[4, 5] = np.sin(thetaS)/L2
+        D[4, 6] = -np.cos(thetaS)/L2
+        D[4, 8] = -np.cos(thetaA)/L2
+        D[4, 9] = np.sin(thetaA)/L2
+
+        D[6, 7] = -1/L2
+        D[6, 10] = -D[6, 7]
+
+        D[5, 8] = np.cos(thetaA)/L3
+        D[5, 9] = np.sin(thetaA)/L3
+        D[5, 11] = 1/L3
+
+        D[7, 10] = -D[5, 11]
+        D[7, 12] = D[5, 11]
+
+        # ==== Popovici formula ====
+        # Minv = B*A*((D*(S+T'*F*T)^(-1)*D')^(-1)+G)^(-1)*A'*B'
+        Minv = (B @ A @ np.linalg.inv(np.linalg.inv(D @ np.linalg.inv(S + T.T @ F @ T) @ D.T) + G) @ A.T @ B.T)
+        
+        """
         # 計算
         term = np.linalg.inv(G + C.T @ F @ C)  # G + C' * F * C の逆行列
         HF = A @ term @ A.T  # A * (G + C' * F * C)^(-1) * A'
@@ -495,6 +745,7 @@ def calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_m
             Minv = B @ Pinv @ B.T
         if Hfocus == 0:
             Minv = B @ HF @ B.T #これもreslibと一致
+        """
         M = np.linalg.inv(Minv)
         
         # RM 行列の設定
@@ -574,15 +825,17 @@ def calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_m
         
         # 相似変換
         RM = rot_mat @ RM @ rot_mat.T
-        if sense == '-+-':
+        
+        if sense == 1:
             # 上下反転
             # rightではそのまま、leftでaxis2をaxis1に対してミラーさせる。
             S = np.diag([1.0, -1.0, 1.0, 1.0])   # y軸のみ反転
             RM_flipped = S @ RM @ S.T
             
             RM = RM_flipped
-        elif sense == '+-+':
+        elif sense == 0:
             pass
+        
         # RMは(q//,q⊥,hw,qz)における空間分布
         # これを(qx(axis1),qy(axis2),hw,qz)に置ける空間分布に変換する。
         """
@@ -657,24 +910,6 @@ def calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_m
             F = -2 * log2
 
             return A, Bc, Cc, D, E, F
-        
-        def ellipse_slice_coefficients(RM, free_axes):
-            """
-            free_axes: ("x","z") のように残す2軸
-            他の軸は0で固定（slice）
-            """
-            # 軸マップ（x=Q//, y=Q⊥, z=E, w=out-of-plane）
-            axes_map = {"x":0, "y":1, "z":2, "w":3}
-            
-            i, j = axes_map[free_axes[0]], axes_map[free_axes[1]]
-            
-            A = RM[np.ix_([i,j],[i,j])]
-            
-            A_xx = A[0,0]
-            A_xy = 2*A[0,1]
-            A_yy = A[1,1]
-            
-            return A_xx, A_xy, A_yy, 0, 0, -2*np.log(2)
 
         # xz平面の楕円の係数
         A_xz, B_xz, C_xz, D_xz, E_xz, F_xz = ellipse_coefficients(RM, log2=np.log(2), plane=("x","z"))
@@ -739,7 +974,7 @@ def calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_m
         max_w, coords_w = find_max_along_axis(RM, axis="w")# w
         
         # 楕円をプロットする関数
-        def plot_ellipse1(A, B, C, D, E, F, Xrange_lim, Zrange_lim, ax, labels, color,ls,shift_x=0,shift_y=0):
+        def plot_ellipse1(A, B, C, D, E, F, Xrange_lim, Zrange_lim, ax, label, color,shift_x=0,shift_y=0):
             x = np.linspace(-Xrange_lim, Xrange_lim, 500)
             z = np.linspace(-Zrange_lim, Zrange_lim, 500)
             X, Z = np.meshgrid(x, z)
@@ -758,9 +993,9 @@ def calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_m
 
             # 等高線をプロット（楕円の曲線部分）
             #plt.contour(X_shifted, Z_shifted, ellipse, levels=[0], colors=color, label=label)
-            ax.contour(X_display, Z_shifted, ellipse, levels=[0], colors=color, label=labels,linestyles=ls)
+            ax.contour(X_display, Z_shifted, ellipse, levels=[0], colors=color, label=label)
         
-        def plot_ellipse2(A, B, C, D, E, F, Xrange_lim, Zrange_lim, ax, labels, color,ls,shift_x=0,shift_y=0):
+        def plot_ellipse2(A, B, C, D, E, F, Xrange_lim, Zrange_lim, ax, label, color,shift_x=0,shift_y=0):
             x = np.linspace(-Xrange_lim, Xrange_lim, 500)
             z = np.linspace(-Zrange_lim, Zrange_lim, 500)
             X, Z = np.meshgrid(x, z)
@@ -779,9 +1014,9 @@ def calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_m
 
             # 等高線をプロット（楕円の曲線部分）
             #plt.contour(X_shifted, Z_shifted, ellipse, levels=[0], colors=color, label=label)
-            ax.contour(X_display, Z_shifted, ellipse, levels=[0], colors=color, label=labels,linestyles=ls)
+            ax.contour(X_display, Z_shifted, ellipse, levels=[0], colors=color, label=label)
             
-        def plot_ellipse3(A, B, C, D, E, F, Xrange_lim, Zrange_lim, ax, labels, color,ls,shift_x=0,shift_y=0):
+        def plot_ellipse3(A, B, C, D, E, F, Xrange_lim, Zrange_lim, ax, label, color,shift_x=0,shift_y=0):
             x = np.linspace(-Xrange_lim, Xrange_lim, 500)
             z = np.linspace(-Zrange_lim, Zrange_lim, 500)
             X, Z = np.meshgrid(x, z)
@@ -802,9 +1037,9 @@ def calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_m
 
             # 等高線をプロット（楕円の曲線部分）
             #plt.contour(X_shifted, Z_shifted, ellipse, levels=[0], colors=color, label=label)
-            ax.contour(X_display, Y_display, ellipse, levels=[0], colors=color, label=labels,linestyles=ls)
+            ax.contour(X_display, Y_display, ellipse, levels=[0], colors=color, label=label)
             
-        def plot_ellipse4(A, B, C, D, E, F, Wrange_lim, Zrange_lim, ax, labels, color,ls,shift_x=0,shift_y=0):
+        def plot_ellipse4(A, B, C, D, E, F, Wrange_lim, Zrange_lim, ax, label, color,shift_x=0,shift_y=0):
             x = np.linspace(-Wrange_lim, Wrange_lim, 500)
             z = np.linspace(-Zrange_lim, Zrange_lim, 500)
             X, Z = np.meshgrid(x, z)
@@ -823,34 +1058,13 @@ def calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_m
 
             # 等高線をプロット（楕円の曲線部分）
             #plt.contour(X_shifted, Z_shifted, ellipse, levels=[0], colors=color, label=label)
-            ax.contour(X_display, Z_shifted, ellipse, levels=[0], colors=color, label=labels,linestyles=ls)
+            ax.contour(X_display, Z_shifted, ellipse, levels=[0], colors=color, label=label)
                 
         # x=Q//,y=Q⊥,z=E,w=out of plane
-        plot_ellipse1(A_xz, B_xz, C_xz, D_xz, E_xz, F_xz, Xrange_lim, Zrange_lim, ax1, labels = "", color="red",ls=["-"],shift_x=0, shift_y=0)
-        plot_ellipse2(A_yz, B_yz, C_yz, D_yz, E_yz, F_yz, Yrange_lim, Zrange_lim, ax2, labels = "", color="blue",ls=["-"],shift_x=0, shift_y=0)
-        plot_ellipse3(A_xy, B_xy, C_xy, D_xy, E_xy, F_xy, Xrange_lim, Yrange_lim, ax3, labels = "", color="black",ls=["-"],shift_x=0, shift_y=0)
-        plot_ellipse4(A_wz, B_wz, C_wz, D_wz, E_wz, F_wz, Wrange_lim, Zrange_lim, ax4, labels = "", color="green",ls=["-"],shift_x=0, shift_y=0)
-
-        A_xz_s, B_xz_s, C_xz_s, D_xz_s, E_xz_s, F_xz_s = ellipse_slice_coefficients(RM, ("x","z"))
-        plot_ellipse1(A_xz_s, B_xz_s, C_xz_s, D_xz_s, E_xz_s, F_xz_s,
-              Xrange_lim, Zrange_lim, ax1,
-              labels = "",color="red",ls=["--"], 
-              shift_x=0, shift_y=0)
-        A_yz_s, B_yz_s, C_yz_s, D_yz_s, E_yz_s, F_yz_s = ellipse_slice_coefficients(RM, ("y","z"))
-        plot_ellipse2(A_yz_s, B_yz_s, C_yz_s, D_yz_s, E_yz_s, F_yz_s,
-              Yrange_lim, Zrange_lim, ax2,
-              labels = "",color="blue",ls=["--"],
-              shift_x=0, shift_y=0)
-        A_xy_s, B_xy_s, C_xy_s, D_xy_s, E_xy_s, F_xy_s = ellipse_slice_coefficients(RM, ("x","y"))
-        plot_ellipse3(A_xy_s, B_xy_s, C_xy_s, D_xy_s, E_xy_s, F_xy_s,
-              Xrange_lim, Yrange_lim, ax3,
-              labels = "",color="black",ls=["--"],
-              shift_x=0, shift_y=0)
-        A_wz_s, B_wz_s, C_wz_s, D_wz_s, E_wz_s, F_wz_s = ellipse_slice_coefficients(RM, ("w","z"))
-        plot_ellipse4(A_wz_s, B_wz_s, C_wz_s, D_wz_s, E_wz_s, F_wz_s,
-              Wrange_lim, Zrange_lim, ax4,
-              labels = "",color="green",ls=["--"],
-              shift_x=0, shift_y=0)
+        plot_ellipse1(A_xz, B_xz, C_xz, D_xz, E_xz, F_xz, Xrange_lim, Zrange_lim, ax1, label = "", color="red",shift_x=0, shift_y=0)
+        plot_ellipse2(A_yz, B_yz, C_yz, D_yz, E_yz, F_yz, Yrange_lim, Zrange_lim, ax2, label = "", color="blue",shift_x=0, shift_y=0)
+        plot_ellipse3(A_xy, B_xy, C_xy, D_xy, E_xy, F_xy, Xrange_lim, Yrange_lim, ax3, label = "", color="black",shift_x=0, shift_y=0)
+        plot_ellipse4(A_wz, B_wz, C_wz, D_wz, E_wz, F_wz, Wrange_lim, Zrange_lim, ax4, label = "", color="green",shift_x=0, shift_y=0)
         
         # 各軸の最大値を2倍した値
         resolution_Q_parallel = 2 * max_x
@@ -877,6 +1091,7 @@ def calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_m
 
         ax1.set_xlim([-Xrange_lim/np.linalg.norm(Qx), Xrange_lim/np.linalg.norm(Qx)])
         ax1.set_ylim([-Zrange_lim, Zrange_lim])
+        #ax1.set_xlim([-0.015, 0.015])
         ax1.grid(True)
 
         # === Q_perp vs E の楕円描画===
@@ -889,6 +1104,7 @@ def calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_m
         # 必要であれば同様に情報を追加（または省略）
         ax2.set_xlim([-Yrange_lim/np.linalg.norm(Qy), Yrange_lim/np.linalg.norm(Qy)])
         ax2.set_ylim([-Zrange_lim, Zrange_lim])
+        #ax2.set_xlim([-0.015, 0.015])
         ax2.grid(True)
         
         # === Q_perp vs Q_parallelの楕円描画===
@@ -901,6 +1117,8 @@ def calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_m
         # 必要であれば同様に情報を追加（または省略）
         ax3.set_xlim([-Xrange_lim/np.linalg.norm(Qx), Xrange_lim/np.linalg.norm(Qx)])
         ax3.set_ylim([-Yrange_lim/np.linalg.norm(Qy), Yrange_lim/np.linalg.norm(Qy)])
+        #ax3.set_xlim([-0.015, 0.015])
+        #ax3.set_ylim([-0.015, 0.015])
         #ax3.set_aspect(np.linalg.norm(Qy)/np.linalg.norm(Qx))  # ここで縦横比を1:1に固定
         ax3.grid(True)
         
@@ -913,6 +1131,7 @@ def calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_m
 
         # 必要であれば同様に情報を追加（または省略）
         ax4.set_xlim([-Wrange_lim/np.linalg.norm(Qz), Wrange_lim/np.linalg.norm(Qz)])
+        #ax4.set_xlim([-0.02, 0.02])
         ax4.set_ylim([-Zrange_lim, Zrange_lim])
         ax4.grid(True)
         

@@ -1,6 +1,6 @@
-# cd C:\DATA_HK\python\SPICE_python
+# cd c:/Users/h34/Documents/Python/SPICE_python
 # 右上にバージョン情報を表示
-__version__ = '1.14.1'
+__version__ = '1.15.1'
 """
 セマンティック バージョニング (Semantic Versioning)
 セマンティック バージョニング（セムバ―、SemVer）は、バージョン番号を「MAJOR.MINOR.PATCH」の形式で表します。それぞれの部分には以下のような意味があります：
@@ -207,7 +207,7 @@ def load_values_from_ini():
     w_antiw.set(w_antiw_value)
     
     # ラジオボタンの初期状態を読み込む
-    rl_value = int(config['instrument'].get('sense', '0'))  # 1がデフォルト
+    rl_value = config['instrument'].get('sense', '+-+')  # デフォルトは "+-+"
     # eiefの初期値を設定
     RorL.set(rl_value)
     
@@ -430,8 +430,9 @@ from fittingLC import fit_lattice_constants
 #from QEresolution import calcresolution
 #from QEresolution_scan import calcresolution_scan
 #from QEresolution_scan2 import calcresolution_scan2
-from QEresolution_scan3 import calcresolution_scan3 # Qz方向にも拡張
-from QEresolution_scan4 import calcresolution_scan4 # 一覧表示に対応
+from QEresolution_scan3 import calcresolution_scan3 # スライダー形式、Qz方向にも拡張
+from QEresolution_scan4 import calcresolution_scan4 # 一覧表示に対応、Qz方向にも拡張
+#from QEresolution_scan5 import calcresolution_scan3 # popovic
 from QEresolution_scan_save import calcresolution_save
 from fig_reciprocal_space import plot_reciprocal_space
 
@@ -905,7 +906,7 @@ sense = tk.IntVar()
 sense.set(0)
 
 # ラジオボタンを設定
-rdo_sense0 = tk.Radiobutton(frame3s, value=0, variable=sense, text='+++', width=15)
+rdo_sense0 = tk.Radiobutton(frame3s, value=0, variable=sense, text='+-+', width=15)
 rdo_sense0.grid(row=0, column=0, sticky="NSEW")
 
 rdo_sense1 = tk.Radiobutton(frame3s, value=1, variable=sense, text='-+-', width=15)
@@ -922,7 +923,7 @@ frame4 = ttk.Frame(root)
 frame4.grid(row=3,column=0,sticky="NSEW")
 
 frame4.columnconfigure(0, weight=1)
-frame4.columnconfigure(1, weight=5)
+frame4.columnconfigure(1, weight=2)
 frame4.rowconfigure(0, weight=1)
 
 frame4a = ttk.Labelframe(frame4,text= "configuration of spectromter")
@@ -959,10 +960,10 @@ eief = tk.IntVar()
 #eief.set(1)
 
 # ラジオボタンを作成し、commandにupdate_labelを設定
-rdo_eief0 = ttk.Radiobutton(frame4a, value=0, variable=eief, text='Ei fix', command=update_label, width=12)
+rdo_eief0 = ttk.Radiobutton(frame4a, value=0, variable=eief, text='Ei fix', command=update_label, width=21)
 rdo_eief0.grid(row=0, column=0, sticky="NSEW")
 
-rdo_eief1 = ttk.Radiobutton(frame4a, value=1, variable=eief, text='Ef fix', command=update_label, width=12)
+rdo_eief1 = ttk.Radiobutton(frame4a, value=1, variable=eief, text='Ef fix', command=update_label, width=21)
 rdo_eief1.grid(row=1, column=0, sticky="NSEW")
 
 if eief.get()==0:
@@ -974,19 +975,19 @@ bpl1.grid(row=0, column=0,sticky="NSEW")
 # チェック有無変数
 w_antiw = tk.IntVar()
 # ラジオボタンを作成し、commandにupdate_labelを設定
-rdo_configuration0 = ttk.Radiobutton(frame4a, value=0, variable=w_antiw, text='W', width=12)
+rdo_configuration0 = ttk.Radiobutton(frame4a, value=0, variable=w_antiw, text='W', width=21)
 rdo_configuration0.grid(row=0, column=1, sticky="NSEW")
 
-rdo_configuration1 = ttk.Radiobutton(frame4a, value=1, variable=w_antiw, text='anti-W', width=12)
+rdo_configuration1 = ttk.Radiobutton(frame4a, value=1, variable=w_antiw, text='anti-W', width=21)
 rdo_configuration1.grid(row=1, column=1, sticky="NSEW")
 
 # チェック有無変数
-RorL = tk.IntVar()
+RorL = tk.StringVar()
 # ラジオボタンを作成し、commandにupdate_labelを設定
-rdo_sense0 = ttk.Radiobutton(frame4a, value=0, variable=RorL, text='+-+', width=12)
+rdo_sense0 = ttk.Radiobutton(frame4a, value='+-+', variable=RorL, text='+-+', width=20)
 rdo_sense0.grid(row=0, column=2, sticky="NSEW")
 
-rdo_sense1 = ttk.Radiobutton(frame4a, value=1, variable=RorL, text='-+-', width=12)
+rdo_sense1 = ttk.Radiobutton(frame4a, value='-+-', variable=RorL, text='-+-', width=20)
 rdo_sense1.grid(row=1, column=2, sticky="NSEW")
 
 Energy = ttk.Entry(frame4b)

@@ -657,24 +657,6 @@ def calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_m
             F = -2 * log2
 
             return A, Bc, Cc, D, E, F
-        
-        def ellipse_slice_coefficients(RM, free_axes):
-            """
-            free_axes: ("x","z") のように残す2軸
-            他の軸は0で固定（slice）
-            """
-            # 軸マップ（x=Q//, y=Q⊥, z=E, w=out-of-plane）
-            axes_map = {"x":0, "y":1, "z":2, "w":3}
-            
-            i, j = axes_map[free_axes[0]], axes_map[free_axes[1]]
-            
-            A = RM[np.ix_([i,j],[i,j])]
-            
-            A_xx = A[0,0]
-            A_xy = 2*A[0,1]
-            A_yy = A[1,1]
-            
-            return A_xx, A_xy, A_yy, 0, 0, -2*np.log(2)
 
         # xz平面の楕円の係数
         A_xz, B_xz, C_xz, D_xz, E_xz, F_xz = ellipse_coefficients(RM, log2=np.log(2), plane=("x","z"))
@@ -739,7 +721,7 @@ def calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_m
         max_w, coords_w = find_max_along_axis(RM, axis="w")# w
         
         # 楕円をプロットする関数
-        def plot_ellipse1(A, B, C, D, E, F, Xrange_lim, Zrange_lim, ax, labels, color,ls,shift_x=0,shift_y=0):
+        def plot_ellipse1(A, B, C, D, E, F, Xrange_lim, Zrange_lim, ax, label, color,shift_x=0,shift_y=0):
             x = np.linspace(-Xrange_lim, Xrange_lim, 500)
             z = np.linspace(-Zrange_lim, Zrange_lim, 500)
             X, Z = np.meshgrid(x, z)
@@ -758,9 +740,9 @@ def calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_m
 
             # 等高線をプロット（楕円の曲線部分）
             #plt.contour(X_shifted, Z_shifted, ellipse, levels=[0], colors=color, label=label)
-            ax.contour(X_display, Z_shifted, ellipse, levels=[0], colors=color, label=labels,linestyles=ls)
+            ax.contour(X_display, Z_shifted, ellipse, levels=[0], colors=color, label=label)
         
-        def plot_ellipse2(A, B, C, D, E, F, Xrange_lim, Zrange_lim, ax, labels, color,ls,shift_x=0,shift_y=0):
+        def plot_ellipse2(A, B, C, D, E, F, Xrange_lim, Zrange_lim, ax, label, color,shift_x=0,shift_y=0):
             x = np.linspace(-Xrange_lim, Xrange_lim, 500)
             z = np.linspace(-Zrange_lim, Zrange_lim, 500)
             X, Z = np.meshgrid(x, z)
@@ -779,9 +761,9 @@ def calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_m
 
             # 等高線をプロット（楕円の曲線部分）
             #plt.contour(X_shifted, Z_shifted, ellipse, levels=[0], colors=color, label=label)
-            ax.contour(X_display, Z_shifted, ellipse, levels=[0], colors=color, label=labels,linestyles=ls)
+            ax.contour(X_display, Z_shifted, ellipse, levels=[0], colors=color, label=label)
             
-        def plot_ellipse3(A, B, C, D, E, F, Xrange_lim, Zrange_lim, ax, labels, color,ls,shift_x=0,shift_y=0):
+        def plot_ellipse3(A, B, C, D, E, F, Xrange_lim, Zrange_lim, ax, label, color,shift_x=0,shift_y=0):
             x = np.linspace(-Xrange_lim, Xrange_lim, 500)
             z = np.linspace(-Zrange_lim, Zrange_lim, 500)
             X, Z = np.meshgrid(x, z)
@@ -802,9 +784,9 @@ def calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_m
 
             # 等高線をプロット（楕円の曲線部分）
             #plt.contour(X_shifted, Z_shifted, ellipse, levels=[0], colors=color, label=label)
-            ax.contour(X_display, Y_display, ellipse, levels=[0], colors=color, label=labels,linestyles=ls)
+            ax.contour(X_display, Y_display, ellipse, levels=[0], colors=color, label=label)
             
-        def plot_ellipse4(A, B, C, D, E, F, Wrange_lim, Zrange_lim, ax, labels, color,ls,shift_x=0,shift_y=0):
+        def plot_ellipse4(A, B, C, D, E, F, Wrange_lim, Zrange_lim, ax, label, color,shift_x=0,shift_y=0):
             x = np.linspace(-Wrange_lim, Wrange_lim, 500)
             z = np.linspace(-Zrange_lim, Zrange_lim, 500)
             X, Z = np.meshgrid(x, z)
@@ -823,34 +805,13 @@ def calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_m
 
             # 等高線をプロット（楕円の曲線部分）
             #plt.contour(X_shifted, Z_shifted, ellipse, levels=[0], colors=color, label=label)
-            ax.contour(X_display, Z_shifted, ellipse, levels=[0], colors=color, label=labels,linestyles=ls)
+            ax.contour(X_display, Z_shifted, ellipse, levels=[0], colors=color, label=label)
                 
         # x=Q//,y=Q⊥,z=E,w=out of plane
-        plot_ellipse1(A_xz, B_xz, C_xz, D_xz, E_xz, F_xz, Xrange_lim, Zrange_lim, ax1, labels = "", color="red",ls=["-"],shift_x=0, shift_y=0)
-        plot_ellipse2(A_yz, B_yz, C_yz, D_yz, E_yz, F_yz, Yrange_lim, Zrange_lim, ax2, labels = "", color="blue",ls=["-"],shift_x=0, shift_y=0)
-        plot_ellipse3(A_xy, B_xy, C_xy, D_xy, E_xy, F_xy, Xrange_lim, Yrange_lim, ax3, labels = "", color="black",ls=["-"],shift_x=0, shift_y=0)
-        plot_ellipse4(A_wz, B_wz, C_wz, D_wz, E_wz, F_wz, Wrange_lim, Zrange_lim, ax4, labels = "", color="green",ls=["-"],shift_x=0, shift_y=0)
-
-        A_xz_s, B_xz_s, C_xz_s, D_xz_s, E_xz_s, F_xz_s = ellipse_slice_coefficients(RM, ("x","z"))
-        plot_ellipse1(A_xz_s, B_xz_s, C_xz_s, D_xz_s, E_xz_s, F_xz_s,
-              Xrange_lim, Zrange_lim, ax1,
-              labels = "",color="red",ls=["--"], 
-              shift_x=0, shift_y=0)
-        A_yz_s, B_yz_s, C_yz_s, D_yz_s, E_yz_s, F_yz_s = ellipse_slice_coefficients(RM, ("y","z"))
-        plot_ellipse2(A_yz_s, B_yz_s, C_yz_s, D_yz_s, E_yz_s, F_yz_s,
-              Yrange_lim, Zrange_lim, ax2,
-              labels = "",color="blue",ls=["--"],
-              shift_x=0, shift_y=0)
-        A_xy_s, B_xy_s, C_xy_s, D_xy_s, E_xy_s, F_xy_s = ellipse_slice_coefficients(RM, ("x","y"))
-        plot_ellipse3(A_xy_s, B_xy_s, C_xy_s, D_xy_s, E_xy_s, F_xy_s,
-              Xrange_lim, Yrange_lim, ax3,
-              labels = "",color="black",ls=["--"],
-              shift_x=0, shift_y=0)
-        A_wz_s, B_wz_s, C_wz_s, D_wz_s, E_wz_s, F_wz_s = ellipse_slice_coefficients(RM, ("w","z"))
-        plot_ellipse4(A_wz_s, B_wz_s, C_wz_s, D_wz_s, E_wz_s, F_wz_s,
-              Wrange_lim, Zrange_lim, ax4,
-              labels = "",color="green",ls=["--"],
-              shift_x=0, shift_y=0)
+        plot_ellipse1(A_xz, B_xz, C_xz, D_xz, E_xz, F_xz, Xrange_lim, Zrange_lim, ax1, label = "", color="red",shift_x=0, shift_y=0)
+        plot_ellipse2(A_yz, B_yz, C_yz, D_yz, E_yz, F_yz, Yrange_lim, Zrange_lim, ax2, label = "", color="blue",shift_x=0, shift_y=0)
+        plot_ellipse3(A_xy, B_xy, C_xy, D_xy, E_xy, F_xy, Xrange_lim, Yrange_lim, ax3, label = "", color="black",shift_x=0, shift_y=0)
+        plot_ellipse4(A_wz, B_wz, C_wz, D_wz, E_wz, F_wz, Wrange_lim, Zrange_lim, ax4, label = "", color="green",shift_x=0, shift_y=0)
         
         # 各軸の最大値を2倍した値
         resolution_Q_parallel = 2 * max_x
