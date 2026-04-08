@@ -285,8 +285,14 @@ def load_values_from_ini():
     hwl9f.insert(0, config['instrument'].get('maxnu', '-5'))
     hwl9t.delete(0, tk.END)  # 既存の値をクリア
     hwl9t.insert(0, config['instrument'].get('minnu', '5'))
-    acna.delete(0, tk.END)  # 既存の値をクリア
-    acna.insert(0, config['instrument'].get('blade_num', '7'))
+    mbnh.delete(0, tk.END)  # 既存の値をクリア
+    mbnh.insert(0, config['instrument'].get('mono_blade_num_h', '7'))
+    mbnv.delete(0, tk.END)  # 既存の値をクリア
+    mbnv.insert(0, config['instrument'].get('mono_blade_num_v', '7'))
+    abnh.delete(0, tk.END)  # 既存の値をクリア
+    abnh.insert(0, config['instrument'].get('ana_blade_num_h', '7'))
+    abnv.delete(0, tk.END)  # 既存の値をクリア
+    abnv.insert(0, config['instrument'].get('ana_blade_num_v', '7'))
     
     #figure option
     # チェックボックス
@@ -296,9 +302,18 @@ def load_values_from_ini():
     fig_reso_value = int(config['option'].get('fig_reso', '1'))  # 1がデフォルト  
     # fig_resoの初期値を設定
     fig_reso.set(fig_reso_value)
-    calc_hf_value = int(config['option'].get('calc_hf', '1'))  # 1がデフォルト
-    # calc_hfの初期値を設定
-    calc_hf.set(calc_hf_value)
+    # mono_HFの初期値を設定
+    mono_HF_value = int(config['option'].get('mono_HF', '1'))  # 1がデフォルト
+    mono_HF.set(mono_HF_value)
+    # mono_VFの初期値を設定
+    mono_VF_value = int(config['option'].get('mono_VF', '1'))  # 1がデフォルト
+    mono_VF.set(mono_VF_value)
+    # ana_HFの初期値を設定
+    ana_HF_value = int(config['option'].get('ana_HF', '1'))  # 1がデフォルト
+    ana_HF.set(ana_HF_value)
+    # ana_VFの初期値を設定
+    ana_VF_value = int(config['option'].get('ana_VF', '1'))  # 1がデフォルト
+    ana_VF.set(ana_VF_value)
     # gmの初期値を設定
     gm_value = int(config['option'].get('gm', '1'))  # 1がデフォルト
     gm.set(gm_value)
@@ -310,6 +325,10 @@ def load_values_from_ini():
     # グラフの表示方法
     mode_value = config['option'].get('mode', 'slider')
     mode_var.set(mode_value)
+
+    # 近似方法
+    apr_value = config['option'].get('approximation', 'CN')
+    apr_var.set(apr_value)
 
 def save_values_to_ini():
     """
@@ -401,7 +420,10 @@ def save_values_to_ini():
         'minmu': hwl8t.get(),
         'maxnu': hwl9f.get(),
         'minnu': hwl9t.get(),
-        'blade_num': acna.get(),
+        'mono_blade_num_h': mbnh.get(),
+        'mono_blade_num_v': mbnv.get(),
+        'ana_blade_num_h': abnh.get(),
+        'ana_blade_num_v': abnv.get(),
     })
     
     # 'option'セクションを更新
@@ -409,9 +431,13 @@ def save_values_to_ini():
         'fig_spec': str(fig_spec.get()),
         'fig_reso': str(fig_reso.get()),
         'fig_reci': str(fig_reci.get()),
-        'calc_hf': str(calc_hf.get()),
+        'mono_HF': str(mono_HF.get()),
+        'mono_VF': str(mono_VF.get()),
+        'ana_HF': str(ana_HF.get()),
+        'ana_VF': str(ana_VF.get()),
         'gm': str(gm.get()),
         'mode': mode_var.get(),
+        'approximation' : apr_var.get(),
     })
     
     # INIファイルに書き込み
@@ -425,14 +451,14 @@ from UBcalc import UB_calc  #
 from anglecalc import angle_calc    #
 from anglecalc2 import angle_calc2    #
 from anglecalc3 import angle_calc3    #
-from specfigscan import plot_spectrometer #
-from fittingLC import fit_lattice_constants
+from specfigscan import plot_spectrometer # 分光器の実際の駆動を表示
+from fittingLC import fit_lattice_constants # lattice constantのフィッティング
 #from QEresolution import calcresolution
 #from QEresolution_scan import calcresolution_scan
 #from QEresolution_scan2 import calcresolution_scan2
 from QEresolution_scan3 import calcresolution_scan3 # スライダー形式、Qz方向にも拡張
 from QEresolution_scan4 import calcresolution_scan4 # 一覧表示に対応、Qz方向にも拡張
-#from QEresolution_scan5 import calcresolution_scan3 # popovic
+from QEresolution_scan5 import calcresolution_scan5 # popovic
 from QEresolution_scan_save import calcresolution_save
 from fig_reciprocal_space import plot_reciprocal_space
 
@@ -925,8 +951,9 @@ frame4.grid(row=3,column=0,sticky="NSEW")
 frame4.columnconfigure(0, weight=1)
 frame4.columnconfigure(1, weight=2)
 frame4.rowconfigure(0, weight=1)
+frame4.rowconfigure(1, weight=1)
 
-frame4a = ttk.Labelframe(frame4,text= "configuration of spectromter")
+frame4a = ttk.Labelframe(frame4,text= "configuration of spectrometer")
 frame4a.grid(row=0,column=0,sticky="NSEW")
 
 frame4a.columnconfigure(0, weight=1)
@@ -935,8 +962,108 @@ frame4a.columnconfigure(2, weight=1)
 frame4a.rowconfigure(0, weight=1)
 frame4a.rowconfigure(1, weight=1)
 
+frame7c = ttk.Labelframe(frame4,text= "approximation")
+frame7c.grid(row=0,column=1,sticky="NSEW")
+frame7c.columnconfigure(0, weight=1)
+frame7c.columnconfigure(1, weight=1)
+frame7c.columnconfigure(2, weight=1)
+frame7c.columnconfigure(3, weight=1)
+frame7c.rowconfigure(0, weight=1)
+frame7c.rowconfigure(1, weight=1)
+
+'''
+#チェック有無変数
+ana_HF = tk.IntVar()
+# value=0にチェックを入れる
+ana_HF.set(0)
+
+ana_HF = tk.Checkbutton(frame7c, variable=ana_HF, text='on')
+ana_HF.grid(row=0, column=0,sticky="NSEW")
+
+aclna = tk.Label(frame7c,text='blade num')
+aclna.grid(row=1, column=0,sticky="NSEW")
+abnh = ttk.Entry(frame7c)
+abnh.grid(row=2, column=0,sticky="NSEW")
+abnh.insert(0,'7')
+'''
+
+# --- ラジオボタン ---
+apr_var = tk.StringVar(value="CN")  # デフォルト
+
+rb_cn = ttk.Radiobutton(frame7c, text="Cooper-Nathans", value="CN",
+                        variable=apr_var, command=lambda: switch_approx())
+rb_p  = ttk.Radiobutton(frame7c, text="Popovic", value="P",
+                        variable=apr_var, command=lambda: switch_approx())
+
+rb_cn.grid(row=0, column=0, columnspan=2, sticky="W")
+rb_p.grid(row=0, column=2, columnspan=2, sticky="W")
+
+# --- チェックボックス ---
+mono_VF = tk.IntVar(value=0)
+mono_HF = tk.IntVar(value=0)
+ana_VF = tk.IntVar(value=0)
+ana_HF = tk.IntVar(value=0)
+
+chk_mono_HF = tk.Checkbutton(frame7c, text="Mono Hor", variable=mono_HF)
+chk_mono_VF = tk.Checkbutton(frame7c, text="Mono Ver", variable=mono_VF)
+chk_ana_HF = tk.Checkbutton(frame7c, text="Ana Hor", variable=ana_HF)
+chk_ana_VF = tk.Checkbutton(frame7c, text="Ana Ver", variable=ana_VF)
+
+chk_mono_HF.grid(row=1, column=0, sticky="W")
+chk_mono_VF.grid(row=2, column=0, sticky="W")
+chk_ana_HF.grid(row=1, column=2, sticky="W")
+chk_ana_VF.grid(row=2, column=2, sticky="W")
+
+mbnh = ttk.Entry(frame7c)
+mbnh.grid(row=1, column=1,sticky="NSEW")
+mbnh.insert(0,'1')
+
+mbnv = ttk.Entry(frame7c)
+mbnv.grid(row=2, column=1,sticky="NSEW")
+mbnv.insert(0,'2')
+
+abnh = ttk.Entry(frame7c)
+abnh.grid(row=1, column=3,sticky="NSEW")
+abnh.insert(0,'7')
+
+abnv = ttk.Entry(frame7c)
+abnv.grid(row=2, column=3,sticky="NSEW")
+abnv.insert(0,'3')
+
+# --- 切替関数 ---
+def switch_approx():
+    sel = apr_var.get()
+    if sel == "CN":
+        # CN の場合：Analyzer horizontal だけ選択可能
+        chk_mono_VF.config(state="disabled")
+        chk_mono_HF.config(state="disabled")
+        chk_ana_VF.config(state="disabled")
+        chk_ana_HF.config(state="normal")
+
+        mbnh.config(state="disabled")
+        mbnv.config(state="disabled")
+        abnh.config(state="normal")
+        abnv.config(state="disabled")
+        '''
+        # CN のときに選択不可のチェックはオフに
+        mono_VF.set(0)
+        mono_HF.set(0)
+        ana_VF.set(0)
+        '''
+    else:
+        # Popović の場合：すべて選択可能
+        chk_mono_VF.config(state="normal")
+        chk_mono_HF.config(state="normal")
+        chk_ana_VF.config(state="normal")
+        chk_ana_HF.config(state="normal")
+
+        mbnh.config(state="normal")
+        mbnv.config(state="normal")
+        abnh.config(state="normal")
+        abnv.config(state="normal")
+
 frame4b = ttk.Labelframe(frame4,text= "observed bragg peak position")
-frame4b.grid(row=0,column=1,sticky="NSEW")
+frame4b.grid(row=1,column=0,columnspan=2,sticky="NSEW")
 
 frame4b.columnconfigure(0, weight=1)
 frame4b.columnconfigure(1, weight=1)
@@ -960,10 +1087,10 @@ eief = tk.IntVar()
 #eief.set(1)
 
 # ラジオボタンを作成し、commandにupdate_labelを設定
-rdo_eief0 = ttk.Radiobutton(frame4a, value=0, variable=eief, text='Ei fix', command=update_label, width=21)
+rdo_eief0 = ttk.Radiobutton(frame4a, value=0, variable=eief, text='Ei fix', command=update_label)
 rdo_eief0.grid(row=0, column=0, sticky="NSEW")
 
-rdo_eief1 = ttk.Radiobutton(frame4a, value=1, variable=eief, text='Ef fix', command=update_label, width=21)
+rdo_eief1 = ttk.Radiobutton(frame4a, value=1, variable=eief, text='Ef fix', command=update_label)
 rdo_eief1.grid(row=1, column=0, sticky="NSEW")
 
 if eief.get()==0:
@@ -975,19 +1102,19 @@ bpl1.grid(row=0, column=0,sticky="NSEW")
 # チェック有無変数
 w_antiw = tk.IntVar()
 # ラジオボタンを作成し、commandにupdate_labelを設定
-rdo_configuration0 = ttk.Radiobutton(frame4a, value=0, variable=w_antiw, text='W', width=21)
+rdo_configuration0 = ttk.Radiobutton(frame4a, value=0, variable=w_antiw, text='W')
 rdo_configuration0.grid(row=0, column=1, sticky="NSEW")
 
-rdo_configuration1 = ttk.Radiobutton(frame4a, value=1, variable=w_antiw, text='anti-W', width=21)
+rdo_configuration1 = ttk.Radiobutton(frame4a, value=1, variable=w_antiw, text='anti-W')
 rdo_configuration1.grid(row=1, column=1, sticky="NSEW")
 
 # チェック有無変数
 RorL = tk.StringVar()
 # ラジオボタンを作成し、commandにupdate_labelを設定
-rdo_sense0 = ttk.Radiobutton(frame4a, value='+-+', variable=RorL, text='+-+', width=20)
+rdo_sense0 = ttk.Radiobutton(frame4a, value='+-+', variable=RorL, text='+-+')
 rdo_sense0.grid(row=0, column=2, sticky="NSEW")
 
-rdo_sense1 = ttk.Radiobutton(frame4a, value='-+-', variable=RorL, text='-+-', width=20)
+rdo_sense1 = ttk.Radiobutton(frame4a, value='-+-', variable=RorL, text='-+-')
 rdo_sense1.grid(row=1, column=2, sticky="NSEW")
 
 Energy = ttk.Entry(frame4b)
@@ -1498,8 +1625,8 @@ def calculate_angle():
         plot_spectrometer(sense,A_sets,QE_sets)
     
     Ni_mir = gm.get()
-    Hfocus = calc_hf.get()
-    num_ana = float(acna.get())
+    Hfocus = ana_HF.get()
+    num_ana = float(abnh.get())
     
     if fig_reci.get()==1:
         # 逆格子空間のki,kf,τベクトルを示す。
@@ -1585,13 +1712,13 @@ def calculate_angle():
         bstar = RLtable['bstar']
         cstar = RLtable['cstar']
         sense = RorL.get()
+        apr_value = apr_var.get()
         if mode_var.get() == "slider":
             # slider用処理
-            calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values)
+            calcresolution_scan3(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values)
         elif mode_var.get() == "overview":
             # overview用処理
-            calcresolution_scan4(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values)
-        
+            calcresolution_scan4(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values)
     
     plt.show()
 
@@ -1708,10 +1835,9 @@ frame7.grid(row=5,column=0,sticky="NSEW")
 notebook11 = ttk.Notebook(frame7,style="example.TNotebook")
 
 # grid配分
-frame7.columnconfigure(0, weight=5)
-frame7.columnconfigure(1, weight=3)
-frame7.columnconfigure(2, weight=1)
-frame7.columnconfigure(3, weight=1)
+frame7.columnconfigure(0, weight=7)
+frame7.columnconfigure(1, weight=4)
+frame7.columnconfigure(2, weight=2)
 frame7.rowconfigure(0, weight=1)
 
 frame7a = ttk.Labelframe(frame7,text= "collimator divergence (unit : min)")
@@ -1823,27 +1949,6 @@ label_d_ana.grid(row=0, column=1,sticky="NSEW")
 d_ana = ttk.Entry(frame7d,width = 11)
 d_ana.grid(row=1, column=1,sticky="NSEW")
 
-frame7c = ttk.Labelframe(frame7,text= "focusing")
-frame7c.grid(row=0,column=3,sticky="NSEW")
-frame7c.columnconfigure(0, weight=1)
-frame7c.rowconfigure(0, weight=1)
-frame7c.rowconfigure(1, weight=1)
-frame7c.rowconfigure(2, weight=1)
-
-#チェック有無変数
-calc_hf = tk.IntVar()
-# value=0にチェックを入れる
-calc_hf.set(0)
-
-calc_HF = tk.Checkbutton(frame7c, variable=calc_hf, text='on')
-calc_HF.grid(row=0, column=0,sticky="NSEW")
-
-aclna = tk.Label(frame7c,text='blade num')
-aclna.grid(row=1, column=0,sticky="NSEW")
-acna = ttk.Entry(frame7c)
-acna.grid(row=2, column=0,sticky="NSEW")
-acna.insert(0,'7')
-
 # ファイル選択のフレームの作成と設置
 frame5 = ttk.Labelframe(root)
 frame5.grid(row=6,column=0,sticky="NSEW")
@@ -1870,9 +1975,9 @@ frame5a.rowconfigure(0, weight=1)
 frame5a.rowconfigure(1, weight=1)
 frame5a.rowconfigure(2, weight=1)
 
-hwll0 = tk.Label(frame5a,text='from',width=15)
+hwll0 = tk.Label(frame5a,text='min',width=15)
 hwll0.grid(row=1, column=0,sticky="NSEW")
-hwll1 = tk.Label(frame5a,text='to',width=15)
+hwll1 = tk.Label(frame5a,text='max',width=15)
 hwll1.grid(row=2, column=0,sticky="NSEW")
 
 hwll2 = tk.Label(frame5a,text='C1')
@@ -1962,7 +2067,7 @@ fig_spec = tk.IntVar()
 # value=0にチェックを入れる
 fig_spec.set(1)
 
-show_fig_spec = tk.Checkbutton(frame5b, variable=fig_spec, text='spec',width=14)
+show_fig_spec = tk.Checkbutton(frame5b, variable=fig_spec, text='spec',width=16)
 show_fig_spec.grid(row=0, column=0,sticky="NSEW")
 
 # チェック有無変数
@@ -1970,7 +2075,7 @@ fig_reci = tk.IntVar()
 # value=0にチェックを入れる
 fig_reci.set(1)
 
-show_fig_reci = tk.Checkbutton(frame5b, variable=fig_reci, text='reci',width=14)
+show_fig_reci = tk.Checkbutton(frame5b, variable=fig_reci, text='reci',width=16)
 show_fig_reci.grid(row=0, column=1,sticky="NSEW")
 
 # チェック有無変数
@@ -1978,15 +2083,15 @@ fig_reso = tk.IntVar()
 # value=0にチェックを入れる
 fig_reso.set(1)
 
-show_fig_reso = tk.Checkbutton(frame5b, variable=fig_reso, text='reso',width=14)
+show_fig_reso = tk.Checkbutton(frame5b, variable=fig_reso, text='reso',width=16)
 show_fig_reso.grid(row=1, column=0,rowspan=2,sticky="NSEW")
 
 # グラフの表示方法の選択
 # ラジオボタンの作成
 mode_var = tk.StringVar(value="slider")  # デフォルトを"slider"に
-rb_slider = ttk.Radiobutton(frame5b, text="slider", variable=mode_var, value="slider",width=21)
+rb_slider = ttk.Radiobutton(frame5b, text="slider", variable=mode_var, value="slider",width=16)
 rb_slider.grid(row=1, column=1,sticky="NSEW")
-rb_overview = ttk.Radiobutton(frame5b, text="overview", variable=mode_var, value="overview",width=21)
+rb_overview = ttk.Radiobutton(frame5b, text="overview", variable=mode_var, value="overview",width=16)
 rb_overview.grid(row=2, column=1,sticky="NSEW")
 # mode_var.get()で値を取得
 
@@ -2377,8 +2482,8 @@ def constQscan_show_table():
         plot_spectrometer(sense,A_sets,QE_sets)
         
     Ni_mir = gm.get()
-    Hfocus = calc_hf.get()
-    num_ana = float(acna.get())
+    Hfocus = ana_HF.get()
+    num_ana = float(abnh.get())
     
     global reso_mat_cQ,col_cond_cQ,scan_cond_cQ
     # Entry ウィジェットの値を辞書にまとめる
@@ -2477,10 +2582,12 @@ def constQscan_show_table():
         sense = RorL.get()
         if mode_var.get() == "slider":
             # slider用処理
-            calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cQ)
+            if apr_var.get() =="CN":
+                calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cQ)
         elif mode_var.get() == "overview":
             # overview用処理
-            calcresolution_scan4(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cQ)
+            if apr_var.get() =="CN":
+                calcresolution_scan4(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cQ)
     plt.show()
     
     return angletable2,reso_mat_cQ,col_cond_cQ,scan_cond_cQ
@@ -2887,8 +2994,8 @@ def conostEscan_show_table():
         tree.column(col, width=80, anchor="center")
     
     Ni_mir = gm.get()
-    Hfocus = calc_hf.get()
-    num_ana = float(acna.get())
+    Hfocus = ana_HF.get()
+    num_ana = float(abnh.get())
     
     global reso_mat_cE,col_cond_cE,scan_cond_cE
     # Entry ウィジェットの値を辞書にまとめる
@@ -3060,10 +3167,12 @@ def conostEscan_show_table():
         sense = RorL.get()
         if mode_var.get() == "slider":
             # slider用処理
-            calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cE)
+            if apr_var.get() =="CN":
+                calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cE)
         elif mode_var.get() == "overview":
             # overview用処理
-            calcresolution_scan4(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cE)
+            if apr_var.get() =="CN":
+                calcresolution_scan4(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cE)
         
     plt.show()
     
@@ -4058,6 +4167,9 @@ filemenu3.add_command(label="exit",command=lambda:root.destroy())
 
 # アプリ起動時にデフォルト値を読み込む
 load_values_from_ini()
+# approximationの初期化
+switch_approx()
+
 
 # アプリ起動時にflux.datがあれば読み込む
 # ファイル名

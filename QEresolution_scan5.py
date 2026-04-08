@@ -13,7 +13,7 @@ import pandas as pd
 from scipy.linalg import block_diag
 from PIL import Image  # GIF 保存のために必要
 
-def calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values,initial_index=0,save_gif=False,gif_name="resolution.gif"):
+def calcresolution_scan5(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values,initial_index=0,save_gif=False,gif_name="resolution.gif"):
     # save_gifがTrueだと保存、Falseだと非保存
 
     # INIファイルから設定を読み込む
@@ -635,6 +635,11 @@ def calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_m
 
         # ==== Sample shape ====
         sshape = np.eye(3)
+        psi = thetaS -phi
+        rot = np.array([[cos(np.radians(psi)),sin(np.radians(psi)),0],
+               [-sin(np.radians(psi)),cos(np.radians(psi)),0],
+               [0,0,1]])
+        sshape = rot@sshape@rot.T
 
         # ==== Analyzer shape ====
         anaw = 140/1000**2
@@ -826,14 +831,14 @@ def calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_m
         # 相似変換
         RM = rot_mat @ RM @ rot_mat.T
         
-        if sense == 1:
+        if sense == '-+-':
             # 上下反転
             # rightではそのまま、leftでaxis2をaxis1に対してミラーさせる。
             S = np.diag([1.0, -1.0, 1.0, 1.0])   # y軸のみ反転
             RM_flipped = S @ RM @ S.T
             
             RM = RM_flipped
-        elif sense == 0:
+        elif sense == '+-+':
             pass
         
         # RMは(q//,q⊥,hw,qz)における空間分布

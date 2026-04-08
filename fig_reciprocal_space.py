@@ -116,7 +116,9 @@ def plot_reciprocal_space(bpe, bpc2, cphw, cp, fixe, sv1, sv2, RLtable,A_sets, C
         
         # 格子点を描画
         ax.scatter(grid_points[:, 0], grid_points[:, 1], color='black', s=10, label='Lattice Points')
-        
+        # 原点だけ星マーカーで描画
+        ax.scatter(0, 0,color='black', s=50, marker='*', label='Origin')
+
         if fixe==0: # ei fix
             Ei = bpe
             Ef = bpe - QE_sets[index][0]
@@ -135,13 +137,13 @@ def plot_reciprocal_space(bpe, bpc2, cphw, cp, fixe, sv1, sv2, RLtable,A_sets, C
         hkl_x = c1 * sp1v_2d[0] + c2 * sp2v_2d[0]
         hkl_y = c1 * sp1v_2d[1] + c2 * sp2v_2d[1]
         
-        # hkl_calベクトルを描画
-        ax.quiver(0, 0, hkl_x, hkl_y, angles='xy', scale_units='xy', scale=1, color='red', label='τ (ki-kf)')
-        
         # sp1v_2d, sp2v_2dベクトルを描画
         # 端に表示するようにする。
         ax.quiver(-sp1v_2d[0]*n_points1-sp2v_2d[0]*n_points2, -sp1v_2d[1]*n_points1-sp2v_2d[1]*n_points2, sp1v_2d[0], sp1v_2d[1], angles='xy', scale_units='xy', scale=1, color='magenta', label='axis 1')
         ax.quiver(-sp1v_2d[0]*n_points1-sp2v_2d[0]*n_points2, -sp1v_2d[1]*n_points1-sp2v_2d[1]*n_points2, sp2v_2d[0], sp2v_2d[1], angles='xy', scale_units='xy', scale=1, color='aqua', label='axis 2')
+
+        # hkl_calベクトルを描画
+        ax.quiver(0, 0, hkl_x, hkl_y, angles='xy', scale_units='xy', scale=1, color='red', label='τ (ki-kf)')
         
         # ki, kfベクトルを描画. ki//y_axis
         #C_sets.append([C1, C2, C3, C4])
