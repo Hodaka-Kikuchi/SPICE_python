@@ -13,7 +13,7 @@ import pandas as pd
 
 from PIL import Image  # GIF 保存のために必要
 
-def calcresolution_scan3(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values,initial_index=0,save_gif=False,gif_name="resolution.gif"):
+def calcresolution_scan3(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,entry_values,initial_index=0,save_gif=False,gif_name="resolution.gif"):
     # save_gifがTrueだと保存、Falseだと非保存
 
     # INIファイルから設定を読み込む
@@ -47,7 +47,18 @@ def calcresolution_scan3(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE
     mos_ana_v = float(entry_values.get("mos_ana_v"))
     
     sample_to_analyzer = float(config['settings']['sample_to_analyzer'])
-    analyzer_width = float(config['settings']['analyzer_width'])
+    analyzer_width = float(config['settings']['ana_width'])
+
+    # focusing conditionの読み出し
+    MHF = focus_cond["MHF"]
+    MVF = focus_cond["MVF"]
+    AHF = focus_cond["AHF"]
+    AVF = focus_cond["AVF"]
+
+    num_mono_h = focus_cond["num_mono_h"]
+    num_mono_v = focus_cond["num_mono_v"]
+    num_ana_h  = focus_cond["num_ana_h"]
+    num_ana_v  = focus_cond["num_ana_v"]
     
     fig, axs = plt.subplots(2, 2, figsize=(10, 8))  # 2x2グリッドのサブプロット作成
     plt.subplots_adjust(left=0.1, bottom=0.15, wspace=0.3, hspace=0.4)
@@ -133,11 +144,11 @@ def calcresolution_scan3(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE
             
         alpha2 = div_2nd_h / 60 / 180 * pi * 0.4246609
         # focusingの場合式が異なる。
-        if Hfocus==0:
+        if AHF==0:
             alpha3 = div_3rd_h / 60 / 180 * pi * 0.4246609
-        elif Hfocus==1:
+        elif AHF==1:
             L=sample_to_analyzer
-            W=analyzer_width*num_ana*np.sin(np.radians(A3))
+            W=analyzer_width*num_ana_h*np.sin(np.radians(A3))
             af=2 * np.degrees(np.arctan((W / 2) / L))
             #alpha3 = div_3rd_h / 60 / 180 * pi * 0.4246609 * (8*np.log(2)/12)**(1/2)
             alpha3 = af / 180 * pi * 0.4246609 * (8*np.log(2)/12)**(1/2)
@@ -200,7 +211,7 @@ def calcresolution_scan3(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE
         term = np.linalg.inv(G + C.T @ F @ C)  # G + C' * F * C の逆行列
         HF = A @ term @ A.T  # A * (G + C' * F * C)^(-1) * A'
         # HFまでreslibと一致
-        if Hfocus == 1:
+        if AHF == 1:
             P = np.linalg.inv(HF)
             P[4, 4] = (1 / (kf * alpha3)) ** 2
             P[3, 4] = 0
@@ -208,7 +219,7 @@ def calcresolution_scan3(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE
             P[4, 3] = 0
             Pinv = np.linalg.inv(P)
             Minv = B @ Pinv @ B.T
-        if Hfocus == 0:
+        if AHF == 0:
             Minv = B @ HF @ B.T #これもreslibと一致
         M = np.linalg.inv(Minv)
         
@@ -418,11 +429,11 @@ def calcresolution_scan3(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE
             
         alpha2 = div_2nd_h / 60 / 180 * pi * 0.4246609
         # focusingの場合式が異なる。
-        if Hfocus==0:
+        if AHF==0:
             alpha3 = div_3rd_h / 60 / 180 * pi * 0.4246609
-        elif Hfocus==1:
+        elif AHF==1:
             L=sample_to_analyzer
-            W=analyzer_width*num_ana*np.sin(np.radians(A3))
+            W=analyzer_width*num_ana_h*np.sin(np.radians(A3))
             af=2 * np.degrees(np.arctan((W / 2) / L))
             #alpha3 = div_3rd_h / 60 / 180 * pi * 0.4246609 * (8*np.log(2)/12)**(1/2)
             alpha3 = af / 180 * pi * 0.4246609 * (8*np.log(2)/12)**(1/2)
@@ -485,7 +496,7 @@ def calcresolution_scan3(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE
         term = np.linalg.inv(G + C.T @ F @ C)  # G + C' * F * C の逆行列
         HF = A @ term @ A.T  # A * (G + C' * F * C)^(-1) * A'
         # HFまでreslibと一致
-        if Hfocus == 1:
+        if AHF == 1:
             P = np.linalg.inv(HF)
             P[4, 4] = (1 / (kf * alpha3)) ** 2
             P[3, 4] = 0
@@ -493,7 +504,7 @@ def calcresolution_scan3(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE
             P[4, 3] = 0
             Pinv = np.linalg.inv(P)
             Minv = B @ Pinv @ B.T
-        if Hfocus == 0:
+        if AHF == 0:
             Minv = B @ HF @ B.T #これもreslibと一致
         M = np.linalg.inv(Minv)
         

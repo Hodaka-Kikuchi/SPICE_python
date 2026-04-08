@@ -948,8 +948,9 @@ UBcalculate_button.grid(row=1, column=1,sticky="NSEW")
 frame4 = ttk.Frame(root)
 frame4.grid(row=3,column=0,sticky="NSEW")
 
-frame4.columnconfigure(0, weight=1)
-frame4.columnconfigure(1, weight=2)
+frame4.columnconfigure(0, weight=3)
+frame4.columnconfigure(1, weight=1)
+frame4.columnconfigure(2, weight=2)
 frame4.rowconfigure(0, weight=1)
 frame4.rowconfigure(1, weight=1)
 
@@ -962,14 +963,11 @@ frame4a.columnconfigure(2, weight=1)
 frame4a.rowconfigure(0, weight=1)
 frame4a.rowconfigure(1, weight=1)
 
-frame7c = ttk.Labelframe(frame4,text= "approximation")
-frame7c.grid(row=0,column=1,sticky="NSEW")
-frame7c.columnconfigure(0, weight=1)
-frame7c.columnconfigure(1, weight=1)
-frame7c.columnconfigure(2, weight=1)
-frame7c.columnconfigure(3, weight=1)
-frame7c.rowconfigure(0, weight=1)
-frame7c.rowconfigure(1, weight=1)
+frame4c = ttk.Labelframe(frame4,text= "approximation")
+frame4c.grid(row=0,column=1,sticky="NSEW")
+frame4c.columnconfigure(0, weight=1)
+frame4c.rowconfigure(0, weight=1)
+frame4c.rowconfigure(1, weight=1)
 
 '''
 #チェック有無変数
@@ -977,12 +975,12 @@ ana_HF = tk.IntVar()
 # value=0にチェックを入れる
 ana_HF.set(0)
 
-ana_HF = tk.Checkbutton(frame7c, variable=ana_HF, text='on')
+ana_HF = tk.Checkbutton(frame4c, variable=ana_HF, text='on')
 ana_HF.grid(row=0, column=0,sticky="NSEW")
 
-aclna = tk.Label(frame7c,text='blade num')
+aclna = tk.Label(frame4c,text='blade num')
 aclna.grid(row=1, column=0,sticky="NSEW")
-abnh = ttk.Entry(frame7c)
+abnh = ttk.Entry(frame4c)
 abnh.grid(row=2, column=0,sticky="NSEW")
 abnh.insert(0,'7')
 '''
@@ -990,13 +988,22 @@ abnh.insert(0,'7')
 # --- ラジオボタン ---
 apr_var = tk.StringVar(value="CN")  # デフォルト
 
-rb_cn = ttk.Radiobutton(frame7c, text="Cooper-Nathans", value="CN",
+rb_cn = ttk.Radiobutton(frame4c, text="Cooper-Nathans", value="CN",
                         variable=apr_var, command=lambda: switch_approx())
-rb_p  = ttk.Radiobutton(frame7c, text="Popovic", value="P",
+rb_p  = ttk.Radiobutton(frame4c, text="Popovic", value="P",
                         variable=apr_var, command=lambda: switch_approx())
 
-rb_cn.grid(row=0, column=0, columnspan=2, sticky="W")
-rb_p.grid(row=0, column=2, columnspan=2, sticky="W")
+rb_cn.grid(row=0, column=0, sticky="W")
+rb_p.grid(row=1, column=0, sticky="W")
+
+frame4d = ttk.Labelframe(frame4,text= "focusing")
+frame4d.grid(row=0,column=2,sticky="NSEW")
+frame4d.columnconfigure(0, weight=1)
+frame4d.columnconfigure(1, weight=1)
+frame4d.columnconfigure(2, weight=1)
+frame4d.columnconfigure(3, weight=1)
+frame4d.rowconfigure(0, weight=1)
+frame4d.rowconfigure(1, weight=1)
 
 # --- チェックボックス ---
 mono_VF = tk.IntVar(value=0)
@@ -1004,29 +1011,29 @@ mono_HF = tk.IntVar(value=0)
 ana_VF = tk.IntVar(value=0)
 ana_HF = tk.IntVar(value=0)
 
-chk_mono_HF = tk.Checkbutton(frame7c, text="Mono Hor", variable=mono_HF)
-chk_mono_VF = tk.Checkbutton(frame7c, text="Mono Ver", variable=mono_VF)
-chk_ana_HF = tk.Checkbutton(frame7c, text="Ana Hor", variable=ana_HF)
-chk_ana_VF = tk.Checkbutton(frame7c, text="Ana Ver", variable=ana_VF)
+chk_mono_HF = tk.Checkbutton(frame4d, text="Mono Hor", variable=mono_HF)
+chk_mono_VF = tk.Checkbutton(frame4d, text="Mono Ver", variable=mono_VF)
+chk_ana_HF = tk.Checkbutton(frame4d, text="Ana Hor", variable=ana_HF)
+chk_ana_VF = tk.Checkbutton(frame4d, text="Ana Ver", variable=ana_VF)
 
 chk_mono_HF.grid(row=1, column=0, sticky="W")
 chk_mono_VF.grid(row=2, column=0, sticky="W")
 chk_ana_HF.grid(row=1, column=2, sticky="W")
 chk_ana_VF.grid(row=2, column=2, sticky="W")
 
-mbnh = ttk.Entry(frame7c)
+mbnh = ttk.Entry(frame4d,width=6)
 mbnh.grid(row=1, column=1,sticky="NSEW")
 mbnh.insert(0,'1')
 
-mbnv = ttk.Entry(frame7c)
+mbnv = ttk.Entry(frame4d,width=6)
 mbnv.grid(row=2, column=1,sticky="NSEW")
 mbnv.insert(0,'2')
 
-abnh = ttk.Entry(frame7c)
+abnh = ttk.Entry(frame4d,width=6)
 abnh.grid(row=1, column=3,sticky="NSEW")
 abnh.insert(0,'7')
 
-abnv = ttk.Entry(frame7c)
+abnv = ttk.Entry(frame4d,width=6)
 abnv.grid(row=2, column=3,sticky="NSEW")
 abnv.insert(0,'3')
 
@@ -1063,7 +1070,7 @@ def switch_approx():
         abnv.config(state="normal")
 
 frame4b = ttk.Labelframe(frame4,text= "observed bragg peak position")
-frame4b.grid(row=1,column=0,columnspan=2,sticky="NSEW")
+frame4b.grid(row=1,column=0,columnspan=3,sticky="NSEW")
 
 frame4b.columnconfigure(0, weight=1)
 frame4b.columnconfigure(1, weight=1)
@@ -1625,8 +1632,25 @@ def calculate_angle():
         plot_spectrometer(sense,A_sets,QE_sets)
     
     Ni_mir = gm.get()
-    Hfocus = ana_HF.get()
-    num_ana = float(abnh.get())
+    MHF = mono_HF.get()
+    MVF = mono_VF.get()
+    AHF = ana_HF.get()
+    AVF = ana_VF.get()
+    num_mono_h = float(mbnh.get())
+    num_mono_v = float(mbnv.get())
+    num_ana_h = float(abnh.get())
+    num_ana_v = float(abnv.get())
+
+    focus_cond = {
+        "MHF": MHF,
+        "MVF": MVF,
+        "AHF": AHF,
+        "AVF": AVF,
+        "num_mono_h": num_mono_h,
+        "num_mono_v": num_mono_v,
+        "num_ana_h": num_ana_h,
+        "num_ana_v": num_ana_v,
+    }
     
     if fig_reci.get()==1:
         # 逆格子空間のki,kf,τベクトルを示す。
@@ -1699,7 +1723,7 @@ def calculate_angle():
             "mos_ana_h": mos_ana_h.get(),
             "mos_ana_v": mos_ana_v.get(),
         }
-        #calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values)
+        #calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,entry_values)
         
         # サンプル点の取得
         sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
@@ -1715,10 +1739,10 @@ def calculate_angle():
         apr_value = apr_var.get()
         if mode_var.get() == "slider":
             # slider用処理
-            calcresolution_scan3(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values)
+            calcresolution_scan3(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,entry_values)
         elif mode_var.get() == "overview":
             # overview用処理
-            calcresolution_scan4(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values)
+            calcresolution_scan4(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,entry_values)
     
     plt.show()
 
@@ -2482,8 +2506,8 @@ def constQscan_show_table():
         plot_spectrometer(sense,A_sets,QE_sets)
         
     Ni_mir = gm.get()
-    Hfocus = ana_HF.get()
-    num_ana = float(abnh.get())
+    AHF = ana_HF.get()
+    num_ana_h = float(abnh.get())
     
     global reso_mat_cQ,col_cond_cQ,scan_cond_cQ
     # Entry ウィジェットの値を辞書にまとめる
@@ -2514,7 +2538,7 @@ def constQscan_show_table():
     bstar = RLtable['bstar']
     cstar = RLtable['cstar']
     sense = RorL.get()
-    reso_mat_cQ,col_cond_cQ,scan_cond_cQ = calcresolution_save(sense,astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cQ) # reso matの計算のみ
+    reso_mat_cQ,col_cond_cQ,scan_cond_cQ = calcresolution_save(sense,astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,entry_values_cQ) # reso matの計算のみ
     
     if fig_reci.get()==1:
         # 逆格子空間のki,kf,τベクトルを示す。
@@ -2566,8 +2590,8 @@ def constQscan_show_table():
         #plot_reciprocal_space_with_gif(bpe,bpc2,cphw,cp,fixe,sv1,sv2,RLtable,A_sets,C_sets,QE_sets)
     
     if fig_reso.get()==1:
-        #calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cQ) # resoグラフ出力
-        #calcresolution_scan_with_gif(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values)
+        #calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,entry_values_cQ) # resoグラフ出力
+        #calcresolution_scan_with_gif(A_sets,QE_sets,bpe,fixe,focus_cond,entry_values)
         
         # サンプル点の取得
         sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
@@ -2583,11 +2607,11 @@ def constQscan_show_table():
         if mode_var.get() == "slider":
             # slider用処理
             if apr_var.get() =="CN":
-                calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cQ)
+                calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,entry_values_cQ)
         elif mode_var.get() == "overview":
             # overview用処理
             if apr_var.get() =="CN":
-                calcresolution_scan4(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cQ)
+                calcresolution_scan4(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,entry_values_cQ)
     plt.show()
     
     return angletable2,reso_mat_cQ,col_cond_cQ,scan_cond_cQ
@@ -2994,8 +3018,8 @@ def conostEscan_show_table():
         tree.column(col, width=80, anchor="center")
     
     Ni_mir = gm.get()
-    Hfocus = ana_HF.get()
-    num_ana = float(abnh.get())
+    AHF = ana_HF.get()
+    num_ana_h = float(abnh.get())
     
     global reso_mat_cE,col_cond_cE,scan_cond_cE
     # Entry ウィジェットの値を辞書にまとめる
@@ -3088,7 +3112,7 @@ def conostEscan_show_table():
     bstar = RLtable['bstar']
     cstar = RLtable['cstar']    
     sense = RorL.get()
-    reso_mat_cE,col_cond_cE,scan_cond_cE = calcresolution_save(sense, astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cE) # reso matの計算のみ
+    reso_mat_cE,col_cond_cE,scan_cond_cE = calcresolution_save(sense, astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,entry_values_cE) # reso matの計算のみ
     
     if fig_spec.get()==1:
         # プロット関数を呼び出し
@@ -3150,8 +3174,8 @@ def conostEscan_show_table():
         #plot_reciprocal_space_with_gif(bpe,bpc2,cphw,cp,fixe,sv1,sv2,RLtable,A_sets,C_sets,QE_sets)
     
     if fig_reso.get()==1:
-        #calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cE)
-        #calcresolution_scan_with_gif(A_sets,QE_sets,bpe,fixe,Hfocus,num_ana,entry_values)
+        #calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,entry_values_cE)
+        #calcresolution_scan_with_gif(A_sets,QE_sets,bpe,fixe,focus_cond,entry_values)
         
         # サンプル点の取得
         # 散乱面の取得
@@ -3168,11 +3192,11 @@ def conostEscan_show_table():
         if mode_var.get() == "slider":
             # slider用処理
             if apr_var.get() =="CN":
-                calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cE)
+                calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,entry_values_cE)
         elif mode_var.get() == "overview":
             # overview用処理
             if apr_var.get() =="CN":
-                calcresolution_scan4(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values_cE)
+                calcresolution_scan4(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,entry_values_cE)
         
     plt.show()
     
