@@ -327,11 +327,14 @@ def calcresolution_scan4(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE
         if AHF==0:
             alpha3 = div_3rd_h / 60 / 180 * pi * 0.4246609
         elif AHF==1:
+            '''
             L=sample_to_analyzer
             W=analyzer_width*num_ana_h*np.sin(np.radians(A3))
             af=2 * np.degrees(np.arctan((W / 2) / L))
             #alpha3 = div_3rd_h / 60 / 180 * pi * 0.4246609 * (8*np.log(2)/12)**(1/2)
             alpha3 = af / 180 * pi * 0.4246609 * (8*np.log(2)/12)**(1/2)
+            '''
+            alpha3 = div_3rd_h / 60 / 180 * pi * 0.4246609 * (8*np.log(2)/12)**(1/2)
         
         alpha4 = div_4th_h / 60 / 180 * pi * 0.4246609
         beta2 = div_2nd_v / 60 / 180 * pi * 0.4246609
@@ -464,23 +467,23 @@ def calcresolution_scan4(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE
                 return R
 
             # focusing:
-            if MHF == 0:
-                monorv = 1e6
-            elif MHF ==1:
-                monorv = focusing_curvature(L0,L1,thetaM)
             if MVF == 0:
-                monorh = 1e6
+                monorv = 1e10
             elif MVF ==1:
+                monorv = focusing_curvature(L0,L1,thetaM)
+            if MHF == 0:
+                monorh = 1e10
+            elif MHF ==1:
                 monorh = focusing_curvature(L0,L1,thetaM)
-            if AHF == 0:
-                anarv = 1e6
-            elif AHF ==1:
-                anarv = focusing_curvature(L2,L3,thetaA)
             if AVF == 0:
-                anarh = 1e6
+                anarv = 1e10
             elif AVF ==1:
+                anarv = focusing_curvature(L2,L3,thetaA)
+            if AHF == 0:
+                anarh = 1e10
+            elif AHF ==1:
                 anarh = focusing_curvature(L2,L3,thetaA)
-            
+
             # ==== T matrix ====
             T = np.zeros((4, 13))
 
@@ -499,6 +502,8 @@ def calcresolution_scan4(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE
             T[2, 8] = np.cos(np.radians(thetaA))*(1/L3 - 1/L2)/2
             T[2, 9] = np.sin(np.radians(thetaA))*(1/L2 + 1/L3 - 2/(anarh*np.sin(np.radians(thetaA))))/2
             T[2, 11] = 1/(2*L3)
+
+            print(T[0, 3],T[2, 9])
 
             T[3, 7] = -1/(2*L2*np.sin(np.radians(thetaA)))
             T[3, 10] = (1/L2 + 1/L3 - 2*np.sin(np.radians(thetaA))/anarv)/(2*np.sin(np.radians(thetaA)))
