@@ -9,8 +9,9 @@ import sys
 from matplotlib.widgets import Slider
 from scipy.optimize import minimize_scalar
 from scipy.optimize import minimize
+from scipy.linalg import block_diag
 
-def calcresolution_save(sense,astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fixe,Hfocus,num_ana,entry_values):
+def calcresolution_save(apr_value,sense,astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,entry_values):
     # INIファイルから設定を読み込む
     config = configparser.ConfigParser()
     # .exe化した場合に対応する
@@ -42,7 +43,18 @@ def calcresolution_save(sense,astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bp
     mos_ana_v = float(entry_values.get("mos_ana_v"))
     
     sample_to_analyzer = float(config['settings']['sample_to_analyzer'])
-    analyzer_width = float(config['settings']['analyzer_width'])
+    analyzer_width = float(config['settings']['ana_width'])
+
+    # focusing conditionの読み出し
+    MHF = focus_cond["MHF"]
+    MVF = focus_cond["MVF"]
+    AHF = focus_cond["AHF"]
+    AVF = focus_cond["AVF"]
+
+    num_mono_h = focus_cond["num_mono_h"]
+    num_mono_v = focus_cond["num_mono_v"]
+    num_ana_h  = focus_cond["num_ana_h"]
+    num_ana_v  = focus_cond["num_ana_v"]
 
     reso_mat = np.zeros((4,4,len(A_sets)))
     col_cond = np.zeros((14,len(A_sets)))
@@ -104,15 +116,18 @@ def calcresolution_save(sense,astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bp
             beta1 = alpha1
         alpha2 = div_2nd_h / 60 / 180 * pi * 0.4246609
         # focusingの場合式が異なる。
-        if Hfocus==0:
+        # focusingの場合式が異なる。
+        if AHF==0:
             alpha3 = div_3rd_h / 60 / 180 * pi * 0.4246609
-        elif Hfocus==1:
+        elif AHF==1:
+            '''
             L=sample_to_analyzer
-            W=analyzer_width*num_ana*np.sin(np.radians(A3))
+            W=analyzer_width*num_ana_h*np.sin(np.radians(A3))
             af=2 * np.degrees(np.arctan((W / 2) / L))
-            div_3rd_h = af*60
             #alpha3 = div_3rd_h / 60 / 180 * pi * 0.4246609 * (8*np.log(2)/12)**(1/2)
             alpha3 = af / 180 * pi * 0.4246609 * (8*np.log(2)/12)**(1/2)
+            '''
+            alpha3 = div_3rd_h / 60 / 180 * pi * 0.4246609 * (8*np.log(2)/12)**(1/2)
         
         col_cond[:,index]=[div_1st_h,div_2nd_h,div_3rd_h,div_4th_h,div_1st_v,div_2nd_v,div_3rd_v,div_4th_v,mos_mono_h,mos_ana_h,mos_sam_h,mos_mono_v,mos_ana_v,mos_sam_v]
         
@@ -172,20 +187,173 @@ def calcresolution_save(sense,astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bp
         C[3, 6] = 1 / (2 * sin(np.radians(thetaA)))
         C[3, 7] = -C[3, 6]
         
+        # popovic近似へ分岐
+        if apr_value == "P":
+            beam_width = float(config['settings']['beam_width'])
+            beam_height = float(config['settings']['beam_height'])
+            # ==== Beam shape ====
+            beamw = (beam_width)**2
+            beamh = (beam_height)**2
+            bshape = np.diag([beamw, beamh])
+
+            # ==== Mono shape ====
+            mono_width = float(config['settings']['mono_width'])
+            mono_height = float(config['settings']['mono_height'])
+            mono_depth = float(config['settings']['mono_depth'])
+            monow = (num_mono_h*mono_width)**2
+            monoh = (num_mono_v*mono_height)**2
+            monod = (mono_depth)**2
+            mshape = np.diag([monod, monow, monoh])
+
+            '''
+            # ==== Monitor shape ====
+            # only flux normalization
+            monitorw = 1
+            monitorh = 1
+            # if you want:
+            #monitorw = monitor.width**2
+            #monitorh = monitor.height**2
+            monitorshape = np.diag([monitorw, monitorh])
+            '''
+
+            # ==== Sample shape ====
+            sshape = np.eye(3)
+            psi = thetaS -phi
+            rot = np.array([[cos(np.radians(psi)),sin(np.radians(psi)),0],
+                [-sin(np.radians(psi)),cos(np.radians(psi)),0],
+                [0,0,1]])
+            sshape = rot@sshape@rot.T
+
+            # ==== Analyzer shape ====
+            ana_width = float(config['settings']['ana_width'])
+            ana_height = float(config['settings']['ana_height'])
+            ana_depth = float(config['settings']['ana_depth'])
+            anaw = (num_ana_h*ana_width)**2
+            anah = (num_ana_v*ana_height)**2
+            anad = (ana_depth)**2
+            ashape = np.diag([anad, anaw, anah])
+
+            # ==== Detector shape ====
+            det_width = float(config['settings']['det_width'])
+            det_height = float(config['settings']['det_height'])
+            detectorw = (det_width)**2
+            detectorh = (det_height)**2
+            dshape = np.diag([detectorw, detectorh])
+
+            # ==== S matrix ====
+            Sinv = block_diag(bshape, mshape, sshape, ashape, dshape)  # S^-1
+            S = np.linalg.inv(Sinv)
+
+            # ==== Distances ====
+            L0 = float(config['settings']['source_to_monochromator'])
+            L1 = float(config['settings']['monochromator_to_sample'])
+            #L1mon = 1 # only flux normalization
+            L2 = float(config['settings']['sample_to_analyzer'])
+            L3 = float(config['settings']['analyzer_to_detector'])
+
+            def focusing_curvature(L_1, L_2, theta):
+                # 有効焦点距離。ただし、単位をmmからmに直す必要がある。
+                f = 1.0 / (1.0/L_1 + 1.0/L_2)
+
+                # θ をラジアンに変換
+                theta_rad = np.radians(theta)
+
+                # 曲率 R = 2*f*|sin(theta)|
+                R = 2.0 * f * np.abs(np.sin(theta_rad))
+
+                return R
+
+            # focusing:
+            if MVF == 0:
+                monorv = 1e10
+            elif MVF ==1:
+                monorv = focusing_curvature(L0,L1,thetaM)
+            if MHF == 0:
+                monorh = 1e10
+            elif MHF ==1:
+                monorh = focusing_curvature(L0,L1,thetaM)
+            if AVF == 0:
+                anarv = 1e10
+            elif AVF ==1:
+                anarv = focusing_curvature(L2,L3,thetaA)
+            if AHF == 0:
+                anarh = 1e10
+            elif AHF ==1:
+                anarh = focusing_curvature(L2,L3,thetaA)
+
+            # ==== T matrix ====
+            T = np.zeros((4, 13))
+
+            T[0, 0] = -1/(2*L0)
+            T[0, 2] = np.cos(np.radians(thetaM))*(1/L1 - 1/L0)/2
+            T[0, 3] = np.sin(np.radians(thetaM))*(1/L0 + 1/L1 - 2/(monorh*np.sin(np.radians(thetaM))))/2
+            T[0, 5] = np.sin(np.radians(thetaS))/(2*L1)
+            T[0, 6] = np.cos(np.radians(thetaS))/(2*L1)
+
+            T[1, 1] = -1/(2*L0*np.sin(np.radians(thetaM)))
+            T[1, 4] = (1/L0 + 1/L1 - 2*np.sin(np.radians(thetaM))/monorv)/(2*np.sin(np.radians(thetaM)))
+            T[1, 7] = -1/(2*L1*np.sin(np.radians(thetaM)))
+
+            T[2, 5] = np.sin(np.radians(thetaS))/(2*L2)
+            T[2, 6] = -np.cos(np.radians(thetaS))/(2*L2)
+            T[2, 8] = np.cos(np.radians(thetaA))*(1/L3 - 1/L2)/2
+            T[2, 9] = np.sin(np.radians(thetaA))*(1/L2 + 1/L3 - 2/(anarh*np.sin(np.radians(thetaA))))/2
+            T[2, 11] = 1/(2*L3)
+
+            T[3, 7] = -1/(2*L2*np.sin(np.radians(thetaA)))
+            T[3, 10] = (1/L2 + 1/L3 - 2*np.sin(np.radians(thetaA))/anarv)/(2*np.sin(np.radians(thetaA)))
+            T[3, 12] = -1/(2*L3*np.sin(np.radians(thetaA)))
+
+            # ==== D matrix ====
+            D = np.zeros((8, 13))
+
+            D[0, 0] = -1/L0
+            D[0, 2] = -np.cos(np.radians(thetaM))/L0
+            D[0, 3] = np.sin(np.radians(thetaM))/L0
+
+            D[2, 1] = D[0, 0]
+            D[2, 4] = -D[0, 0]
+
+            D[1, 2] = np.cos(np.radians(thetaM))/L1
+            D[1, 3] = np.sin(np.radians(thetaM))/L1
+            D[1, 5] = np.sin(np.radians(thetaS))/L1
+            D[1, 6] = np.cos(np.radians(thetaS))/L1
+
+            D[3, 4] = -1/L1
+            D[3, 7] = -D[3, 4]
+
+            D[4, 5] = np.sin(np.radians(thetaS))/L2
+            D[4, 6] = -np.cos(np.radians(thetaS))/L2
+            D[4, 8] = -np.cos(np.radians(thetaA))/L2
+            D[4, 9] = np.sin(np.radians(thetaA))/L2
+
+            D[6, 7] = -1/L2
+            D[6, 10] = -D[6, 7]
+
+            D[5, 8] = np.cos(np.radians(thetaA))/L3
+            D[5, 9] = np.sin(np.radians(thetaA))/L3
+            D[5, 11] = 1/L3
+
+            D[7, 10] = -D[5, 11]
+            D[7, 12] = D[5, 11]
+
         # 計算
         term = np.linalg.inv(G + C.T @ F @ C)  # G + C' * F * C の逆行列
         HF = A @ term @ A.T  # A * (G + C' * F * C)^(-1) * A'
         # HFまでreslibと一致
-        if Hfocus == 1:
-            P = np.linalg.inv(HF)
-            P[4, 4] = (1 / (kf * alpha3)) ** 2
-            P[3, 4] = 0
-            P[3, 3] = (np.tan(np.radians(thetaA)) / (etaA * kf)) ** 2
-            P[4, 3] = 0
-            Pinv = np.linalg.inv(P)
-            Minv = B @ Pinv @ B.T
-        if Hfocus == 0:
-            Minv = B @ HF @ B.T
+        if apr_value == "P":
+            Minv = (B @ A @ np.linalg.inv(np.linalg.inv(D @ np.linalg.inv(S + T.T @ F @ T) @ D.T) + G) @ A.T @ B.T)
+        elif apr_value == "CN":
+            if AHF == 1:
+                P = np.linalg.inv(HF)
+                P[4, 4] = (1 / (kf * alpha3)) ** 2
+                P[3, 4] = 0
+                P[3, 3] = (np.tan(np.radians(thetaA)) / (etaA * kf)) ** 2
+                P[4, 3] = 0
+                Pinv = np.linalg.inv(P)
+                Minv = B @ Pinv @ B.T
+            elif AHF == 0:
+                Minv = B @ HF @ B.T #これもreslibと一致
         M = np.linalg.inv(Minv)
         # RM 行列の設定
         #RM = np.zeros((4, 4))  # 4x4 のゼロ行列で初期化

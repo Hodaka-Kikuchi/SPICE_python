@@ -503,8 +503,6 @@ def calcresolution_scan4(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE
             T[2, 9] = np.sin(np.radians(thetaA))*(1/L2 + 1/L3 - 2/(anarh*np.sin(np.radians(thetaA))))/2
             T[2, 11] = 1/(2*L3)
 
-            print(T[0, 3],T[2, 9])
-
             T[3, 7] = -1/(2*L2*np.sin(np.radians(thetaA)))
             T[3, 10] = (1/L2 + 1/L3 - 2*np.sin(np.radians(thetaA))/anarv)/(2*np.sin(np.radians(thetaA)))
             T[3, 12] = -1/(2*L3*np.sin(np.radians(thetaA)))

@@ -1737,6 +1737,7 @@ def calculate_angle():
         cstar = RLtable['cstar']
         sense = RorL.get()
         apr_value = apr_var.get()
+
         if mode_var.get() == "slider":
             # slider用処理
             calcresolution_scan3(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,entry_values)
@@ -2538,7 +2539,30 @@ def constQscan_show_table():
     bstar = RLtable['bstar']
     cstar = RLtable['cstar']
     sense = RorL.get()
-    reso_mat_cQ,col_cond_cQ,scan_cond_cQ = calcresolution_save(sense,astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,entry_values_cQ) # reso matの計算のみ
+    apr_value = apr_var.get()
+
+    Ni_mir = gm.get()
+    MHF = mono_HF.get()
+    MVF = mono_VF.get()
+    AHF = ana_HF.get()
+    AVF = ana_VF.get()
+    num_mono_h = float(mbnh.get())
+    num_mono_v = float(mbnv.get())
+    num_ana_h = float(abnh.get())
+    num_ana_v = float(abnv.get())
+
+    focus_cond = {
+        "MHF": MHF,
+        "MVF": MVF,
+        "AHF": AHF,
+        "AVF": AVF,
+        "num_mono_h": num_mono_h,
+        "num_mono_v": num_mono_v,
+        "num_ana_h": num_ana_h,
+        "num_ana_v": num_ana_v,
+    }
+
+    reso_mat_cQ,col_cond_cQ,scan_cond_cQ = calcresolution_save(apr_value,sense,astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,entry_values_cQ) # reso matの計算のみ
     
     if fig_reci.get()==1:
         # 逆格子空間のki,kf,τベクトルを示す。
@@ -2604,14 +2628,14 @@ def constQscan_show_table():
         bstar = RLtable['bstar']
         cstar = RLtable['cstar']
         sense = RorL.get()
+        apr_value = apr_var.get()
+
         if mode_var.get() == "slider":
             # slider用処理
-            if apr_var.get() =="CN":
-                calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,entry_values_cQ)
+            calcresolution_scan3(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,entry_values_cQ)
         elif mode_var.get() == "overview":
             # overview用処理
-            if apr_var.get() =="CN":
-                calcresolution_scan4(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,entry_values_cQ)
+            calcresolution_scan4(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,entry_values_cQ)
     plt.show()
     
     return angletable2,reso_mat_cQ,col_cond_cQ,scan_cond_cQ
@@ -3112,7 +3136,29 @@ def conostEscan_show_table():
     bstar = RLtable['bstar']
     cstar = RLtable['cstar']    
     sense = RorL.get()
-    reso_mat_cE,col_cond_cE,scan_cond_cE = calcresolution_save(sense, astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,entry_values_cE) # reso matの計算のみ
+
+    Ni_mir = gm.get()
+    MHF = mono_HF.get()
+    MVF = mono_VF.get()
+    AHF = ana_HF.get()
+    AVF = ana_VF.get()
+    num_mono_h = float(mbnh.get())
+    num_mono_v = float(mbnv.get())
+    num_ana_h = float(abnh.get())
+    num_ana_v = float(abnv.get())
+
+    focus_cond = {
+        "MHF": MHF,
+        "MVF": MVF,
+        "AHF": AHF,
+        "AVF": AVF,
+        "num_mono_h": num_mono_h,
+        "num_mono_v": num_mono_v,
+        "num_ana_h": num_ana_h,
+        "num_ana_v": num_ana_v,
+    }
+
+    reso_mat_cE,col_cond_cE,scan_cond_cE = calcresolution_save(apr_value,sense, astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,entry_values_cE) # reso matの計算のみ
     
     if fig_spec.get()==1:
         # プロット関数を呼び出し
@@ -3189,14 +3235,14 @@ def conostEscan_show_table():
         bstar = RLtable['bstar']
         cstar = RLtable['cstar']
         sense = RorL.get()
+        apr_value = apr_var.get()
+
         if mode_var.get() == "slider":
             # slider用処理
-            if apr_var.get() =="CN":
-                calcresolution_scan3(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,entry_values_cE)
+            calcresolution_scan3(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,entry_values_cE)
         elif mode_var.get() == "overview":
             # overview用処理
-            if apr_var.get() =="CN":
-                calcresolution_scan4(sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,entry_values_cE)
+            calcresolution_scan4(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,entry_values_cE)
         
     plt.show()
     
