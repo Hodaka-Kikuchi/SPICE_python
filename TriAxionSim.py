@@ -1,6 +1,6 @@
 # cd c:/Users/h34/Documents/Python/SPICE_python
 # 右上にバージョン情報を表示
-__version__ = '1.15.0'
+__version__ = '1.16.0'
 """
 セマンティック バージョニング (Semantic Versioning)
 セマンティック バージョニング（セムバ―、SemVer）は、バージョン番号を「MAJOR.MINOR.PATCH」の形式で表します。それぞれの部分には以下のような意味があります：
