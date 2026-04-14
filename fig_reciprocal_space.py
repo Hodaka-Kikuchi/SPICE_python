@@ -24,7 +24,8 @@ def solve_linear_combination(sp1v, sp2v, hkl_cal):
     c1, c2 = coefficients
     return c1, c2
 
-def plot_reciprocal_space(bpe, bpc2, cphw, cp, fixe, sv1, sv2, RLtable,A_sets, C_sets,QE_sets, initial_index=0):
+# def plot_reciprocal_space(bpe, bpc2, cphw, cp, fixe, sv1, sv2, RLtable,A_sets, C_sets,QE_sets, initial_index=0):
+def plot_reciprocal_space(bpe, fixe, sv1, sv2, RLtable,A_sets, C_sets,QE_sets, initial_index=0):
     """
     逆格子空間を描く（sp1vとsp2vがなす角度、格子点生成、ベクトルの表示）
     """

@@ -246,7 +246,13 @@ def load_values_from_ini():
     mos_ana_v.delete(0, tk.END)  # 既存の値をクリア
     mos_ana_v.insert(0, config['instrument'].get('mos_ana_v', '50'))
     
-    # monochromatorとanalyzerのd値
+    # monochromatorとanalyzerを読み込む
+    mono_cry = config["instrument"].get("mono_cry", "PG(002)")
+    ana_cry  = config["instrument"].get("ana_cry", "PG(002)")
+    combo_mono.set(mono_cry)
+    combo_ana.set(ana_cry)
+
+    # monoとanaのd値
     d_mono.delete(0, tk.END)  # 既存の値をクリア
     d_mono.insert(0, config['instrument'].get('d_mono', '3.355'))
     d_ana.delete(0, tk.END)  # 既存の値をクリア
@@ -330,6 +336,74 @@ def load_values_from_ini():
     apr_value = config['option'].get('approximation', 'CN')
     apr_var.set(apr_value)
 
+    # 近似パラメータ及び分光器パラメータ
+    # settings セクションの読み込み
+    e_pp0.delete(0, tk.END)
+    e_pp0.insert(0, config['settings'].get('source_to_mono', '10'))
+
+    e_cs1.delete(0, tk.END)
+    e_cs1.insert(0, config['settings'].get('mono_radius', '0.7'))
+
+    e_pp1.delete(0, tk.END)
+    e_pp1.insert(0, config['settings'].get('mono_to_sample', '1.6'))
+
+    e_cs2.delete(0, tk.END)
+    e_cs2.insert(0, config['settings'].get('sample_stage_radius', '0.4'))
+
+    e_pp2.delete(0, tk.END)
+    e_pp2.insert(0, config['settings'].get('sample_to_ana', '1.016'))
+
+    e_cs3.delete(0, tk.END)
+    e_cs3.insert(0, config['settings'].get('ana_radius', '0.56'))
+
+    e_pp3.delete(0, tk.END)
+    e_pp3.insert(0, config['settings'].get('ana_to_det', '0.49'))
+
+    e_cs4.delete(0, tk.END)
+    e_cs4.insert(0, config['settings'].get('det_radius', '300'))
+
+    e_cs5.delete(0, tk.END)
+    e_cs5.insert(0, config['settings'].get('floor_length', '6'))
+
+    e_cs6.delete(0, tk.END)
+    e_cs6.insert(0, config['settings'].get('floor_width', '3'))
+
+    e_cs7.delete(0, tk.END)
+    e_cs7.insert(0, config['settings'].get('floor_position_x', '-3'))
+
+    e_cs8.delete(0, tk.END)
+    e_cs8.insert(0, config['settings'].get('floor_position_y', '0.6'))
+
+    e_pp4.delete(0, tk.END)
+    e_pp4.insert(0, config['settings'].get('beam_width', '0.1'))
+
+    e_pp5.delete(0, tk.END)
+    e_pp5.insert(0, config['settings'].get('beam_height', '0.2'))
+
+    e_pp6.delete(0, tk.END)
+    e_pp6.insert(0, config['settings'].get('mono_width', '0.14'))
+
+    e_pp7.delete(0, tk.END)
+    e_pp7.insert(0, config['settings'].get('mono_height', '0.02'))
+
+    e_pp8.delete(0, tk.END)
+    e_pp8.insert(0, config['settings'].get('mono_depth', '0.002'))
+
+    e_pp9.delete(0, tk.END)
+    e_pp9.insert(0, config['settings'].get('ana_width', '0.02'))
+
+    e_pp10.delete(0, tk.END)
+    e_pp10.insert(0, config['settings'].get('ana_height', '0.02'))
+
+    e_pp11.delete(0, tk.END)
+    e_pp11.insert(0, config['settings'].get('ana_depth', '0.002'))
+
+    e_pp12.delete(0, tk.END)
+    e_pp12.insert(0, config['settings'].get('det_width', '0.032'))
+
+    e_pp13.delete(0, tk.END)
+    e_pp13.insert(0, config['settings'].get('det_height', '0.120'))
+
 def save_values_to_ini():
     """
     現在のウィジェットの値をINIファイルに保存する
@@ -400,6 +474,8 @@ def save_values_to_ini():
         'div_4th_v': div_4th_v.get(),
         'd_mono': d_mono.get(),
         'd_ana': d_ana.get(),
+        'mono_cry' : combo_mono.get(),
+        'ana_cry' : combo_ana.get(),
         'mos_mono_h': mos_mono_h.get(),
         'mos_mono_v': mos_mono_v.get(),
         'mos_ana_h': mos_ana_h.get(),
@@ -424,6 +500,32 @@ def save_values_to_ini():
         'mono_blade_num_v': mbnv.get(),
         'ana_blade_num_h': abnh.get(),
         'ana_blade_num_v': abnv.get(),
+    })
+
+    # 'setting'セクションを更新
+    config['settings'].update({
+        'source_to_mono': e_pp0.get(),
+        'mono_radius': e_cs1.get(),
+        'mono_to_sample': e_pp1.get(),
+        'sample_stage_radius': e_cs2.get(),
+        'sample_to_ana': e_pp2.get(),
+        'ana_radius': e_cs3.get(),
+        'ana_to_det': e_pp3.get(),
+        'det_radius': e_cs4.get(),
+        'floor_length': e_cs5.get(),
+        'floor_width': e_cs6.get(),
+        'floor_position_x': e_cs7.get(),
+        'floor_position_y': e_cs8.get(),
+        'beam_width': e_pp4.get(),
+        'beam_height': e_pp5.get(),
+        'mono_width': e_pp6.get(),
+        'mono_height': e_pp7.get(),
+        'mono_depth': e_pp8.get(),
+        'ana_width': e_pp9.get(),
+        'ana_height': e_pp10.get(),
+        'ana_depth': e_pp11.get(),
+        'det_width': e_pp12.get(),
+        'det_height': e_pp13.get(),
     })
     
     # 'option'セクションを更新
@@ -469,18 +571,193 @@ from fig_reciprocal_space import plot_reciprocal_space
 from time_estimate import constqtime
 from time_estimate import constetime
 
-# GUIの配分を決める。
 root.columnconfigure(0, weight=1)
-root.rowconfigure(0, weight=2)
-root.rowconfigure(1, weight=2)
-root.rowconfigure(2, weight=4)
-root.rowconfigure(3, weight=2)
-root.rowconfigure(4, weight=5)
-root.rowconfigure(5, weight=3)
-root.rowconfigure(6, weight=3)
+root.rowconfigure(0, weight=1)
+
+# main tabとinst tabを設定
+frame0 = ttk.Frame(root)
+frame0.grid(row=0, column=0, sticky="nsew")
+
+frame0.columnconfigure(0, weight=1)
+frame0.rowconfigure(0, weight=1)
+
+notebook = ttk.Notebook(frame0)
+notebook.pack(expand=True, fill="both")
+
+# タブの作成
+tab_user = tk.Frame(notebook)# for user
+tab_inst = tk.Frame(notebook)# information of spectrometer
+
+# notebookにタブを追加
+notebook.add(tab_user, text="main")
+notebook.add(tab_inst, text="sub")
+
+# GUIの配分を決める。
+tab_user.columnconfigure(0, weight=1)
+tab_user.rowconfigure(0, weight=2)
+tab_user.rowconfigure(1, weight=2)
+tab_user.rowconfigure(2, weight=4)
+tab_user.rowconfigure(3, weight=2)
+tab_user.rowconfigure(4, weight=5)
+tab_user.rowconfigure(5, weight=3)
+tab_user.rowconfigure(6, weight=3)
+
+# GUIの配分を決める。
+tab_inst.columnconfigure(0, weight=1)
+tab_inst.rowconfigure(0, weight=10)
+tab_inst.rowconfigure(1, weight=4)
+
+# 装置の情報(Userが興味ない部分)
+frame_sub1 = ttk.Labelframe(tab_inst,text= "Parameter sets for the Popovic approximation [unit : m]")
+frame_sub1.grid(row=0,column=0,sticky="NSEW")
+
+frame_sub1.columnconfigure(0, weight=1)
+frame_sub1.columnconfigure(1, weight=1)
+frame_sub1.columnconfigure(2, weight=1)
+frame_sub1.columnconfigure(3, weight=1)
+frame_sub1.rowconfigure(0, weight=1)
+frame_sub1.rowconfigure(1, weight=1)
+frame_sub1.rowconfigure(2, weight=1)
+frame_sub1.rowconfigure(3, weight=1)
+frame_sub1.rowconfigure(4, weight=1)
+frame_sub1.rowconfigure(5, weight=1)
+frame_sub1.rowconfigure(6, weight=1)
+frame_sub1.rowconfigure(7, weight=1)
+frame_sub1.rowconfigure(8, weight=1)
+frame_sub1.rowconfigure(9, weight=1)
+
+l_pp0 = tk.Label(frame_sub1,text='L0 : source to mono')
+l_pp0.grid(row=0, column=0,sticky="NSEW")
+e_pp0 = ttk.Entry(frame_sub1)
+e_pp0.grid(row=1, column=0,sticky="NSEW")
+
+l_pp1 = tk.Label(frame_sub1,text='L1 : mono to sample')
+l_pp1.grid(row=0, column=1,sticky="NSEW")
+e_pp1 = ttk.Entry(frame_sub1)
+e_pp1.grid(row=1, column=1,sticky="NSEW")
+
+l_pp2 = tk.Label(frame_sub1,text='L2 : sample to ana')
+l_pp2.grid(row=0, column=2,sticky="NSEW")
+e_pp2 = ttk.Entry(frame_sub1)
+e_pp2.grid(row=1, column=2,sticky="NSEW")
+
+l_pp3 = tk.Label(frame_sub1,text='L3 : ana to det')
+l_pp3.grid(row=0, column=3,sticky="NSEW")
+e_pp3 = ttk.Entry(frame_sub1)
+e_pp3.grid(row=1, column=3,sticky="NSEW")
+
+l_pp4 = tk.Label(frame_sub1,text='beam width')
+l_pp4.grid(row=2, column=0,sticky="NSEW")
+e_pp4 = ttk.Entry(frame_sub1)
+e_pp4.grid(row=3, column=0,sticky="NSEW")
+
+l_pp5 = tk.Label(frame_sub1,text='beam height')
+l_pp5.grid(row=2, column=1,sticky="NSEW")
+e_pp5 = ttk.Entry(frame_sub1)
+e_pp5.grid(row=3, column=1,sticky="NSEW")
+
+l_ppn = tk.Label(frame_sub1,text='mono width (per blade)')
+l_ppn.grid(row=4, column=3,sticky="NSEW")
+
+l_pp6 = tk.Label(frame_sub1,text='mono width (per blade)')
+l_pp6.grid(row=4, column=0,sticky="NSEW")
+e_pp6 = ttk.Entry(frame_sub1)
+e_pp6.grid(row=5, column=0,sticky="NSEW")
+
+l_pp7 = tk.Label(frame_sub1,text='mono height (per blade)')
+l_pp7.grid(row=4, column=1,sticky="NSEW")
+e_pp7 = ttk.Entry(frame_sub1)
+e_pp7.grid(row=5, column=1,sticky="NSEW")
+
+l_pp8 = tk.Label(frame_sub1,text='mono thickness (per blade)')
+l_pp8.grid(row=4, column=2,sticky="NSEW")
+e_pp8 = ttk.Entry(frame_sub1)
+e_pp8.grid(row=5, column=2,sticky="NSEW")
+
+l_pp9 = tk.Label(frame_sub1,text='ana width (per blade)')
+l_pp9.grid(row=6, column=0,sticky="NSEW")
+e_pp9 = ttk.Entry(frame_sub1)
+e_pp9.grid(row=7, column=0,sticky="NSEW")
+
+l_pp10 = tk.Label(frame_sub1,text='ana height (per blade)')
+l_pp10.grid(row=6, column=1,sticky="NSEW")
+e_pp10 = ttk.Entry(frame_sub1)
+e_pp10.grid(row=7, column=1,sticky="NSEW")
+
+l_pp11 = tk.Label(frame_sub1,text='ana thickness (per blade)')
+l_pp11.grid(row=6, column=2,sticky="NSEW")
+e_pp11 = ttk.Entry(frame_sub1)
+e_pp11.grid(row=7, column=2,sticky="NSEW")
+
+l_pp12 = tk.Label(frame_sub1,text='det width')
+l_pp12.grid(row=8, column=0,sticky="NSEW")
+e_pp12 = ttk.Entry(frame_sub1)
+e_pp12.grid(row=9, column=0,sticky="NSEW")
+
+l_pp13 = tk.Label(frame_sub1,text='det height')
+l_pp13.grid(row=8, column=1,sticky="NSEW")
+e_pp13 = ttk.Entry(frame_sub1)
+e_pp13.grid(row=9, column=1,sticky="NSEW")
+
+frame_sub2 = ttk.Labelframe(tab_inst,text= "Parameter sets for displaying the spectrometer diagram [unit : m]")
+frame_sub2.grid(row=1,column=0,sticky="NSEW")
+
+frame_sub2.columnconfigure(0, weight=1)
+frame_sub2.columnconfigure(1, weight=1)
+frame_sub2.columnconfigure(2, weight=1)
+frame_sub2.columnconfigure(3, weight=1)
+frame_sub2.rowconfigure(0, weight=1)
+frame_sub2.rowconfigure(1, weight=1)
+frame_sub2.rowconfigure(2, weight=1)
+frame_sub2.rowconfigure(3, weight=1)
+
+l_cs1 = tk.Label(frame_sub2,text='radius of mono drum')
+l_cs1.grid(row=0, column=0,sticky="NSEW")
+e_cs1 = ttk.Entry(frame_sub2)
+e_cs1.grid(row=1, column=0,sticky="NSEW")
+
+l_cs2 = tk.Label(frame_sub2,text='radius of sample stage')
+l_cs2.grid(row=0, column=1,sticky="NSEW")
+e_cs2 = ttk.Entry(frame_sub2)
+e_cs2.grid(row=1, column=1,sticky="NSEW")
+
+l_cs3 = tk.Label(frame_sub2,text='radius of ana drum')
+l_cs3.grid(row=0, column=2,sticky="NSEW")
+e_cs3 = ttk.Entry(frame_sub2)
+e_cs3.grid(row=1, column=2,sticky="NSEW")
+
+l_cs4 = tk.Label(frame_sub2,text='radius of det drum')
+l_cs4.grid(row=0, column=3,sticky="NSEW")
+e_cs4 = ttk.Entry(frame_sub2)
+e_cs4.grid(row=1, column=3,sticky="NSEW")
+
+l_cs5 = tk.Label(frame_sub2,text='floor length')
+l_cs5.grid(row=2, column=0,sticky="NSEW")
+e_cs5 = ttk.Entry(frame_sub2)
+e_cs5.grid(row=3, column=0,sticky="NSEW")
+
+l_cs6 = tk.Label(frame_sub2,text='floor width')
+l_cs6.grid(row=2, column=1,sticky="NSEW")
+e_cs6 = ttk.Entry(frame_sub2)
+e_cs6.grid(row=3, column=1,sticky="NSEW")
+
+l_cs7 = tk.Label(frame_sub2,text='floor position X')
+l_cs7.grid(row=2, column=2,sticky="NSEW")
+e_cs7 = ttk.Entry(frame_sub2)
+e_cs7.grid(row=3, column=2,sticky="NSEW")
+
+l_cs8 = tk.Label(frame_sub2,text='floor position Y')
+l_cs8.grid(row=2, column=3,sticky="NSEW")
+e_cs8 = ttk.Entry(frame_sub2)
+e_cs8.grid(row=3, column=3,sticky="NSEW")
+
+
+
+###############################################################
+# userのためのフレーム
 
 # ファイル選択のフレームの作成と設置
-frame1 = ttk.Labelframe(root,text= "lattice information")
+frame1 = ttk.Labelframe(tab_user,text= "lattice information")
 frame1.grid(row=0,column=0,sticky="NSEW")
 
 frame1.columnconfigure(0, weight=1)
@@ -577,7 +854,7 @@ lc_gamma.grid(row=1, column=5,sticky="NSEW")
 #lc_gamma.insert(0,'120')
 
 # ファイル選択のフレームの作成と設置
-frame2 = ttk.Labelframe(root,text= "scattering plane")
+frame2 = ttk.Labelframe(tab_user,text= "scattering plane")
 frame2.grid(row=1,column=0,sticky="NSEW")
 
 frame2.columnconfigure(0, weight=1)
@@ -667,7 +944,7 @@ sv3_l = ttk.Entry(frame2c)
 sv3_l.grid(row=1, column=2,sticky="NSEW")
 
 # UB matrixの表示
-frame3 = ttk.Labelframe(root,text= "matrix display")
+frame3 = ttk.Labelframe(tab_user,text= "matrix display")
 frame3.grid(row=2,column=0,sticky="NSEW")
 
 frame3.columnconfigure(0, weight=1)
@@ -945,7 +1222,7 @@ UBcalculate_button.grid(row=1, column=1,sticky="NSEW")
 
 # ブラッグピーク位置を入力
 # ファイル選択のフレームの作成と設置
-frame4 = ttk.Frame(root)
+frame4 = ttk.Frame(tab_user)
 frame4.grid(row=3,column=0,sticky="NSEW")
 
 frame4.columnconfigure(0, weight=3)
@@ -1041,7 +1318,7 @@ abnv.insert(0,'3')
 def switch_approx():
     sel = apr_var.get()
     if sel == "CN":
-        # CN の場合：Analyzer horizontal だけ選択可能
+        # CN の場合：ana horizontal だけ選択可能
         chk_mono_VF.config(state="disabled")
         chk_mono_HF.config(state="disabled")
         chk_ana_VF.config(state="disabled")
@@ -1159,7 +1436,7 @@ bp_nu.grid(row=1, column=6,sticky="NSEW")
 
 # select feature
 # ファイル選択のフレームの作成と設置
-frame6 = ttk.Labelframe(root,text= "select feature")
+frame6 = ttk.Labelframe(tab_user,text= "select feature")
 frame6.grid(row=4,column=0,sticky="NSEW")
 
 # 計算する位置を入力
@@ -1476,33 +1753,33 @@ def calculate_angle():
         ini_path = os.path.join(os.path.dirname(__file__), 'config.ini')
     config.read(ini_path)
     
-    monochromator_radius = float(config['settings']['monochromator_radius'])
-    monochromator_to_sample = float(config['settings']['monochromator_to_sample'])
-    sample_goniometer_radius = float(config['settings']['sample_goniometer_radius'])
-    sample_to_analyzer = float(config['settings']['sample_to_analyzer'])
-    analyzer_radius = float(config['settings']['analyzer_radius'])
-    analyzer_to_detector = float(config['settings']['analyzer_to_detector'])
-    detector_radius = float(config['settings']['detector_radius'])
+    mono_radius = float(config['settings']['mono_radius'])
+    mono_to_sample = float(config['settings']['mono_to_sample'])
+    sample_stage_radius = float(config['settings']['sample_stage_radius'])
+    sample_to_ana = float(config['settings']['sample_to_ana'])
+    ana_radius = float(config['settings']['ana_radius'])
+    ana_to_det = float(config['settings']['ana_to_det'])
+    det_radius = float(config['settings']['det_radius'])
     floor_length = float(config['settings']['floor_length'])
     floor_width = float(config['settings']['floor_width'])
     floor_position_x = float(config['settings']['floor_position_x'])
     floor_position_y = float(config['settings']['floor_position_y'])
     
     # sample gonioがfloorからはみ出る場合
-    #positionY_sample = monochromator_to_sample * np.sin(np.radians(angletable['A1'])) - sample_goniometer_radius # < floor_position_y
-    # analyzer dramがfloorからはみ出る場合
-    #positionY_analyzer = monochromator_to_sample * np.sin(np.radians(angletable['A1'])) - sample_to_analyzer * np.sin(np.radians(angletable['A2'] - angletable['A1'])) - analyzer_radius # < floor_position_y
-    # detector dramがfloorからはみ出る場合
-    #positionY_detector = monochromator_to_sample * np.sin(np.radians(angletable['A1'])) - sample_to_analyzer * np.sin(np.radians(angletable['A2'] - angletable['A1'])) + analyzer_to_detector * np.sin(np.radians(angletable['A3'] - angletable['A2'] + angletable['A1'])) - detector_radius # < floor_position_y
-    #positionX_detector = monochromator_to_sample * np.cos(np.radians(angletable['A1'])) + sample_to_analyzer * np.cos(np.radians(angletable['A2'] - angletable['A1'])) + analyzer_to_detector * np.cos(np.radians(angletable['A3'] - angletable['A2'] + angletable['A1'])) - detector_radius # < floor_position_x+floor_length
+    #positionY_sample = mono_to_sample * np.sin(np.radians(angletable['A1'])) - sample_stage_radius # < floor_position_y
+    # ana dramがfloorからはみ出る場合
+    #positionY_ana = mono_to_sample * np.sin(np.radians(angletable['A1'])) - sample_to_ana * np.sin(np.radians(angletable['A2'] - angletable['A1'])) - ana_radius # < floor_position_y
+    # det dramがfloorからはみ出る場合
+    #positionY_det = mono_to_sample * np.sin(np.radians(angletable['A1'])) - sample_to_ana * np.sin(np.radians(angletable['A2'] - angletable['A1'])) + ana_to_det * np.sin(np.radians(angletable['A3'] - angletable['A2'] + angletable['A1'])) - det_radius # < floor_position_y
+    #positionX_det = mono_to_sample * np.cos(np.radians(angletable['A1'])) + sample_to_ana * np.cos(np.radians(angletable['A2'] - angletable['A1'])) + ana_to_det * np.cos(np.radians(angletable['A3'] - angletable['A2'] + angletable['A1'])) - det_radius # < floor_position_x+floor_length
     
     if error_message is not None:
         acl10.config(text=error_message, fg="red")
         return  # 計算を中断
-    elif (monochromator_to_sample * np.sin(np.radians(angletable['A1'])) - sample_goniometer_radius < floor_position_y or
-          monochromator_to_sample * np.sin(np.radians(angletable['A1'])) - sample_to_analyzer * np.sin(np.radians(angletable['A2'] - angletable['A1'])) - analyzer_radius < floor_position_y or
-          monochromator_to_sample * np.sin(np.radians(angletable['A1'])) - sample_to_analyzer * np.sin(np.radians(angletable['A2'] - angletable['A1'])) + analyzer_to_detector * np.sin(np.radians(angletable['A3'] - angletable['A2'] + angletable['A1'])) - detector_radius < floor_position_y or
-          monochromator_to_sample * np.cos(np.radians(angletable['A1'])) + sample_to_analyzer * np.cos(np.radians(angletable['A2'] - angletable['A1'])) + analyzer_to_detector * np.cos(np.radians(angletable['A3'] - angletable['A2'] + angletable['A1'])) - detector_radius > floor_position_x+floor_length):
+    elif (mono_to_sample * np.sin(np.radians(angletable['A1'])) - sample_stage_radius < floor_position_y or
+          mono_to_sample * np.sin(np.radians(angletable['A1'])) - sample_to_ana * np.sin(np.radians(angletable['A2'] - angletable['A1'])) - ana_radius < floor_position_y or
+          mono_to_sample * np.sin(np.radians(angletable['A1'])) - sample_to_ana * np.sin(np.radians(angletable['A2'] - angletable['A1'])) + ana_to_det * np.sin(np.radians(angletable['A3'] - angletable['A2'] + angletable['A1'])) - det_radius < floor_position_y or
+          mono_to_sample * np.cos(np.radians(angletable['A1'])) + sample_to_ana * np.cos(np.radians(angletable['A2'] - angletable['A1'])) + ana_to_det * np.cos(np.radians(angletable['A3'] - angletable['A2'] + angletable['A1'])) - det_radius > floor_position_x+floor_length):
         acl10.config(text="Out of the floor.", fg="red")
     elif (round(angletable['C1'],4)<float(hwl2f.get()) or
         round(angletable['C1'],4)>float(hwl2t.get()) or
@@ -1625,11 +1902,6 @@ def calculate_angle():
     l=round(l,4)
     
     QE_sets.append([hw, h, k, l])
-
-    if fig_spec.get()==1:
-        # プロット関数を呼び出し
-        sense = RorL.get()
-        plot_spectrometer(sense,A_sets,QE_sets)
     
     Ni_mir = gm.get()
     MHF = mono_HF.get()
@@ -1651,6 +1923,36 @@ def calculate_angle():
         "num_ana_h": num_ana_h,
         "num_ana_v": num_ana_v,
     }
+
+    inst_param= {
+        'source_to_mono': float(e_pp0.get()),
+        'mono_radius': float(e_cs1.get()),
+        'mono_to_sample': float(e_pp1.get()),
+        'sample_stage_radius': float(e_cs2.get()),
+        'sample_to_ana': float(e_pp2.get()),
+        'ana_radius': float(e_cs3.get()),
+        'ana_to_det': float(e_pp3.get()),
+        'det_radius': float(e_cs4.get()),
+        'floor_length': float(e_cs5.get()),
+        'floor_width': float(e_cs6.get()),
+        'floor_position_x': float(e_cs7.get()),
+        'floor_position_y': float(e_cs8.get()),
+        'beam_width': float(e_pp4.get()),
+        'beam_height': float(e_pp5.get()),
+        'mono_width': float(e_pp6.get()),
+        'mono_height': float(e_pp7.get()),
+        'mono_depth': float(e_pp8.get()),
+        'ana_width': float(e_pp9.get()),
+        'ana_height': float(e_pp10.get()),
+        'ana_depth': float(e_pp11.get()),
+        'det_width': float(e_pp12.get()),
+        'det_height': float(e_pp13.get()),
+    }
+
+    if fig_spec.get()==1:
+        # プロット関数を呼び出し
+        sense = RorL.get()
+        plot_spectrometer(inst_param,sense,A_sets,QE_sets)
     
     if fig_reci.get()==1:
         # 逆格子空間のki,kf,τベクトルを示す。
@@ -1661,46 +1963,11 @@ def calculate_angle():
         sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
         sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
         
-        cp_h_entry = acbh.get()
-        try:
-            # 少数の場合
-            if '/' not in cp_h_entry:
-                cph = float(cp_h_entry)
-            else:
-                # 分数の場合
-                cph = float(Fraction(cp_h_entry))
-        except ValueError:
-            pass
-        
-        cp_k_entry = acbk.get()
-        try:
-            # 少数の場合
-            if '/' not in cp_k_entry:
-                cpk = float(cp_k_entry)
-            else:
-                # 分数の場合
-                cpk = float(Fraction(cp_k_entry))
-        except ValueError:
-            pass
-        
-        cp_l_entry = acbl.get()
-        try:
-            # 少数の場合
-            if '/' not in cp_l_entry:
-                cpl = float(cp_l_entry)
-            else:
-                # 分数の場合
-                cpl = float(Fraction(cp_l_entry))
-        except ValueError:
-            pass
-        
-        cphw = float(acbe.get())
-        cp = np.array([cph,cpk,cpl])
         
         fixe=float(eief.get())
         bpe = float(Energy.get())
         bpc2 = float(bp_c2.get())
-        plot_reciprocal_space(bpe,bpc2,cphw,cp,fixe,sv1,sv2,RLtable,A_sets,C_sets,QE_sets)
+        plot_reciprocal_space(bpe,fixe,sv1,sv2,RLtable,A_sets,C_sets,QE_sets)
     
     if fig_reso.get()==1:
         bpe = float(Energy.get())
@@ -1724,6 +1991,31 @@ def calculate_angle():
             "mos_ana_v": mos_ana_v.get(),
         }
         #calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,entry_values)
+
+        inst_param= {
+            'source_to_mono': float(e_pp0.get()),
+            'mono_radius': float(e_cs1.get()),
+            'mono_to_sample': float(e_pp1.get()),
+            'sample_stage_radius': float(e_cs2.get()),
+            'sample_to_ana': float(e_pp2.get()),
+            'ana_radius': float(e_cs3.get()),
+            'ana_to_det': float(e_pp3.get()),
+            'det_radius': float(e_cs4.get()),
+            'floor_length': float(e_cs5.get()),
+            'floor_width': float(e_cs6.get()),
+            'floor_position_x': float(e_cs7.get()),
+            'floor_position_y': float(e_cs8.get()),
+            'beam_width': float(e_pp4.get()),
+            'beam_height': float(e_pp5.get()),
+            'mono_width': float(e_pp6.get()),
+            'mono_height': float(e_pp7.get()),
+            'mono_depth': float(e_pp8.get()),
+            'ana_width': float(e_pp9.get()),
+            'ana_height': float(e_pp10.get()),
+            'ana_depth': float(e_pp11.get()),
+            'det_width': float(e_pp12.get()),
+            'det_height': float(e_pp13.get()),
+        }
         
         # サンプル点の取得
         sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
@@ -1740,10 +2032,10 @@ def calculate_angle():
 
         if mode_var.get() == "slider":
             # slider用処理
-            calcresolution_scan3(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,entry_values)
+            calcresolution_scan3(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,inst_param,entry_values)
         elif mode_var.get() == "overview":
             # overview用処理
-            calcresolution_scan4(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,entry_values)
+            calcresolution_scan4(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,inst_param,entry_values)
     
     plt.show()
 
@@ -1751,25 +2043,25 @@ acle = tk.Label(tab_001a,text='ℏω (meV)')
 acle.grid(row=0, column=0,sticky="NSEW")
 acbe = ttk.Entry(tab_001a)
 acbe.grid(row=1, column=0,sticky="NSEW")
-acbe.insert(0,'0')
+acbe.insert(0,'')
 
 aclh = tk.Label(tab_001a,text='h')
 aclh.grid(row=0, column=1,sticky="NSEW")
 acbh = ttk.Entry(tab_001a)
 acbh.grid(row=1, column=1,sticky="NSEW")
-acbh.insert(0,'1')
+acbh.insert(0,'')
 
 aclk = tk.Label(tab_001a,text='k')
 aclk.grid(row=0, column=2,sticky="NSEW")
 acbk = ttk.Entry(tab_001a)
 acbk.grid(row=1, column=2,sticky="NSEW")
-acbk.insert(0,'0')
+acbk.insert(0,'')
 
 acll = tk.Label(tab_001a,text='l')
 acll.grid(row=0, column=3,sticky="NSEW")
 acbl = ttk.Entry(tab_001a)
 acbl.grid(row=1, column=3,sticky="NSEW")
-acbl.insert(0,'0')
+acbl.insert(0,'')
 
 #ボタン1つで両方の計算を実行
 Angle_calculate_button = ttk.Button(tab_001a, text="calc", command=calculate_angle,width=16)
@@ -1853,7 +2145,7 @@ acl10.grid(row=2, column=1,columnspan=7,sticky="NSEW")
 
 # collimator information
 # ファイル選択のフレームの作成と設置
-frame7 = ttk.Labelframe(root,text= "instrumental condition")
+frame7 = ttk.Labelframe(tab_user,text= "instrumental condition")
 frame7.grid(row=5,column=0,sticky="NSEW")
 
 # Notebookウィジェットの作成
@@ -1964,6 +2256,7 @@ frame7d.columnconfigure(0, weight=1)
 frame7d.columnconfigure(1, weight=1)
 frame7d.rowconfigure(0, weight=1)
 frame7d.rowconfigure(1, weight=1)
+frame7d.rowconfigure(2, weight=1)
 
 label_d_mono = tk.Label(frame7d,text='mono',width = 11)
 label_d_mono.grid(row=0, column=0,sticky="NSEW")
@@ -1974,12 +2267,47 @@ label_d_ana.grid(row=0, column=1,sticky="NSEW")
 d_ana = ttk.Entry(frame7d,width = 11)
 d_ana.grid(row=1, column=1,sticky="NSEW")
 
+# コンボボックス
+d_options = {
+    "PG(002)": 3.355,
+    "PG(004)": 1.677,
+    "Heusler": 3.362,
+    "CoFe": 1.771,
+    "Ge(111)": 3.266,
+    "Ge(311)": 1.714,
+    "Ge(511)": 1.089,
+    "Ge(533)": 0.863,
+    "Si(111)": 3.135,
+    "Cu(111)": 2.087,
+    "Cu(002)": 1.807,
+    "Cu(220)": 1.278,
+}
+
+combo_mono = ttk.Combobox(frame7d, values=list(d_options.keys()), state="readonly", width=14)
+combo_mono.grid(row=2, column=0, sticky="NSEW")
+
+combo_ana = ttk.Combobox(frame7d, values=list(d_options.keys()), state="readonly", width=14)
+combo_ana.grid(row=2, column=1, sticky="NSEW")
+
+def set_d_mono(event):
+    value = d_options[combo_mono.get()]
+    d_mono.delete(0, tk.END)
+    d_mono.insert(0, str(value))
+
+def set_d_ana(event):
+    value = d_options[combo_ana.get()]
+    d_ana.delete(0, tk.END)
+    d_ana.insert(0, str(value))
+
+combo_mono.bind("<<ComboboxSelected>>", set_d_mono)
+combo_ana.bind("<<ComboboxSelected>>", set_d_ana)
+
 # ファイル選択のフレームの作成と設置
-frame5 = ttk.Labelframe(root)
+frame5 = ttk.Labelframe(tab_user)
 frame5.grid(row=6,column=0,sticky="NSEW")
 
-frame5.columnconfigure(0, weight=9)
-frame5.columnconfigure(1, weight=2)
+frame5.columnconfigure(0, weight=5)
+frame5.columnconfigure(1, weight=1)
 frame5.rowconfigure(0, weight=1)
 
 # hardware limit
@@ -2157,25 +2485,25 @@ cqsl2.grid(row=0, column=4,sticky="NSEW")
 
 cqsef = ttk.Entry(tab_002a)
 cqsef.grid(row=1, column=1,sticky="NSEW")
-cqsef.insert(0,'0')
+cqsef.insert(0,'')
 cqset = ttk.Entry(tab_002a)
 cqset.grid(row=2, column=1,sticky="NSEW")
-cqset.insert(0,'7')
+cqset.insert(0,'')
 cqsei = ttk.Entry(tab_002a)
 cqsei.grid(row=3, column=1,sticky="NSEW")
-cqsei.insert(0,'0.5')
+cqsei.insert(0,'')
 
 cqse1 = ttk.Entry(tab_002a)
 cqse1.grid(row=1, column=2,sticky="NSEW")
-cqse1.insert(0,'1.5')
+cqse1.insert(0,'')
 cqse2 = ttk.Entry(tab_002a)
 cqse2.grid(row=1, column=3,sticky="NSEW")
-cqse2.insert(0,'0')
+cqse2.insert(0,'')
 cqse3 = ttk.Entry(tab_002a)
 cqse3.grid(row=1, column=4,sticky="NSEW")
-cqse3.insert(0,'0')
+cqse3.insert(0,'')
 
-cqsltl= tk.Label(tab_002a,text='mcu')
+cqsltl= tk.Label(tab_002a,text='mcu(m)')
 cqsltl.grid(row=4, column=0,sticky="NSEW")
 cqs11 = ttk.Entry(tab_002a)
 cqs11.grid(row=4, column=1,sticky="NSEW")
@@ -2427,13 +2755,13 @@ def constQscan_show_table():
         ini_path = os.path.join(os.path.dirname(__file__), 'config.ini')
     config.read(ini_path)
     
-    monochromator_radius = float(config['settings']['monochromator_radius'])
-    monochromator_to_sample = float(config['settings']['monochromator_to_sample'])
-    sample_goniometer_radius = float(config['settings']['sample_goniometer_radius'])
-    sample_to_analyzer = float(config['settings']['sample_to_analyzer'])
-    analyzer_radius = float(config['settings']['analyzer_radius'])
-    analyzer_to_detector = float(config['settings']['analyzer_to_detector'])
-    detector_radius = float(config['settings']['detector_radius'])
+    mono_radius = float(config['settings']['mono_radius'])
+    mono_to_sample = float(config['settings']['mono_to_sample'])
+    sample_stage_radius = float(config['settings']['sample_stage_radius'])
+    sample_to_ana = float(config['settings']['sample_to_ana'])
+    ana_radius = float(config['settings']['ana_radius'])
+    ana_to_det = float(config['settings']['ana_to_det'])
+    det_radius = float(config['settings']['det_radius'])
     floor_length = float(config['settings']['floor_length'])
     floor_width = float(config['settings']['floor_width'])
     floor_position_x = float(config['settings']['floor_position_x'])
@@ -2464,18 +2792,18 @@ def constQscan_show_table():
         QE_sets.append([hw, h, k,l])
         
         # sample gonioがfloorからはみ出る場合
-        positionY_sample = monochromator_to_sample * np.sin(np.radians(results['A1'])) - sample_goniometer_radius # < floor_position_y
-        # analyzer dramがfloorからはみ出る場合
-        positionY_analyzer = monochromator_to_sample * np.sin(np.radians(results['A1'])) - sample_to_analyzer * np.sin(np.radians(results['A2'] - results['A1'])) - analyzer_radius # < floor_position_y
-        # detector dramがfloorからはみ出る場合
-        positionY_detector = monochromator_to_sample * np.sin(np.radians(results['A1'])) - sample_to_analyzer * np.sin(np.radians(results['A2'] - results['A1'])) + analyzer_to_detector * np.sin(np.radians(results['A3'] - results['A2'] + results['A1'])) - detector_radius # < floor_position_y
-        positionX_detector = monochromator_to_sample * np.cos(np.radians(results['A1'])) + sample_to_analyzer * np.cos(np.radians(results['A2'] - results['A1'])) + analyzer_to_detector * np.cos(np.radians(results['A3'] - results['A2'] + results['A1'])) - detector_radius # < floor_position_x+floor_length
+        positionY_sample = mono_to_sample * np.sin(np.radians(results['A1'])) - sample_stage_radius # < floor_position_y
+        # ana dramがfloorからはみ出る場合
+        positionY_ana = mono_to_sample * np.sin(np.radians(results['A1'])) - sample_to_ana * np.sin(np.radians(results['A2'] - results['A1'])) - ana_radius # < floor_position_y
+        # det dramがfloorからはみ出る場合
+        positionY_det = mono_to_sample * np.sin(np.radians(results['A1'])) - sample_to_ana * np.sin(np.radians(results['A2'] - results['A1'])) + ana_to_det * np.sin(np.radians(results['A3'] - results['A2'] + results['A1'])) - det_radius # < floor_position_y
+        positionX_det = mono_to_sample * np.cos(np.radians(results['A1'])) + sample_to_ana * np.cos(np.radians(results['A2'] - results['A1'])) + ana_to_det * np.cos(np.radians(results['A3'] - results['A2'] + results['A1'])) - det_radius # < floor_position_x+floor_length
         
         # フロアからはみ出た場合、行を赤色にする
         if (positionY_sample < floor_position_y or
-          positionY_analyzer < floor_position_y or
-          positionY_detector < floor_position_y or
-          positionX_detector > floor_position_x+floor_length):
+          positionY_ana < floor_position_y or
+          positionY_det < floor_position_y or
+          positionX_det > floor_position_x+floor_length):
             tree.tag_configure("red", foreground="red")  # 'red' タグを設定
             tree.item(item_id, tags=("red",))  # 行に 'red' タグを適用
         
@@ -2499,12 +2827,6 @@ def constQscan_show_table():
             tree.tag_configure("blue", foreground="blue")  # 'red' タグを設定
             tree.item(item_id, tags=("blue",))  # 行に 'red' タグを適用
         #tree.insert("", "end", values=values)
-        
-    if fig_spec.get()==1:
-        # プロット関数を呼び出し
-        #plot_spectrometer_with_gif(A_sets,QE_sets)
-        sense = RorL.get()
-        plot_spectrometer(sense,A_sets,QE_sets)
         
     Ni_mir = gm.get()
     AHF = ana_HF.get()
@@ -2562,7 +2884,38 @@ def constQscan_show_table():
         "num_ana_v": num_ana_v,
     }
 
-    reso_mat_cQ,col_cond_cQ,scan_cond_cQ = calcresolution_save(apr_value,sense,astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,entry_values_cQ) # reso matの計算のみ
+    inst_param= {
+        'source_to_mono': float(e_pp0.get()),
+        'mono_radius': float(e_cs1.get()),
+        'mono_to_sample': float(e_pp1.get()),
+        'sample_stage_radius': float(e_cs2.get()),
+        'sample_to_ana': float(e_pp2.get()),
+        'ana_radius': float(e_cs3.get()),
+        'ana_to_det': float(e_pp3.get()),
+        'det_radius': float(e_cs4.get()),
+        'floor_length': float(e_cs5.get()),
+        'floor_width': float(e_cs6.get()),
+        'floor_position_x': float(e_cs7.get()),
+        'floor_position_y': float(e_cs8.get()),
+        'beam_width': float(e_pp4.get()),
+        'beam_height': float(e_pp5.get()),
+        'mono_width': float(e_pp6.get()),
+        'mono_height': float(e_pp7.get()),
+        'mono_depth': float(e_pp8.get()),
+        'ana_width': float(e_pp9.get()),
+        'ana_height': float(e_pp10.get()),
+        'ana_depth': float(e_pp11.get()),
+        'det_width': float(e_pp12.get()),
+        'det_height': float(e_pp13.get()),
+    }
+
+    if fig_spec.get()==1:
+        # プロット関数を呼び出し
+        #plot_spectrometer_with_gif(A_sets,QE_sets)
+        sense = RorL.get()
+        plot_spectrometer(inst_param,sense,A_sets,QE_sets)
+
+    reso_mat_cQ,col_cond_cQ,scan_cond_cQ = calcresolution_save(apr_value,sense,astar,bstar,cstar,sv1,sv2,A_sets,C_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,inst_param,entry_values_cQ) # reso matの計算のみ
     
     if fig_reci.get()==1:
         # 逆格子空間のki,kf,τベクトルを示す。
@@ -2574,43 +2927,7 @@ def constQscan_show_table():
         sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
         sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
         
-        cp_h_entry = acbh.get()
-        try:
-            # 少数の場合
-            if '/' not in cp_h_entry:
-                cph = float(cp_h_entry)
-            else:
-                # 分数の場合
-                cph = float(Fraction(cp_h_entry))
-        except ValueError:
-            pass
-        
-        cp_k_entry = acbk.get()
-        try:
-            # 少数の場合
-            if '/' not in cp_k_entry:
-                cpk = float(cp_k_entry)
-            else:
-                # 分数の場合
-                cpk = float(Fraction(cp_k_entry))
-        except ValueError:
-            pass
-        
-        cp_l_entry = acbl.get()
-        try:
-            # 少数の場合
-            if '/' not in cp_l_entry:
-                cpl = float(cp_l_entry)
-            else:
-                # 分数の場合
-                cpl = float(Fraction(cp_l_entry))
-        except ValueError:
-            pass
-        
-        cphw = float(acbe.get())
-        cp = np.array([cph,cpk,cpl])
-        
-        plot_reciprocal_space(bpe,bpc2,cphw,cp,fixe,sv1,sv2,RLtable,A_sets,C_sets,QE_sets)
+        plot_reciprocal_space(bpe,fixe,sv1,sv2,RLtable,A_sets,C_sets,QE_sets)
         #plot_reciprocal_space_with_gif(bpe,bpc2,cphw,cp,fixe,sv1,sv2,RLtable,A_sets,C_sets,QE_sets)
     
     if fig_reso.get()==1:
@@ -2632,10 +2949,10 @@ def constQscan_show_table():
 
         if mode_var.get() == "slider":
             # slider用処理
-            calcresolution_scan3(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,entry_values_cQ)
+            calcresolution_scan3(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,inst_param,entry_values_cQ)
         elif mode_var.get() == "overview":
             # overview用処理
-            calcresolution_scan4(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,entry_values_cQ)
+            calcresolution_scan4(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,inst_param,entry_values_cQ)
     plt.show()
     
     return angletable2,reso_mat_cQ,col_cond_cQ,scan_cond_cQ
@@ -2677,39 +2994,39 @@ cesll.grid(row=0, column=3,sticky="NSEW")
 
 ces1 = ttk.Entry(tab_002b)
 ces1.grid(row=1, column=1,sticky="NSEW")
-ces1.insert(0,'-1')
+ces1.insert(0,'')
 ces2 = ttk.Entry(tab_002b)
 ces2.grid(row=1, column=2,sticky="NSEW")
-ces2.insert(0,'2')
+ces2.insert(0,'')
 ces3 = ttk.Entry(tab_002b)
 ces3.grid(row=1, column=3,sticky="NSEW")
-ces3.insert(0,'0')
+ces3.insert(0,'')
 
 ces4 = ttk.Entry(tab_002b)
 ces4.grid(row=2, column=1,sticky="NSEW")
-ces4.insert(0,'3')
+ces4.insert(0,'')
 ces5 = ttk.Entry(tab_002b)
 ces5.grid(row=2, column=2,sticky="NSEW")
-ces5.insert(0,'0')
+ces5.insert(0,'')
 ces6 = ttk.Entry(tab_002b)
 ces6.grid(row=2, column=3,sticky="NSEW")
-ces6.insert(0,'0')
+ces6.insert(0,'')
 
 ces7 = ttk.Entry(tab_002b)
 ces7.grid(row=3, column=1,sticky="NSEW")
-ces7.insert(0,'0.2')
+ces7.insert(0,'')
 ces8 = ttk.Entry(tab_002b)
 ces8.grid(row=3, column=2,sticky="NSEW")
-ces8.insert(0,'-0.1')
+ces8.insert(0,'')
 ces9 = ttk.Entry(tab_002b)
 ces9.grid(row=3, column=3,sticky="NSEW")
-ces9.insert(0,'0')
+ces9.insert(0,'')
 
 ces10 = ttk.Entry(tab_002b)
 ces10.grid(row=1, column=4,sticky="NSEW")
-ces10.insert(0,'1')
+ces10.insert(0,'')
 
-cesltl= tk.Label(tab_002b,text='mcu')
+cesltl= tk.Label(tab_002b,text='mcu(m)')
 cesltl.grid(row=4, column=0,sticky="NSEW")
 ces11 = ttk.Entry(tab_002b)
 ces11.grid(row=4, column=1,sticky="NSEW")
@@ -2990,13 +3307,13 @@ def conostEscan_show_table():
         ini_path = os.path.join(os.path.dirname(__file__), 'config.ini')
     config.read(ini_path)
     
-    monochromator_radius = float(config['settings']['monochromator_radius'])
-    monochromator_to_sample = float(config['settings']['monochromator_to_sample'])
-    sample_goniometer_radius = float(config['settings']['sample_goniometer_radius'])
-    sample_to_analyzer = float(config['settings']['sample_to_analyzer'])
-    analyzer_radius = float(config['settings']['analyzer_radius'])
-    analyzer_to_detector = float(config['settings']['analyzer_to_detector'])
-    detector_radius = float(config['settings']['detector_radius'])
+    mono_radius = float(config['settings']['mono_radius'])
+    mono_to_sample = float(config['settings']['mono_to_sample'])
+    sample_stage_radius = float(config['settings']['sample_stage_radius'])
+    sample_to_ana = float(config['settings']['sample_to_ana'])
+    ana_radius = float(config['settings']['ana_radius'])
+    ana_to_det = float(config['settings']['ana_to_det'])
+    det_radius = float(config['settings']['det_radius'])
     floor_length = float(config['settings']['floor_length'])
     floor_width = float(config['settings']['floor_width'])
     floor_position_x = float(config['settings']['floor_position_x'])
@@ -3091,18 +3408,18 @@ def conostEscan_show_table():
         QE_sets.append([hw, h, k,l])
         
         # sample gonioがfloorからはみ出る場合
-        positionY_sample = monochromator_to_sample * np.sin(np.radians(results['A1'])) - sample_goniometer_radius # < floor_position_y
-        # analyzer dramがfloorからはみ出る場合
-        positionY_analyzer = monochromator_to_sample * np.sin(np.radians(results['A1'])) - sample_to_analyzer * np.sin(np.radians(results['A2'] - results['A1'])) - analyzer_radius # < floor_position_y
-        # detector dramがfloorからはみ出る場合
-        positionY_detector = monochromator_to_sample * np.sin(np.radians(results['A1'])) - sample_to_analyzer * np.sin(np.radians(results['A2'] - results['A1'])) + analyzer_to_detector * np.sin(np.radians(results['A3'] - results['A2'] + results['A1'])) - detector_radius # < floor_position_y
-        positionX_detector = monochromator_to_sample * np.cos(np.radians(results['A1'])) + sample_to_analyzer * np.cos(np.radians(results['A2'] - results['A1'])) + analyzer_to_detector * np.cos(np.radians(results['A3'] - results['A2'] + results['A1'])) - detector_radius # < floor_position_x+floor_length
+        positionY_sample = mono_to_sample * np.sin(np.radians(results['A1'])) - sample_stage_radius # < floor_position_y
+        # ana dramがfloorからはみ出る場合
+        positionY_ana = mono_to_sample * np.sin(np.radians(results['A1'])) - sample_to_ana * np.sin(np.radians(results['A2'] - results['A1'])) - ana_radius # < floor_position_y
+        # det dramがfloorからはみ出る場合
+        positionY_det = mono_to_sample * np.sin(np.radians(results['A1'])) - sample_to_ana * np.sin(np.radians(results['A2'] - results['A1'])) + ana_to_det * np.sin(np.radians(results['A3'] - results['A2'] + results['A1'])) - det_radius # < floor_position_y
+        positionX_det = mono_to_sample * np.cos(np.radians(results['A1'])) + sample_to_ana * np.cos(np.radians(results['A2'] - results['A1'])) + ana_to_det * np.cos(np.radians(results['A3'] - results['A2'] + results['A1'])) - det_radius # < floor_position_x+floor_length
         
         # フロアからはみ出た場合、行を赤色にする
         if (positionY_sample < floor_position_y or
-          positionY_analyzer < floor_position_y or
-          positionY_detector < floor_position_y or
-          positionX_detector > floor_position_x+floor_length):
+          positionY_ana < floor_position_y or
+          positionY_det < floor_position_y or
+          positionX_det > floor_position_x+floor_length):
             tree.tag_configure("red", foreground="red")  # 'red' タグを設定
             tree.item(item_id, tags=("red",))  # 行に 'red' タグを適用
 
@@ -3136,6 +3453,7 @@ def conostEscan_show_table():
     bstar = RLtable['bstar']
     cstar = RLtable['cstar']    
     sense = RorL.get()
+    apr_value = apr_var.get()
 
     Ni_mir = gm.get()
     MHF = mono_HF.get()
@@ -3158,13 +3476,38 @@ def conostEscan_show_table():
         "num_ana_v": num_ana_v,
     }
 
-    reso_mat_cE,col_cond_cE,scan_cond_cE = calcresolution_save(apr_value,sense, astar,bstar,cstar,sv1,sv2,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,entry_values_cE) # reso matの計算のみ
+    inst_param= {
+        'source_to_mono': float(e_pp0.get()),
+        'mono_radius': float(e_cs1.get()),
+        'mono_to_sample': float(e_pp1.get()),
+        'sample_stage_radius': float(e_cs2.get()),
+        'sample_to_ana': float(e_pp2.get()),
+        'ana_radius': float(e_cs3.get()),
+        'ana_to_det': float(e_pp3.get()),
+        'det_radius': float(e_cs4.get()),
+        'floor_length': float(e_cs5.get()),
+        'floor_width': float(e_cs6.get()),
+        'floor_position_x': float(e_cs7.get()),
+        'floor_position_y': float(e_cs8.get()),
+        'beam_width': float(e_pp4.get()),
+        'beam_height': float(e_pp5.get()),
+        'mono_width': float(e_pp6.get()),
+        'mono_height': float(e_pp7.get()),
+        'mono_depth': float(e_pp8.get()),
+        'ana_width': float(e_pp9.get()),
+        'ana_height': float(e_pp10.get()),
+        'ana_depth': float(e_pp11.get()),
+        'det_width': float(e_pp12.get()),
+        'det_height': float(e_pp13.get()),
+    }
+
+    reso_mat_cE,col_cond_cE,scan_cond_cE = calcresolution_save(apr_value,sense, astar,bstar,cstar,sv1,sv2,A_sets,C_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,inst_param,entry_values_cE) # reso matの計算のみ
     
     if fig_spec.get()==1:
         # プロット関数を呼び出し
         #plot_spectrometer_with_gif(A_sets,QE_sets)
         sense = RorL.get()
-        plot_spectrometer(sense,A_sets,QE_sets)
+        plot_spectrometer(inst_param,sense,A_sets,QE_sets)
     
     if fig_reci.get()==1:
         # 逆格子空間のki,kf,τベクトルを示す。
@@ -3176,47 +3519,12 @@ def conostEscan_show_table():
         sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
         sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
         
-        cp_h_entry = acbh.get()
-        try:
-            # 少数の場合
-            if '/' not in cp_h_entry:
-                cph = float(cp_h_entry)
-            else:
-                # 分数の場合
-                cph = float(Fraction(cp_h_entry))
-        except ValueError:
-            pass
-        
-        cp_k_entry = acbk.get()
-        try:
-            # 少数の場合
-            if '/' not in cp_k_entry:
-                cpk = float(cp_k_entry)
-            else:
-                # 分数の場合
-                cpk = float(Fraction(cp_k_entry))
-        except ValueError:
-            pass
-        
-        cp_l_entry = acbl.get()
-        try:
-            # 少数の場合
-            if '/' not in cp_l_entry:
-                cpl = float(cp_l_entry)
-            else:
-                # 分数の場合
-                cpl = float(Fraction(cp_l_entry))
-        except ValueError:
-            pass
-        
-        cphw = float(acbe.get())
-        cp = np.array([cph,cpk,cpl])
         
         fixe=float(eief.get())
         bpe = float(Energy.get())
         bpc2 = float(bp_c2.get())
         
-        plot_reciprocal_space(bpe,bpc2,cphw,cp,fixe,sv1,sv2,RLtable,A_sets,C_sets,QE_sets)
+        plot_reciprocal_space(bpe,fixe,sv1,sv2,RLtable,A_sets,C_sets,QE_sets)
         #plot_reciprocal_space_with_gif(bpe,bpc2,cphw,cp,fixe,sv1,sv2,RLtable,A_sets,C_sets,QE_sets)
     
     if fig_reso.get()==1:
@@ -3239,10 +3547,10 @@ def conostEscan_show_table():
 
         if mode_var.get() == "slider":
             # slider用処理
-            calcresolution_scan3(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,entry_values_cE)
+            calcresolution_scan3(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,inst_param,entry_values_cE)
         elif mode_var.get() == "overview":
             # overview用処理
-            calcresolution_scan4(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,entry_values_cE)
+            calcresolution_scan4(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,inst_param,entry_values_cE)
         
     plt.show()
     
@@ -3299,25 +3607,25 @@ cry_fit= tk.Label(tab_003a,text='h')
 cry_fit.grid(row=0, column=1,sticky="NSEW")
 cry_fit_h = ttk.Entry(tab_003a)
 cry_fit_h.grid(row=1, column=1,sticky="NSEW")
-cry_fit_h.insert(0,'1.5')
+cry_fit_h.insert(0,'')
 
 cry_fit= tk.Label(tab_003a,text='k')
 cry_fit.grid(row=0, column=2,sticky="NSEW")
 cry_fit_k = ttk.Entry(tab_003a)
 cry_fit_k.grid(row=1, column=2,sticky="NSEW")
-cry_fit_k.insert(0,'0')
+cry_fit_k.insert(0,'')
 
 cry_fit= tk.Label(tab_003a,text='l')
 cry_fit.grid(row=0, column=3,sticky="NSEW")
 cry_fit_l = ttk.Entry(tab_003a)
 cry_fit_l.grid(row=1, column=3,sticky="NSEW")
-cry_fit_l.insert(0,'0')
+cry_fit_l.insert(0,'')
 
 cry_fit= tk.Label(tab_003a,text='A2')
 cry_fit.grid(row=0, column=4,sticky="NSEW")
 cry_fit_a2 = ttk.Entry(tab_003a)
 cry_fit_a2.grid(row=1, column=4,sticky="NSEW")
-cry_fit_a2.insert(0,'90.6')
+cry_fit_a2.insert(0,'')
 
 def fitting_process():
     # selectされたindexを読み込む
@@ -3881,6 +4189,8 @@ def save_cQ_table():
         except Exception as e:
             messagebox.showerror("保存エラー", f"ファイルの保存中にエラーが発生しました:\n{e}")
 
+import csv
+
 def save_cE_table():
 
     # 保存ダイアログを表示してファイル名を取得
@@ -3920,7 +4230,7 @@ def save_cE_table():
                 n_a = RLtable['n_a']
                 n_b = RLtable['n_b']
                 n_c = RLtable['n_c']
-                
+
                 header_astar = [
                     'a*',
                     f'{float(astar[0]):.4f}',
@@ -4000,6 +4310,58 @@ def save_cQ_resomat():
         try:
             with open(file_path, mode='w', newline='') as file:
                 writer = csv.writer(file)
+
+                # 装置情報を出力
+                sense = RorL.get()
+                apr_value = apr_var.get()
+
+                MHF = mono_HF.get()
+                MVF = mono_VF.get()
+                AHF = ana_HF.get()
+                AVF = ana_VF.get()
+
+                num_mono_h = float(mbnh.get())
+                num_mono_v = float(mbnv.get())
+                num_ana_h = float(abnh.get())
+                num_ana_v = float(abnv.get())
+
+                # 近似法の文字変換
+                approx_name = "Popovic" if apr_value == "P" else "CooperNathans"
+
+                # Flat / Focus の変換
+                def flat_focus(val):
+                    return "Focus" if val == 1 else "Flat"
+                
+                inst_cond_header = [
+                    "sense",
+                    "approximation",
+                    "mono_horizontal",
+                    "mono_h_blades",
+                    "mono_vertical",
+                    "mono_v_blades",
+                    "ana_horizontal",
+                    "ana_h_blades",
+                    "ana_vertical",
+                    "ana_v_blades"
+                ]
+
+                # CSV へ書き込む辞書
+                inst_cond = [
+                    sense,
+                    approx_name,
+                    flat_focus(MHF),
+                    num_mono_h,
+                    flat_focus(MVF),
+                    num_mono_v,
+                    flat_focus(AHF),
+                    num_ana_h,
+                    flat_focus(AVF),
+                    num_ana_v
+                ]
+                
+                writer.writerow(inst_cond_header)
+                writer.writerow(inst_cond)
+
                 # 格子情報を出力
                 params = get_parameters()
                 writer.writerow(params.keys())
@@ -4089,7 +4451,7 @@ def save_cQ_resomat():
                     row_cond = col_cond_cQ[:, i]
                     writer.writerow(row_cond)
                     
-                    header2 = ['A1','A2','A3','Ei','Ef','hw','h','k','l']
+                    header2 = ['Ei','Ef','hw','h','k','l','C1','A1','C2','A2','C3','A3']
                     writer.writerow(header2)
                     row_scan = scan_cond_cQ[:, i]  # 1列（スキャン条件1セット）
                     writer.writerow(row_scan)
@@ -4116,6 +4478,58 @@ def save_cE_resomat():
         try:
             with open(file_path, mode='w', newline='') as file:
                 writer = csv.writer(file)
+
+                # 装置情報を出力
+                sense = RorL.get()
+                apr_value = apr_var.get()
+
+                MHF = mono_HF.get()
+                MVF = mono_VF.get()
+                AHF = ana_HF.get()
+                AVF = ana_VF.get()
+
+                num_mono_h = float(mbnh.get())
+                num_mono_v = float(mbnv.get())
+                num_ana_h = float(abnh.get())
+                num_ana_v = float(abnv.get())
+
+                # 近似法の文字変換
+                approx_name = "Popovic" if apr_value == "P" else "CooperNathans"
+
+                # Flat / Focus の変換
+                def flat_focus(val):
+                    return "Focus" if val == 1 else "Flat"
+                
+                inst_cond_header = [
+                    "sense",
+                    "approximation",
+                    "mono_horizontal",
+                    "mono_h_blades",
+                    "mono_vertical",
+                    "mono_v_blades",
+                    "ana_horizontal",
+                    "ana_h_blades",
+                    "ana_vertical",
+                    "ana_v_blades"
+                ]
+
+                # CSV へ書き込む辞書
+                inst_cond = [
+                    sense,
+                    approx_name,
+                    flat_focus(MHF),
+                    num_mono_h,
+                    flat_focus(MVF),
+                    num_mono_v,
+                    flat_focus(AHF),
+                    num_ana_h,
+                    flat_focus(AVF),
+                    num_ana_v
+                ]
+                
+                writer.writerow(inst_cond_header)
+                writer.writerow(inst_cond)
+
                 # 格子情報を出力
                 params = get_parameters()
                 writer.writerow(params.keys())
@@ -4205,7 +4619,7 @@ def save_cE_resomat():
                     row_cond = col_cond_cE[:, i]
                     writer.writerow(row_cond)
                     
-                    header2 = ['A1','A2','A3','Ei','Ef','hw','h','k','l']
+                    header2 = ['Ei','Ef','hw','h','k','l','C1','A1','C2','A2','C3','A3']
                     writer.writerow(header2)
                     row_scan = scan_cond_cE[:, i]  # 1列（スキャン条件1セット）
                     writer.writerow(row_scan)
