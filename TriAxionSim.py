@@ -1,6 +1,6 @@
 # cd c:/Users/h34/Documents/Python/SPICE_python
 # 右上にバージョン情報を表示
-__version__ = '1.16.0'
+__version__ = '1.17.0'
 """
 セマンティック バージョニング (Semantic Versioning)
 セマンティック バージョニング（セムバ―、SemVer）は、バージョン番号を「MAJOR.MINOR.PATCH」の形式で表します。それぞれの部分には以下のような意味があります：
@@ -553,6 +553,7 @@ from UBcalc import UB_calc  #
 from anglecalc import angle_calc    #
 from anglecalc2 import angle_calc2    #
 from anglecalc3 import angle_calc3    #
+from anglecalc4 import angle_calc4    #
 from specfigscan import plot_spectrometer # 分光器の実際の駆動を表示
 from fittingLC import fit_lattice_constants # lattice constantのフィッティング
 #from QEresolution import calcresolution
@@ -2448,79 +2449,67 @@ rb_overview.grid(row=2, column=1,sticky="NSEW")
 # グリッドの重みを設定
 tab_002.columnconfigure(0, weight=1)
 tab_002.columnconfigure(1, weight=1)
+tab_002.columnconfigure(2, weight=1)
+tab_002.columnconfigure(3, weight=1)
+tab_002.columnconfigure(4, weight=1)
+tab_002.columnconfigure(5, weight=1)
+tab_002.columnconfigure(6, weight=1)
 tab_002.rowconfigure(0, weight=1)
+tab_002.rowconfigure(1, weight=1)
+tab_002.rowconfigure(2, weight=1)
+tab_002.rowconfigure(3, weight=1)
 
-tab_002a = ttk.Labelframe(tab_002,text= "constant Q scan")
-tab_002a.grid(row=0,column=0,sticky="NSEW")
-tab_002a.columnconfigure(0, weight=1)
-tab_002a.columnconfigure(1, weight=1)
-tab_002a.columnconfigure(2, weight=1)
-tab_002a.columnconfigure(3, weight=1)
-tab_002a.columnconfigure(4, weight=1)
-tab_002a.rowconfigure(0, weight=1)
-tab_002a.rowconfigure(1, weight=1)
-tab_002a.rowconfigure(2, weight=1)
-tab_002a.rowconfigure(3, weight=1)
-tab_002a.rowconfigure(4, weight=1)
-tab_002a.rowconfigure(5, weight=1)
+l_sc_1 = tk.Label(tab_002,text='from', width=16)
+l_sc_1.grid(row=1, column=0,sticky="NSEW")
 
-cqslt = tk.Label(tab_002a,text='ℏω (meV)')
-cqslt.grid(row=0, column=1,sticky="NSEW")
-cqslf = tk.Label(tab_002a,text='from',width=15)
-cqslf.grid(row=1, column=0,sticky="NSEW")
-cqslt = tk.Label(tab_002a,text='to')
-cqslt.grid(row=2, column=0,sticky="NSEW")
-cqsli = tk.Label(tab_002a,text='inc')
-cqsli.grid(row=3, column=0,sticky="NSEW")
+l_sc_2 = tk.Label(tab_002,text='to', width=16)
+l_sc_2.grid(row=2, column=0,sticky="NSEW")
 
-cqsl1 = tk.Label(tab_002a,text='h')
-cqsl1.grid(row=0, column=2,sticky="NSEW")
-cqsl2 = tk.Label(tab_002a,text='k')
-cqsl2.grid(row=0, column=3,sticky="NSEW")
-cqsl2 = tk.Label(tab_002a,text='l')
-cqsl2.grid(row=0, column=4,sticky="NSEW")
+l_cs_hw = tk.Label(tab_002,text='ℏω (meV)')
+l_cs_hw.grid(row=0, column=1,sticky="NSEW")
+e_cs_hwf = ttk.Entry(tab_002)
+e_cs_hwf.grid(row=1, column=1,sticky="NSEW")
+e_cs_hwt = ttk.Entry(tab_002)
+e_cs_hwt.grid(row=2, column=1,sticky="NSEW")
 
-cqsef = ttk.Entry(tab_002a)
-cqsef.grid(row=1, column=1,sticky="NSEW")
-cqsef.insert(0,'')
-cqset = ttk.Entry(tab_002a)
-cqset.grid(row=2, column=1,sticky="NSEW")
-cqset.insert(0,'')
-cqsei = ttk.Entry(tab_002a)
-cqsei.grid(row=3, column=1,sticky="NSEW")
-cqsei.insert(0,'')
+l_cs_h = tk.Label(tab_002,text='h')
+l_cs_h.grid(row=0, column=2,sticky="NSEW")
+e_cs_hf = ttk.Entry(tab_002)
+e_cs_hf.grid(row=1, column=2,sticky="NSEW")
+e_cs_ht = ttk.Entry(tab_002)
+e_cs_ht.grid(row=2, column=2,sticky="NSEW")
 
-cqse1 = ttk.Entry(tab_002a)
-cqse1.grid(row=1, column=2,sticky="NSEW")
-cqse1.insert(0,'')
-cqse2 = ttk.Entry(tab_002a)
-cqse2.grid(row=1, column=3,sticky="NSEW")
-cqse2.insert(0,'')
-cqse3 = ttk.Entry(tab_002a)
-cqse3.grid(row=1, column=4,sticky="NSEW")
-cqse3.insert(0,'')
+l_cs_k = tk.Label(tab_002,text='k')
+l_cs_k.grid(row=0, column=3,sticky="NSEW")
+e_cs_kf = ttk.Entry(tab_002)
+e_cs_kf.grid(row=1, column=3,sticky="NSEW")
+e_cs_kt = ttk.Entry(tab_002)
+e_cs_kt.grid(row=2, column=3,sticky="NSEW")
 
-cqsltl= tk.Label(tab_002a,text='mcu(m)')
-cqsltl.grid(row=4, column=0,sticky="NSEW")
-cqs11 = ttk.Entry(tab_002a)
-cqs11.grid(row=4, column=1,sticky="NSEW")
-cqs11.insert(0,'1')
+l_cs_l = tk.Label(tab_002,text='l')
+l_cs_l.grid(row=0, column=4,sticky="NSEW")
+e_cs_lf = ttk.Entry(tab_002)
+e_cs_lf.grid(row=1, column=4,sticky="NSEW")
+e_cs_lt = ttk.Entry(tab_002)
+e_cs_lt.grid(row=2, column=4,sticky="NSEW")
 
-cqsetl0= tk.Label(tab_002a,text='time')
-cqsetl0.grid(row=5, column=0,sticky="NSEW")
-cqs12 = ttk.Entry(tab_002a)
-cqs12.grid(row=5, column=1,sticky="NSEW")
-cqs12.config(state="readonly") # 編集不可に設定
-cqsetl1= tk.Label(tab_002a,text='hour')
-cqsetl1.grid(row=5, column=2,sticky="NSEW")
-cqs13 = ttk.Entry(tab_002a)
-cqs13.grid(row=5, column=3,sticky="NSEW")
-cqs13.config(state="readonly") # 編集不可に設定
-cqsetl1= tk.Label(tab_002a,text='min')
-cqsetl1.grid(row=5, column=4,sticky="NSEW")
+l_cs_n = tk.Label(tab_002,text='points')
+l_cs_n.grid(row=0, column=5,sticky="NSEW")
+e_cs_n = ttk.Entry(tab_002)
+e_cs_n.grid(row=1, column=5,sticky="NSEW")
+
+l_cs_m = tk.Label(tab_002,text='mcu (min)')
+l_cs_m.grid(row=0, column=6,sticky="NSEW")
+e_cs_m = ttk.Entry(tab_002)
+e_cs_m.grid(row=1, column=6,sticky="NSEW")
+e_cs_m.insert(0,'60/60')
+
+e_cs_mr = ttk.Entry(tab_002)
+e_cs_mr.grid(row=2, column=6,sticky="NSEW")
+e_cs_mr.config(state="readonly") # 編集不可に設定
 
 # 別ウィンドウでデータテーブルを表示する関数
-def constQscan_show_table():
+def scan_show_table():
     # RLtableを取得し、辞書から必要な変数を取り出す
     RLtable = on_Rlcalc()
     astar = RLtable['astar']
@@ -2660,75 +2649,73 @@ def constQscan_show_table():
     bp = np.array([float(bp_h.get()), float(bp_k.get()), float(bp_l.get())])
     
     # calculation pointの取得
-    hw_ini = float(cqsef.get())
-    hw_fin = float(cqset.get())
-    hw_inc = float(cqsei.get())
+    hw_ini = float(e_cs_hwf.get())
+    hw_fin = float(e_cs_hwt.get())
+    points = int((e_cs_n).get())
     #h_cal = float(cqse1.get())
     #k_cal = float(cqse2.get())
     #l_cal = float(cqse3.get())
     
     # 分数も少数も受け付ける。
-    # エントリーボックスから値を取得
-    h_cal_entry = cqse1.get()
-    try:
-        # 少数の場合
-        if '/' not in h_cal_entry:
-            h_cal = float(h_cal_entry)
-        else:
-            # 分数の場合
-            h_cal = float(Fraction(h_cal_entry))
-    except ValueError:
-        pass
+
+    def get_float_from_entry(entry_widget, default=None):
+        """
+        Entryウィジェットから値を取得し、
+        float または 分数（'1/3'など）として解釈して返す
+        
+        Parameters:
+            entry_widget : tk.Entry
+            default : エラー時に返す値（None推奨）
+
+        Returns:
+            float または default
+        """
+        value_str = entry_widget.get().strip()
+
+        try:
+            if '/' in value_str:
+                return float(Fraction(value_str))
+            else:
+                return float(value_str)
+        except (ValueError, ZeroDivisionError):
+            return default
     
-    k_cal_entry = cqse2.get()
-    try:
-        # 少数の場合
-        if '/' not in k_cal_entry:
-            k_cal = float(k_cal_entry)
-        else:
-            # 分数の場合
-            k_cal = float(Fraction(k_cal_entry))
-    except ValueError:
-        pass
-    
-    l_cal_entry = cqse3.get()
-    try:
-        # 少数の場合
-        if '/' not in l_cal_entry:
-            l_cal = float(l_cal_entry)
-        else:
-            # 分数の場合
-            l_cal = float(Fraction(l_cal_entry))
-    except ValueError:
-        pass
-               
+    h_cal_ini = get_float_from_entry(e_cs_hf)
+    k_cal_ini = get_float_from_entry(e_cs_kf)
+    l_cal_ini = get_float_from_entry(e_cs_lf)
+    h_cal_fin = get_float_from_entry(e_cs_ht)
+    k_cal_fin = get_float_from_entry(e_cs_kt)
+    l_cal_fin = get_float_from_entry(e_cs_lt)
+
     # Ei or Ef fixの判定
     fixe=float(eief.get())
     # W or antiW fixの判定
     w_config=float(w_antiw.get())
-    global angletable2
-    angletable2 = angle_calc2(dmono,dana,astar, bstar, cstar, U,B,UB, bpe, bpc2, bpmu, bpnu, bp, fixe, w_config, hw_ini, hw_fin, hw_inc, h_cal, k_cal, l_cal)
+    global angletable4
+    angletable4 = angle_calc4(dmono,dana,astar, bstar, cstar, U,B,UB, bpe, bpc2, bpmu, bpnu, bp, fixe, w_config, hw_ini, hw_fin, h_cal_ini,h_cal_fin,k_cal_ini,k_cal_fin, l_cal_ini,l_cal_fin, points)
     
     # mcuの取得
-    mcu = float(cqs11.get())
-    scantime = constqtime(flux_Ei, flux_cps, bpe, fixe, hw_ini, hw_fin, hw_inc, mcu)
-    # スキャン時間を返す
-    cqs12.config(state="normal")  # 一時的に編集可能に
-    cqs12.delete(0, tk.END)
-    cqs12.insert(0, int(scantime['hour']))
-    cqs12.config(state="readonly") # 編集不可に設定
-    
-    cqs13.config(state="normal")  # 一時的に編集可能に
-    cqs13.delete(0, tk.END)
-    cqs13.insert(0, int(scantime['min']))
-    cqs13.config(state="readonly") # 編集不可に設定
+    mcu_str = e_cs_m.get().strip()
+    if mcu_str != "":
+        mcu = get_float_from_entry(e_cs_m)
+
+        scantime = constqtime(flux_Ei, flux_cps, bpe, fixe, hw_ini, hw_fin, points, mcu)
+        hour = int(scantime['hour'])
+        minute = int(scantime['min'])
+
+        time_str = f"{hour:02d}hour{minute:02d}min"
+
+        e_cs_mr.config(state="normal")
+        e_cs_mr.delete(0, tk.END)
+        e_cs_mr.insert(0, time_str)
+        e_cs_mr.config(state="readonly")
     
     # 新しいウィンドウを作成
     result_window = tk.Toplevel()
     result_window.title("calculation results (unit : deg)")
     
     # データの行数に基づいてTreeviewの高さを設定
-    num_rows = len(angletable2)  # データの行数を取得
+    num_rows = len(angletable4)  # データの行数を取得
     tree_height = num_rows if num_rows > 0 else 1  # 行数が0の場合は最低1行表示
     
     # Treeviewの設定
@@ -2740,35 +2727,11 @@ def constQscan_show_table():
         tree.heading(col, text=col)
         tree.column(col, width=80, anchor="center")
     
-    # 先にフロアの条件を読み込み
-    # INIファイルから設定を読み込む
-    config = configparser.ConfigParser()
-    # .exe化した場合に対応する
-    if getattr(sys, 'frozen', False):
-        # .exeの場合、sys.argv[0]が実行ファイルのパスになる
-        ini_path = os.path.join(os.path.dirname(sys.argv[0]), 'config.ini')
-    else:
-        # .pyの場合、__file__がスクリプトのパスになる
-        ini_path = os.path.join(os.path.dirname(__file__), 'config.ini')
-    config.read(ini_path)
-    
-    mono_radius = float(config['settings']['mono_radius'])
-    mono_to_sample = float(config['settings']['mono_to_sample'])
-    sample_stage_radius = float(config['settings']['sample_stage_radius'])
-    sample_to_ana = float(config['settings']['sample_to_ana'])
-    ana_radius = float(config['settings']['ana_radius'])
-    ana_to_det = float(config['settings']['ana_to_det'])
-    det_radius = float(config['settings']['det_radius'])
-    floor_length = float(config['settings']['floor_length'])
-    floor_width = float(config['settings']['floor_width'])
-    floor_position_x = float(config['settings']['floor_position_x'])
-    floor_position_y = float(config['settings']['floor_position_y'])
-    
     A_sets = []  # A_setsリストを初期化
     QE_sets = []
     C_sets = []
     # resultsリストの各結果をTreeviewに追加
-    for idx, results in enumerate(angletable2, start=1):  # idxでスキャン番号を取得
+    for idx, results in enumerate(angletable4, start=1):  # idxでスキャン番号を取得
         values = (idx,) + tuple(results.values())
         item_id = tree.insert("", "end", values=values)
         # A1, A2, A3 を取得して A_sets に追加
@@ -2787,20 +2750,45 @@ def constQscan_show_table():
         k = round(results['k'], 4)  # 'A3'
         l = round(results['l'], 4)  # 'A3'
         QE_sets.append([hw, h, k,l])
-        
+
+        inst_param= {
+            'source_to_mono': float(e_pp0.get()),
+            'mono_radius': float(e_cs1.get()),
+            'mono_to_sample': float(e_pp1.get()),
+            'sample_stage_radius': float(e_cs2.get()),
+            'sample_to_ana': float(e_pp2.get()),
+            'ana_radius': float(e_cs3.get()),
+            'ana_to_det': float(e_pp3.get()),
+            'det_radius': float(e_cs4.get()),
+            'floor_length': float(e_cs5.get()),
+            'floor_width': float(e_cs6.get()),
+            'floor_position_x': float(e_cs7.get()),
+            'floor_position_y': float(e_cs8.get()),
+            'beam_width': float(e_pp4.get()),
+            'beam_height': float(e_pp5.get()),
+            'mono_width': float(e_pp6.get()),
+            'mono_height': float(e_pp7.get()),
+            'mono_depth': float(e_pp8.get()),
+            'ana_width': float(e_pp9.get()),
+            'ana_height': float(e_pp10.get()),
+            'ana_depth': float(e_pp11.get()),
+            'det_width': float(e_pp12.get()),
+            'det_height': float(e_pp13.get()),
+        }
+
         # sample gonioがfloorからはみ出る場合
-        positionY_sample = mono_to_sample * np.sin(np.radians(results['A1'])) - sample_stage_radius # < floor_position_y
+        positionY_sample = inst_param['mono_to_sample'] * np.sin(np.radians(results['A1'])) - inst_param['sample_stage_radius'] # < floor_position_y
         # ana dramがfloorからはみ出る場合
-        positionY_ana = mono_to_sample * np.sin(np.radians(results['A1'])) - sample_to_ana * np.sin(np.radians(results['A2'] - results['A1'])) - ana_radius # < floor_position_y
+        positionY_ana = inst_param['mono_to_sample'] * np.sin(np.radians(results['A1'])) - inst_param['sample_to_ana'] * np.sin(np.radians(results['A2'] - results['A1'])) - inst_param['ana_radius'] # < floor_position_y
         # det dramがfloorからはみ出る場合
-        positionY_det = mono_to_sample * np.sin(np.radians(results['A1'])) - sample_to_ana * np.sin(np.radians(results['A2'] - results['A1'])) + ana_to_det * np.sin(np.radians(results['A3'] - results['A2'] + results['A1'])) - det_radius # < floor_position_y
-        positionX_det = mono_to_sample * np.cos(np.radians(results['A1'])) + sample_to_ana * np.cos(np.radians(results['A2'] - results['A1'])) + ana_to_det * np.cos(np.radians(results['A3'] - results['A2'] + results['A1'])) - det_radius # < floor_position_x+floor_length
+        positionY_det = inst_param['mono_to_sample'] * np.sin(np.radians(results['A1'])) - inst_param['sample_to_ana'] * np.sin(np.radians(results['A2'] - results['A1'])) + inst_param['ana_to_det'] * np.sin(np.radians(results['A3'] - results['A2'] + results['A1'])) - inst_param['det_radius'] # < floor_position_y
+        positionX_det = inst_param['mono_to_sample'] * np.cos(np.radians(results['A1'])) + inst_param['sample_to_ana'] * np.cos(np.radians(results['A2'] - results['A1'])) + inst_param['ana_to_det'] * np.cos(np.radians(results['A3'] - results['A2'] + results['A1'])) - inst_param['det_radius'] # < floor_position_x+floor_length
         
         # フロアからはみ出た場合、行を赤色にする
-        if (positionY_sample < floor_position_y or
-          positionY_ana < floor_position_y or
-          positionY_det < floor_position_y or
-          positionX_det > floor_position_x+floor_length):
+        if (positionY_sample < inst_param['floor_position_y'] or
+          positionY_ana < inst_param['floor_position_y'] or
+          positionY_det < inst_param['floor_position_y'] or
+          positionX_det > inst_param['floor_position_x']+inst_param['floor_length']):
             tree.tag_configure("red", foreground="red")  # 'red' タグを設定
             tree.item(item_id, tags=("red",))  # 行に 'red' タグを適用
         
@@ -2829,9 +2817,9 @@ def constQscan_show_table():
     AHF = ana_HF.get()
     num_ana_h = float(abnh.get())
     
-    global reso_mat_cQ,col_cond_cQ,scan_cond_cQ
+    global reso_mat,col_cond,scan_cond
     # Entry ウィジェットの値を辞書にまとめる
-    entry_values_cQ = {
+    entry_values = {
         "div_1st_m": div_1st_m.get(),
         "div_1st_h": div_1st_h.get(),
         "div_1st_v": div_1st_v.get(),
@@ -2881,38 +2869,13 @@ def constQscan_show_table():
         "num_ana_v": num_ana_v,
     }
 
-    inst_param= {
-        'source_to_mono': float(e_pp0.get()),
-        'mono_radius': float(e_cs1.get()),
-        'mono_to_sample': float(e_pp1.get()),
-        'sample_stage_radius': float(e_cs2.get()),
-        'sample_to_ana': float(e_pp2.get()),
-        'ana_radius': float(e_cs3.get()),
-        'ana_to_det': float(e_pp3.get()),
-        'det_radius': float(e_cs4.get()),
-        'floor_length': float(e_cs5.get()),
-        'floor_width': float(e_cs6.get()),
-        'floor_position_x': float(e_cs7.get()),
-        'floor_position_y': float(e_cs8.get()),
-        'beam_width': float(e_pp4.get()),
-        'beam_height': float(e_pp5.get()),
-        'mono_width': float(e_pp6.get()),
-        'mono_height': float(e_pp7.get()),
-        'mono_depth': float(e_pp8.get()),
-        'ana_width': float(e_pp9.get()),
-        'ana_height': float(e_pp10.get()),
-        'ana_depth': float(e_pp11.get()),
-        'det_width': float(e_pp12.get()),
-        'det_height': float(e_pp13.get()),
-    }
-
     if fig_spec.get()==1:
         # プロット関数を呼び出し
         #plot_spectrometer_with_gif(A_sets,QE_sets)
         sense = RorL.get()
         plot_spectrometer(inst_param,sense,A_sets,QE_sets)
 
-    reso_mat_cQ,col_cond_cQ,scan_cond_cQ = calcresolution_save(apr_value,sense,astar,bstar,cstar,sv1,sv2,A_sets,C_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,inst_param,entry_values_cQ) # reso matの計算のみ
+    reso_mat,col_cond,scan_cond = calcresolution_save(apr_value,sense,astar,bstar,cstar,sv1,sv2,A_sets,C_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,inst_param,entry_values) # reso matの計算のみ
     
     if fig_reci.get()==1:
         # 逆格子空間のki,kf,τベクトルを示す。
@@ -2928,7 +2891,7 @@ def constQscan_show_table():
         #plot_reciprocal_space_with_gif(bpe,bpc2,cphw,cp,fixe,sv1,sv2,RLtable,A_sets,C_sets,QE_sets)
     
     if fig_reso.get()==1:
-        #calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,entry_values_cQ) # resoグラフ出力
+        #calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,entry_values) # resoグラフ出力
         #calcresolution_scan_with_gif(A_sets,QE_sets,bpe,fixe,focus_cond,entry_values)
         
         # サンプル点の取得
@@ -2946,616 +2909,16 @@ def constQscan_show_table():
 
         if mode_var.get() == "slider":
             # slider用処理
-            calcresolution_scan3(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,inst_param,entry_values_cQ)
+            calcresolution_scan3(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,inst_param,entry_values)
         elif mode_var.get() == "overview":
             # overview用処理
-            calcresolution_scan4(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,inst_param,entry_values_cQ)
+            calcresolution_scan4(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,inst_param,entry_values)
     plt.show()
     
-    return angletable2,reso_mat_cQ,col_cond_cQ,scan_cond_cQ
+    return angletable4,reso_mat,col_cond,scan_cond
 
-# ボタンの作成
-button = ttk.Button(tab_002a, text="calc", command=constQscan_show_table)
-button.grid(row=4, column=2,columnspan=3, sticky="NSEW")
-
-tab_002b = ttk.Labelframe(tab_002,text= "constant E scan")
-tab_002b.grid(row=0,column=1,sticky="NSEW")
-tab_002b.columnconfigure(0, weight=1)
-tab_002b.columnconfigure(1, weight=1)
-tab_002b.columnconfigure(2, weight=1)
-tab_002b.columnconfigure(3, weight=1)
-tab_002b.columnconfigure(4, weight=1)
-tab_002b.rowconfigure(0, weight=1)
-tab_002b.rowconfigure(1, weight=1)
-tab_002b.rowconfigure(2, weight=1)
-tab_002b.rowconfigure(3, weight=1)
-tab_002b.rowconfigure(4, weight=1)
-tab_002b.rowconfigure(5, weight=1)
-
-cesel= tk.Label(tab_002b,text='ℏω (meV)')
-cesel.grid(row=0, column=4,sticky="NSEW")
-
-cesl1= tk.Label(tab_002b,text='from',width=15)
-cesl1.grid(row=1, column=0,sticky="NSEW")
-cesl2= tk.Label(tab_002b,text='to')
-cesl2.grid(row=2, column=0,sticky="NSEW")
-cesl3= tk.Label(tab_002b,text='inc')
-cesl3.grid(row=3, column=0,sticky="NSEW")
-
-ceshl= tk.Label(tab_002b,text='h')
-ceshl.grid(row=0, column=1,sticky="NSEW")
-ceskl= tk.Label(tab_002b,text='k')
-ceskl.grid(row=0, column=2,sticky="NSEW")
-cesll= tk.Label(tab_002b,text='l')
-cesll.grid(row=0, column=3,sticky="NSEW")
-
-ces1 = ttk.Entry(tab_002b)
-ces1.grid(row=1, column=1,sticky="NSEW")
-ces1.insert(0,'')
-ces2 = ttk.Entry(tab_002b)
-ces2.grid(row=1, column=2,sticky="NSEW")
-ces2.insert(0,'')
-ces3 = ttk.Entry(tab_002b)
-ces3.grid(row=1, column=3,sticky="NSEW")
-ces3.insert(0,'')
-
-ces4 = ttk.Entry(tab_002b)
-ces4.grid(row=2, column=1,sticky="NSEW")
-ces4.insert(0,'')
-ces5 = ttk.Entry(tab_002b)
-ces5.grid(row=2, column=2,sticky="NSEW")
-ces5.insert(0,'')
-ces6 = ttk.Entry(tab_002b)
-ces6.grid(row=2, column=3,sticky="NSEW")
-ces6.insert(0,'')
-
-ces7 = ttk.Entry(tab_002b)
-ces7.grid(row=3, column=1,sticky="NSEW")
-ces7.insert(0,'')
-ces8 = ttk.Entry(tab_002b)
-ces8.grid(row=3, column=2,sticky="NSEW")
-ces8.insert(0,'')
-ces9 = ttk.Entry(tab_002b)
-ces9.grid(row=3, column=3,sticky="NSEW")
-ces9.insert(0,'')
-
-ces10 = ttk.Entry(tab_002b)
-ces10.grid(row=1, column=4,sticky="NSEW")
-ces10.insert(0,'')
-
-cesltl= tk.Label(tab_002b,text='mcu(m)')
-cesltl.grid(row=4, column=0,sticky="NSEW")
-ces11 = ttk.Entry(tab_002b)
-ces11.grid(row=4, column=1,sticky="NSEW")
-ces11.insert(0,'1')
-
-cesetl0= tk.Label(tab_002b,text='time')
-cesetl0.grid(row=5, column=0,sticky="NSEW")
-ces12 = ttk.Entry(tab_002b)
-ces12.grid(row=5, column=1,sticky="NSEW")
-ces12.config(state="readonly") # 編集不可に設定
-cesetl1= tk.Label(tab_002b,text='hour')
-cesetl1.grid(row=5, column=2,sticky="NSEW")
-ces13 = ttk.Entry(tab_002b)
-ces13.grid(row=5, column=3,sticky="NSEW")
-ces13.config(state="readonly") # 編集不可に設定
-cesetl2= tk.Label(tab_002b,text='min')
-cesetl2.grid(row=5, column=4,sticky="NSEW")
-
-def conostEscan_show_table():
-    # RLtableを取得し、辞書から必要な変数を取り出す
-    RLtable = on_Rlcalc()
-    astar = RLtable['astar']
-    bstar = RLtable['bstar']
-    cstar = RLtable['cstar']
-    
-    # UBtableを取得し、辞書から必要な変数を取り出す
-    UBtable = on_UBcalc()
-    U=UBtable['U']
-    B=UBtable['B']
-    UB=UBtable['UB']
-    
-    # displayに表示
-    # U matrixを表示
-    txt_u_11.config(state="normal")  # 一時的に編集可能に
-    txt_u_11.delete(0, tk.END)
-    txt_u_11.insert(0, round(UBtable['U'][0,0],4))
-    txt_u_11.config(state="readonly") # 編集不可に設定
-    txt_u_12.config(state="normal")  # 一時的に編集可能に
-    txt_u_12.delete(0, tk.END)
-    txt_u_12.insert(0, round(UBtable['U'][0,1],4))
-    txt_u_12.config(state="readonly") # 編集不可に設定
-    txt_u_13.config(state="normal")  # 一時的に編集可能に
-    txt_u_13.delete(0, tk.END)
-    txt_u_13.insert(0, round(UBtable['U'][0,2],4))
-    txt_u_13.config(state="readonly") # 編集不可に設定
-    txt_u_21.config(state="normal")  # 一時的に編集可能に
-    txt_u_21.delete(0, tk.END)
-    txt_u_21.insert(0, round(UBtable['U'][1,0],4))
-    txt_u_21.config(state="readonly") # 編集不可に設定
-    txt_u_22.config(state="normal")  # 一時的に編集可能に
-    txt_u_22.delete(0, tk.END)
-    txt_u_22.insert(0, round(UBtable['U'][1,1],4))
-    txt_u_22.config(state="readonly") # 編集不可に設定
-    txt_u_23.config(state="normal")  # 一時的に編集可能に
-    txt_u_23.delete(0, tk.END)
-    txt_u_23.insert(0, round(UBtable['U'][1,2],4))
-    txt_u_23.config(state="readonly") # 編集不可に設定
-    txt_u_31.config(state="normal")  # 一時的に編集可能に
-    txt_u_31.delete(0, tk.END)
-    txt_u_31.insert(0, round(UBtable['U'][2,0],4))
-    txt_u_31.config(state="readonly") # 編集不可に設定
-    txt_u_32.config(state="normal")  # 一時的に編集可能に
-    txt_u_32.delete(0, tk.END)
-    txt_u_32.insert(0, round(UBtable['U'][2,1],4))
-    txt_u_32.config(state="readonly") # 編集不可に設定
-    txt_u_33.config(state="normal")  # 一時的に編集可能に
-    txt_u_33.delete(0, tk.END)
-    txt_u_33.insert(0, round(UBtable['U'][2,2],4))
-    txt_u_33.config(state="readonly") # 編集不可に設定
-    
-    # B matrixを表示
-    txt_b_11.config(state="normal")  # 一時的に編集可能に
-    txt_b_11.delete(0, tk.END)
-    txt_b_11.insert(0, round(UBtable['B'][0,0],4))
-    txt_b_11.config(state="readonly") # 編集不可に設定
-    txt_b_12.config(state="normal")  # 一時的に編集可能に
-    txt_b_12.delete(0, tk.END)
-    txt_b_12.insert(0, round(UBtable['B'][0,1],4))
-    txt_b_12.config(state="readonly") # 編集不可に設定
-    txt_b_13.config(state="normal")  # 一時的に編集可能に
-    txt_b_13.delete(0, tk.END)
-    txt_b_13.insert(0, round(UBtable['B'][0,2],4))
-    txt_b_13.config(state="readonly") # 編集不可に設定
-    txt_b_21.config(state="normal")  # 一時的に編集可能に
-    txt_b_21.delete(0, tk.END)
-    txt_b_21.insert(0, round(UBtable['B'][1,0],4))
-    txt_b_21.config(state="readonly") # 編集不可に設定
-    txt_b_22.config(state="normal")  # 一時的に編集可能に
-    txt_b_22.delete(0, tk.END)
-    txt_b_22.insert(0, round(UBtable['B'][1,1],4))
-    txt_b_22.config(state="readonly") # 編集不可に設定
-    txt_b_23.config(state="normal")  # 一時的に編集可能に
-    txt_b_23.delete(0, tk.END)
-    txt_b_23.insert(0, round(UBtable['B'][1,2],4))
-    txt_b_23.config(state="readonly") # 編集不可に設定
-    txt_b_31.config(state="normal")  # 一時的に編集可能に
-    txt_b_31.delete(0, tk.END)
-    txt_b_31.insert(0, round(UBtable['B'][2,0],4))
-    txt_b_31.config(state="readonly") # 編集不可に設定
-    txt_b_32.config(state="normal")  # 一時的に編集可能に
-    txt_b_32.delete(0, tk.END)
-    txt_b_32.insert(0, round(UBtable['B'][2,1],4))
-    txt_b_32.config(state="readonly") # 編集不可に設定
-    txt_b_33.config(state="normal")  # 一時的に編集可能に
-    txt_b_33.delete(0, tk.END)
-    txt_b_33.insert(0, round(UBtable['B'][2,2],4))
-    txt_b_33.config(state="readonly") # 編集不可に設定
-    
-    # UB matrixを表示
-    txt_ub_11.config(state="normal")  # 一時的に編集可能に
-    txt_ub_11.delete(0, tk.END)
-    txt_ub_11.insert(0, round(UBtable['UB'][0,0],4))
-    txt_ub_11.config(state="readonly") # 編集不可に設定
-    txt_ub_12.config(state="normal")  # 一時的に編集可能に
-    txt_ub_12.delete(0, tk.END)
-    txt_ub_12.insert(0, round(UBtable['UB'][0,1],4))
-    txt_ub_12.config(state="readonly") # 編集不可に設定
-    txt_ub_13.config(state="normal")  # 一時的に編集可能に
-    txt_ub_13.delete(0, tk.END)
-    txt_ub_13.insert(0, round(UBtable['UB'][0,2],4))
-    txt_ub_13.config(state="readonly") # 編集不可に設定
-    txt_ub_21.config(state="normal")  # 一時的に編集可能に
-    txt_ub_21.delete(0, tk.END)
-    txt_ub_21.insert(0, round(UBtable['UB'][1,0],4))
-    txt_ub_21.config(state="readonly") # 編集不可に設定
-    txt_ub_22.config(state="normal")  # 一時的に編集可能に
-    txt_ub_22.delete(0, tk.END)
-    txt_ub_22.insert(0, round(UBtable['UB'][1,1],4))
-    txt_ub_22.config(state="readonly") # 編集不可に設定
-    txt_ub_23.config(state="normal")  # 一時的に編集可能に
-    txt_ub_23.delete(0, tk.END)
-    txt_ub_23.insert(0, round(UBtable['UB'][1,2],4))
-    txt_ub_23.config(state="readonly") # 編集不可に設定
-    txt_ub_31.config(state="normal")  # 一時的に編集可能に
-    txt_ub_31.delete(0, tk.END)
-    txt_ub_31.insert(0, round(UBtable['UB'][2,0],4))
-    txt_ub_31.config(state="readonly") # 編集不可に設定
-    txt_ub_32.config(state="normal")  # 一時的に編集可能に
-    txt_ub_32.delete(0, tk.END)
-    txt_ub_32.insert(0, round(UBtable['UB'][2,1],4))
-    txt_ub_32.config(state="readonly") # 編集不可に設定
-    txt_ub_33.config(state="normal")  # 一時的に編集可能に
-    txt_ub_33.delete(0, tk.END)
-    txt_ub_33.insert(0, round(UBtable['UB'][2,2],4))
-    txt_ub_33.config(state="readonly") # 編集不可に設定
-    
-    # d-spaceの取得
-    dmono = float(d_mono.get())
-    dana = float(d_ana.get())
-    
-    # Bragg peak positionの取得
-    bpe = float(Energy.get())
-    bpc2 = float(bp_c2.get())
-    bpmu = float(bp_mu.get())
-    bpnu = float(bp_nu.get())
-    bp = np.array([float(bp_h.get()), float(bp_k.get()), float(bp_l.get())])
-    
-    # calculation pointの取得
-    hw_cal = float(ces10.get())
-    #h_ini = float(ces1.get())
-    #k_ini = float(ces2.get())
-    #l_ini = float(ces3.get())
-    #h_fin = float(ces4.get())
-    #k_fin = float(ces5.get())
-    #l_fin = float(ces6.get())
-    #h_inc = float(ces7.get())
-    #k_inc = float(ces8.get())
-    #l_inc = float(ces9.get())
-    
-    h_ini_entry = ces1.get()
-    try:
-        # 少数の場合
-        if '/' not in h_ini_entry:
-            h_ini = float(h_ini_entry)
-        else:
-            # 分数の場合
-            h_ini = float(Fraction(h_ini_entry))
-    except ValueError:
-        pass
-    
-    k_ini_entry = ces2.get()
-    try:
-        # 少数の場合
-        if '/' not in k_ini_entry:
-            k_ini = float(k_ini_entry)
-        else:
-            # 分数の場合
-            k_ini = float(Fraction(k_ini_entry))
-    except ValueError:
-        pass
-    
-    l_ini_entry = ces3.get()
-    try:
-        # 少数の場合
-        if '/' not in l_ini_entry:
-            l_ini = float(l_ini_entry)
-        else:
-            # 分数の場合
-            l_ini = float(Fraction(l_ini_entry))
-    except ValueError:
-        pass
-    
-    h_fin_entry = ces4.get()
-    try:
-        # 少数の場合
-        if '/' not in h_fin_entry:
-            h_fin = float(h_fin_entry)
-        else:
-            # 分数の場合
-            h_fin = float(Fraction(h_fin_entry))
-    except ValueError:
-        pass
-    
-    k_fin_entry = ces5.get()
-    try:
-        # 少数の場合
-        if '/' not in k_fin_entry:
-            k_fin = float(k_fin_entry)
-        else:
-            # 分数の場合
-            k_fin = float(Fraction(k_fin_entry))
-    except ValueError:
-        pass
-    
-    l_fin_entry = ces6.get()
-    try:
-        # 少数の場合
-        if '/' not in l_fin_entry:
-            l_fin = float(l_fin_entry)
-        else:
-            # 分数の場合
-            l_fin = float(Fraction(l_fin_entry))
-    except ValueError:
-        pass
-    
-    h_inc_entry = ces7.get()
-    try:
-        # 少数の場合
-        if '/' not in h_inc_entry:
-            h_inc = float(h_inc_entry)
-        else:
-            # 分数の場合
-            h_inc = float(Fraction(h_inc_entry))
-    except ValueError:
-        pass
-    
-    k_inc_entry = ces8.get()
-    try:
-        # 少数の場合
-        if '/' not in k_inc_entry:
-            k_inc = float(k_inc_entry)
-        else:
-            # 分数の場合
-            k_inc = float(Fraction(k_inc_entry))
-    except ValueError:
-        pass
-    
-    l_inc_entry = ces9.get()
-    try:
-        # 少数の場合
-        if '/' not in l_inc_entry:
-            l_inc = float(l_inc_entry)
-        else:
-            # 分数の場合
-            l_inc = float(Fraction(l_inc_entry))
-    except ValueError:
-        pass
-    
-    # 先にフロアの条件を読み込み
-    # INIファイルから設定を読み込む
-    config = configparser.ConfigParser()
-    # .exe化した場合に対応する
-    if getattr(sys, 'frozen', False):
-        # .exeの場合、sys.argv[0]が実行ファイルのパスになる
-        ini_path = os.path.join(os.path.dirname(sys.argv[0]), 'config.ini')
-    else:
-        # .pyの場合、__file__がスクリプトのパスになる
-        ini_path = os.path.join(os.path.dirname(__file__), 'config.ini')
-    config.read(ini_path)
-    
-    mono_radius = float(config['settings']['mono_radius'])
-    mono_to_sample = float(config['settings']['mono_to_sample'])
-    sample_stage_radius = float(config['settings']['sample_stage_radius'])
-    sample_to_ana = float(config['settings']['sample_to_ana'])
-    ana_radius = float(config['settings']['ana_radius'])
-    ana_to_det = float(config['settings']['ana_to_det'])
-    det_radius = float(config['settings']['det_radius'])
-    floor_length = float(config['settings']['floor_length'])
-    floor_width = float(config['settings']['floor_width'])
-    floor_position_x = float(config['settings']['floor_position_x'])
-    floor_position_y = float(config['settings']['floor_position_y'])
-
-    # Ei or Ef fixの判定
-    fixe=float(eief.get())
-    # W or antiW fixの判定
-    w_config=float(w_antiw.get())
-    
-    global angletable3
-    angletable3 = angle_calc3(dmono,dana,astar,bstar,cstar,U,B,UB,bpe,bpc2,bpmu,bpnu,bp,fixe,w_config,hw_cal,h_ini,k_ini,l_ini,h_fin,k_fin,l_fin,h_inc,k_inc,l_inc)
-    
-    # mcuの取得
-    mcu = float(ces11.get())
-    scantime = constetime(flux_Ei, flux_cps, bpe, fixe, hw_cal,h_ini,k_ini,l_ini,h_fin,k_fin,l_fin,h_inc,k_inc,l_inc, mcu)
-    # スキャン時間を返す
-    ces12.config(state="normal")  # 一時的に編集可能に
-    ces12.delete(0, tk.END)
-    ces12.insert(0, int(scantime['hour']))
-    ces12.config(state="readonly") # 編集不可に設定
-    
-    ces13.config(state="normal")  # 一時的に編集可能に
-    ces13.delete(0, tk.END)
-    ces13.insert(0, int(scantime['min']))
-    ces13.config(state="readonly") # 編集不可に設定
-    
-    # 新しいウィンドウを作成
-    result_window = tk.Toplevel()
-    result_window.title("calculation results (unit : deg)")
-    
-    # データの行数に基づいてTreeviewの高さを設定
-    num_rows = len(angletable3)  # データの行数を取得
-    tree_height = num_rows if num_rows > 0 else 1  # 行数が0の場合は最低1行表示
-    
-    # Treeviewの設定
-    tree = ttk.Treeview(result_window, columns=("pt","hw","h","k","l","C1", "A1", "C2", "A2", "C3", "A3", "mu", "nu"), show="headings", height=tree_height)
-    tree.pack(fill="both", expand=True)
-    
-    # 各列に見出しを設定
-    for col in tree["columns"]:
-        tree.heading(col, text=col)
-        tree.column(col, width=80, anchor="center")
-    
-    Ni_mir = gm.get()
-    AHF = ana_HF.get()
-    num_ana_h = float(abnh.get())
-    
-    global reso_mat_cE,col_cond_cE,scan_cond_cE
-    # Entry ウィジェットの値を辞書にまとめる
-    entry_values_cE = {
-        "div_1st_m": div_1st_m.get(),
-        "div_1st_h": div_1st_h.get(),
-        "div_1st_v": div_1st_v.get(),
-        "div_2nd_h": div_2nd_h.get(),
-        "div_2nd_v": div_2nd_v.get(),
-        "div_3rd_h": div_3rd_h.get(),
-        "div_3rd_v": div_3rd_v.get(),
-        "div_4th_h": div_4th_h.get(),
-        "div_4th_v": div_4th_v.get(),
-        "mos_mono_h": mos_mono_h.get(),
-        "mos_mono_v": mos_mono_v.get(),
-        "mos_sam_h": mos_sam_h.get(),
-        "mos_sam_v": mos_sam_v.get(),
-        "mos_ana_h": mos_ana_h.get(),
-        "mos_ana_v": mos_ana_v.get(),
-    }
-    
-    A_sets = []  # A_setsリストを初期化
-    QE_sets = []
-    C_sets = []
-    # resultsリストの各結果をTreeviewに追加
-    for idx, results in enumerate(angletable3, start=1):  # idxでスキャン番号を取得
-        values = (idx,) + tuple(results.values())
-        item_id = tree.insert("", "end", values=values)
-    
-        # A1, A2, A3 を取得して A_sets に追加
-        A1 = round(results['A1'], 4)  # 'A1'
-        A2 = -round(results['A2'], 4)  # 'A2'
-        A3 = round(results['A3'], 4)  # 'A3'
-        A_sets.append([A1, A2, A3])  # A_sets に追加
-        C1 = round(results['C1'], 4)  # 'C1'
-        C2 = round(results['C2'], 4)  # 'C2'
-        C3 = round(results['C3'], 4)  # 'C3'
-        C4 = round(results['offset'], 4)  # 'offset'
-        C_sets.append([C1, C2, C3, C4])
-        # hw, h,k,l
-        hw = round(results['hw'], 4)  # 'A1'
-        h = round(results['h'], 4)  # 'A2'
-        k = round(results['k'], 4)  # 'A3'
-        l = round(results['l'], 4)  # 'A3'
-        QE_sets.append([hw, h, k,l])
-        
-        # sample gonioがfloorからはみ出る場合
-        positionY_sample = mono_to_sample * np.sin(np.radians(results['A1'])) - sample_stage_radius # < floor_position_y
-        # ana dramがfloorからはみ出る場合
-        positionY_ana = mono_to_sample * np.sin(np.radians(results['A1'])) - sample_to_ana * np.sin(np.radians(results['A2'] - results['A1'])) - ana_radius # < floor_position_y
-        # det dramがfloorからはみ出る場合
-        positionY_det = mono_to_sample * np.sin(np.radians(results['A1'])) - sample_to_ana * np.sin(np.radians(results['A2'] - results['A1'])) + ana_to_det * np.sin(np.radians(results['A3'] - results['A2'] + results['A1'])) - det_radius # < floor_position_y
-        positionX_det = mono_to_sample * np.cos(np.radians(results['A1'])) + sample_to_ana * np.cos(np.radians(results['A2'] - results['A1'])) + ana_to_det * np.cos(np.radians(results['A3'] - results['A2'] + results['A1'])) - det_radius # < floor_position_x+floor_length
-        
-        # フロアからはみ出た場合、行を赤色にする
-        if (positionY_sample < floor_position_y or
-          positionY_ana < floor_position_y or
-          positionY_det < floor_position_y or
-          positionX_det > floor_position_x+floor_length):
-            tree.tag_configure("red", foreground="red")  # 'red' タグを設定
-            tree.item(item_id, tags=("red",))  # 行に 'red' タグを適用
-
-        # hardware limitを超えた場合、行をい色にする
-        elif (round(results['C1'],4)<float(hwl2f.get()) or
-            round(results['C1'],4)>float(hwl2t.get()) or
-            round(results['A1'],4)<float(hwl3f.get()) or
-            round(results['A1'],4)>float(hwl3t.get()) or
-            round(results['C2'],4)<float(hwl4f.get()) or
-            round(results['C2'],4)>float(hwl4t.get()) or
-            round(results['A2'],4)<float(hwl5f.get()) or
-            round(results['A2'],4)>float(hwl5t.get()) or
-            round(results['C3'],4)<float(hwl6f.get()) or
-            round(results['C3'],4)>float(hwl6t.get()) or
-            round(results['A3'],4)<float(hwl7f.get()) or
-            round(results['A3'],4)>float(hwl7t.get()) or
-            round(results['mu'],4)<float(hwl8f.get()) or
-            round(results['mu'],4)>float(hwl8t.get()) or
-            round(results['nu'],4)<float(hwl9f.get()) or
-            round(results['nu'],4)>float(hwl9t.get())):
-            tree.tag_configure("blue", foreground="blue")  # 'red' タグを設定
-            tree.item(item_id, tags=("blue",))  # 行に 'red' タグを適用
-            
-     # サンプル点の取得
-    sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
-    sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
-    
-    # RLtableを取得し、辞書から必要な変数を取り出す
-    RLtable = on_Rlcalc()
-    astar = RLtable['astar']
-    bstar = RLtable['bstar']
-    cstar = RLtable['cstar']    
-    sense = RorL.get()
-    apr_value = apr_var.get()
-
-    Ni_mir = gm.get()
-    MHF = mono_HF.get()
-    MVF = mono_VF.get()
-    AHF = ana_HF.get()
-    AVF = ana_VF.get()
-    num_mono_h = float(mbnh.get())
-    num_mono_v = float(mbnv.get())
-    num_ana_h = float(abnh.get())
-    num_ana_v = float(abnv.get())
-
-    focus_cond = {
-        "MHF": MHF,
-        "MVF": MVF,
-        "AHF": AHF,
-        "AVF": AVF,
-        "num_mono_h": num_mono_h,
-        "num_mono_v": num_mono_v,
-        "num_ana_h": num_ana_h,
-        "num_ana_v": num_ana_v,
-    }
-
-    inst_param= {
-        'source_to_mono': float(e_pp0.get()),
-        'mono_radius': float(e_cs1.get()),
-        'mono_to_sample': float(e_pp1.get()),
-        'sample_stage_radius': float(e_cs2.get()),
-        'sample_to_ana': float(e_pp2.get()),
-        'ana_radius': float(e_cs3.get()),
-        'ana_to_det': float(e_pp3.get()),
-        'det_radius': float(e_cs4.get()),
-        'floor_length': float(e_cs5.get()),
-        'floor_width': float(e_cs6.get()),
-        'floor_position_x': float(e_cs7.get()),
-        'floor_position_y': float(e_cs8.get()),
-        'beam_width': float(e_pp4.get()),
-        'beam_height': float(e_pp5.get()),
-        'mono_width': float(e_pp6.get()),
-        'mono_height': float(e_pp7.get()),
-        'mono_depth': float(e_pp8.get()),
-        'ana_width': float(e_pp9.get()),
-        'ana_height': float(e_pp10.get()),
-        'ana_depth': float(e_pp11.get()),
-        'det_width': float(e_pp12.get()),
-        'det_height': float(e_pp13.get()),
-    }
-
-    reso_mat_cE,col_cond_cE,scan_cond_cE = calcresolution_save(apr_value,sense, astar,bstar,cstar,sv1,sv2,A_sets,C_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,inst_param,entry_values_cE) # reso matの計算のみ
-    
-    if fig_spec.get()==1:
-        # プロット関数を呼び出し
-        #plot_spectrometer_with_gif(A_sets,QE_sets)
-        sense = RorL.get()
-        plot_spectrometer(inst_param,sense,A_sets,QE_sets)
-    
-    if fig_reci.get()==1:
-        # 逆格子空間のki,kf,τベクトルを示す。
-        params = get_parameters()
-        RLtable = RL_calc(**params)  # RL_calcに辞書を展開して渡す
-        
-        # 散乱面の取得
-        # サンプル点の取得
-        sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
-        sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
-        
-        
-        fixe=float(eief.get())
-        bpe = float(Energy.get())
-        bpc2 = float(bp_c2.get())
-        
-        plot_reciprocal_space(bpe,fixe,sv1,sv2,RLtable,A_sets,C_sets,QE_sets)
-        #plot_reciprocal_space_with_gif(bpe,bpc2,cphw,cp,fixe,sv1,sv2,RLtable,A_sets,C_sets,QE_sets)
-    
-    if fig_reso.get()==1:
-        #calcresolution_scan(A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,entry_values_cE)
-        #calcresolution_scan_with_gif(A_sets,QE_sets,bpe,fixe,focus_cond,entry_values)
-        
-        # サンプル点の取得
-        # 散乱面の取得
-        sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
-        sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
-        sv3 = np.array([float(sv3_h.get()), float(sv3_k.get()), float(sv3_l.get())])
-        
-        # RLtableを取得し、辞書から必要な変数を取り出す
-        RLtable = on_Rlcalc()
-        astar = RLtable['astar']
-        bstar = RLtable['bstar']
-        cstar = RLtable['cstar']
-        sense = RorL.get()
-        apr_value = apr_var.get()
-
-        if mode_var.get() == "slider":
-            # slider用処理
-            calcresolution_scan3(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,inst_param,entry_values_cE)
-        elif mode_var.get() == "overview":
-            # overview用処理
-            calcresolution_scan4(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,inst_param,entry_values_cE)
-        
-    plt.show()
-    
-    return angletable3
-
-# ボタンの作成
-button = ttk.Button(tab_002b, text="calc", command=conostEscan_show_table)
-button.grid(row=4, column=2,columnspan=3, sticky="NSEW")
+calc_scan_button = ttk.Button(tab_002, text="calc", command=scan_show_table, width=16)
+calc_scan_button.grid(row=3, column=0, columnspan=7, sticky="NSEW")
 
 # グリッドの重みを設定
 tab_003.columnconfigure(0, weight=1)
@@ -4080,7 +3443,7 @@ filemenu.add_command(label="load ini.file",command=load_values_from_ini)
 #fileメニューにini fileのsave
 filemenu.add_command(label="save ini.file",command=save_values_to_ini)
 
-def save_cQ_table():
+def save_table():
 
     # 保存ダイアログを表示してファイル名を取得
     file_path = filedialog.asksaveasfilename(
@@ -4180,121 +3543,15 @@ def save_cQ_table():
                 writer.writerow(header_keys)
 
                 # 各辞書から必要なキーだけ取り出して書き込み
-                for result in angletable2:
+                for result in angletable4:
                     values = [result[key] for key in header_keys]
                     writer.writerow(values)
         except Exception as e:
             messagebox.showerror("保存エラー", f"ファイルの保存中にエラーが発生しました:\n{e}")
 
 import csv
-
-def save_cE_table():
-
-    # 保存ダイアログを表示してファイル名を取得
-    file_path = filedialog.asksaveasfilename(
-        defaultextension=".csv",
-        filetypes=[("CSV files", "*.csv"), ("All files", "*.*")],
-        title="Save as CSV"
-    )
-
-    if file_path:
-        try:
-            with open(file_path, mode='w', newline='') as file:
-                writer = csv.writer(file)
-                # 格子情報を出力
-                params = get_parameters()
-                writer.writerow(params.keys())
-                writer.writerow([f'{v:.4f}' for v in params.values()])# 格子情報を出力
-                # サンプル点の取得
-                # 散乱面の取得
-                sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
-                sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
-                sv3 = np.array([float(sv3_h.get()), float(sv3_k.get()), float(sv3_l.get())])
-                # 最初の一行だけ header0 を書く
-                """
-                header0 = [
-                    f'Qx//({float(sv1[0]):.4f},{float(sv1[1]):.4f},{float(sv1[2]):.4f})',f'',f'',f'',
-                    f'Qy//({float(sv2[0]):.4f},{float(sv2[1]):.4f},{float(sv2[2]):.4f})'
-                ]
-                """
-                RLtable = on_Rlcalc()
-                astar = RLtable['astar']
-                bstar = RLtable['bstar']
-                cstar = RLtable['cstar']
-                alpha_star = RLtable['alpha_star']
-                beta_star = RLtable['beta_star']
-                gamma_star = RLtable['gamma_star']
-                n_a = RLtable['n_a']
-                n_b = RLtable['n_b']
-                n_c = RLtable['n_c']
-
-                header_astar = [
-                    'a*',
-                    f'{float(astar[0]):.4f}',
-                    f'{float(astar[1]):.4f}',
-                    f'{float(astar[2]):.4f}',
-                    '|a*|',
-                    f'{float(n_a):.4f}'
-                ]
-                writer.writerow(header_astar)
                 
-                header_bstar = [
-                    'b*',
-                    f'{float(bstar[0]):.4f}',
-                    f'{float(bstar[1]):.4f}',
-                    f'{float(bstar[2]):.4f}',
-                    '|b*|',
-                    f'{float(n_b):.4f}'
-                ]
-                writer.writerow(header_bstar)
-                
-                header_cstar = [
-                    'c*',
-                    f'{float(cstar[0]):.4f}',
-                    f'{float(cstar[1]):.4f}',
-                    f'{float(cstar[2]):.4f}',
-                    '|c*|',
-                    f'{float(n_c):.4f}'
-                ]
-                writer.writerow(header_cstar)
-                
-                header01 = [
-                    'Qx//(',
-                    f'{float(sv1[0]):.4f}',
-                    f'{float(sv1[1]):.4f}',
-                    f'{float(sv1[2]):.4f}',
-                    ')',
-                ]
-                writer.writerow(header01)
-                header02 = [
-                    'Qy//(',
-                    f'{float(sv2[0]):.4f}',
-                    f'{float(sv2[1]):.4f}',
-                    f'{float(sv2[2]):.4f}',
-                    ')',
-                ]
-                writer.writerow(header02)
-                header03 = [
-                    'Qz//(',
-                    f'{float(sv3[0]):.4f}',
-                    f'{float(sv3[1]):.4f}',
-                    f'{float(sv3[2]):.4f}',
-                    ')',
-                ]
-                writer.writerow(header03)
-                
-                # ヘッダーに 'offset' を含めない
-                header_keys = ['hw', 'h', 'k', 'l', 'C1', 'A1', 'C2', 'A2', 'C3', 'A3', 'mu', 'nu']
-                writer.writerow(header_keys)
-
-                # 各辞書から必要なキーだけ取り出して書き込み
-                for result in angletable3:
-                    values = [result[key] for key in header_keys]
-                    writer.writerow(values)
-        except Exception as e:
-            messagebox.showerror("保存エラー", f"ファイルの保存中にエラーが発生しました:\n{e}")
-                
-def save_cQ_resomat():
+def save_resomat():
 
     # 保存ダイアログを表示してファイル名を取得
     file_path = filedialog.asksaveasfilename(
@@ -4441,189 +3698,28 @@ def save_cQ_resomat():
                 ]
                 writer.writerow(header03)
                 # この各結果を CSV に書き込む
-                for i in range(len(scan_cond_cQ[0])):  # または len(scan_cond[0])
+                for i in range(len(scan_cond[0])):  # または len(scan_cond[0])
                     # ヘッダーを書き込む
                     header1 = ['div_1st_h','div_2nd_h','div_3rd_h','div_4th_h','div_1st_v','div_2nd_v','div_3rd_v','div_4th_v','mos_mono_h','mos_ana_h','mos_sam_h','mos_mono_v','mos_ana_v','mos_sam_v']  # ヘッダー名を必要に応じて調整
                     writer.writerow(header1)
-                    row_cond = col_cond_cQ[:, i]
+                    row_cond = col_cond[:, i]
                     writer.writerow(row_cond)
                     
-                    header2 = ['Ei','Ef','hw','h','k','l','C1','A1','C2','A2','C3','A3']
+                    header2 = ['Ei','Ef','hw','h','k','l','C1','A1','C2','A2','C3','A3','mu','nu']
                     writer.writerow(header2)
-                    row_scan = scan_cond_cQ[:, i]  # 1列（スキャン条件1セット）
-                    writer.writerow(row_scan)
+                    # scan_condからベース部分
+                    base_values = list(scan_cond[:, i])
+
+                    # angletable4 から mu, nu を追加
+                    result = angletable4[i]
+
+                    values = base_values + [result['mu'], result['nu']]
+                    writer.writerow(values)
                     
                     header3 = ['resoluation matrix (Qpara, Qperp, hw, Qz)']
                     writer.writerow(header3)
                     # 分解能行列を4行4列でCSVに出力
-                    reso = reso_mat_cQ[:, :, i]  # shape: (4, 4)
-                    for row in reso:
-                        writer.writerow(row)  # → [a11, a12, a13, a14] のように1行ずつ書かれる
-        except Exception as e:
-            messagebox.showerror("保存エラー", f"ファイルの保存中にエラーが発生しました:\n{e}")
-
-def save_cE_resomat():
-
-    # 保存ダイアログを表示してファイル名を取得
-    file_path = filedialog.asksaveasfilename(
-        defaultextension=".csv",
-        filetypes=[("CSV files", "*.csv"), ("All files", "*.*")],
-        title="Save as CSV"
-    )
-
-    if file_path:
-        try:
-            with open(file_path, mode='w', newline='') as file:
-                writer = csv.writer(file)
-
-                # 装置情報を出力
-                sense = RorL.get()
-                apr_value = apr_var.get()
-
-                MHF = mono_HF.get()
-                MVF = mono_VF.get()
-                AHF = ana_HF.get()
-                AVF = ana_VF.get()
-
-                num_mono_h = float(mbnh.get())
-                num_mono_v = float(mbnv.get())
-                num_ana_h = float(abnh.get())
-                num_ana_v = float(abnv.get())
-
-                # 近似法の文字変換
-                approx_name = "Popovic" if apr_value == "P" else "CooperNathans"
-
-                # Flat / Focus の変換
-                def flat_focus(val):
-                    return "Focus" if val == 1 else "Flat"
-                
-                inst_cond_header = [
-                    "sense",
-                    "approximation",
-                    "mono_horizontal",
-                    "mono_h_blades",
-                    "mono_vertical",
-                    "mono_v_blades",
-                    "ana_horizontal",
-                    "ana_h_blades",
-                    "ana_vertical",
-                    "ana_v_blades"
-                ]
-
-                # CSV へ書き込む辞書
-                inst_cond = [
-                    sense,
-                    approx_name,
-                    flat_focus(MHF),
-                    num_mono_h,
-                    flat_focus(MVF),
-                    num_mono_v,
-                    flat_focus(AHF),
-                    num_ana_h,
-                    flat_focus(AVF),
-                    num_ana_v
-                ]
-                
-                writer.writerow(inst_cond_header)
-                writer.writerow(inst_cond)
-
-                # 格子情報を出力
-                params = get_parameters()
-                writer.writerow(params.keys())
-                writer.writerow([f'{v:.4f}' for v in params.values()])
-                # サンプル点の取得
-                # 散乱面の取得
-                sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
-                sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
-                sv3 = np.array([float(sv3_h.get()), float(sv3_k.get()), float(sv3_l.get())])
-                # 最初の一行だけ header0 を書く
-                """
-                header0 = [
-                    f'Qx//({float(sv1[0]):.4f},{float(sv1[1]):.4f},{float(sv1[2]):.4f})',f'',f'',f'',
-                    f'Qy//({float(sv2[0]):.4f},{float(sv2[1]):.4f},{float(sv2[2]):.4f})'
-                ]
-                """
-                RLtable = on_Rlcalc()
-                astar = RLtable['astar']
-                bstar = RLtable['bstar']
-                cstar = RLtable['cstar']
-                alpha_star = RLtable['alpha_star']
-                beta_star = RLtable['beta_star']
-                gamma_star = RLtable['gamma_star']
-                n_a = RLtable['n_a']
-                n_b = RLtable['n_b']
-                n_c = RLtable['n_c']
-                
-                header_astar = [
-                    'a*',
-                    f'{float(astar[0]):.4f}',
-                    f'{float(astar[1]):.4f}',
-                    f'{float(astar[2]):.4f}',
-                    '|a*|',
-                    f'{float(n_a):.4f}'
-                ]
-                writer.writerow(header_astar)
-                
-                header_bstar = [
-                    'b*',
-                    f'{float(bstar[0]):.4f}',
-                    f'{float(bstar[1]):.4f}',
-                    f'{float(bstar[2]):.4f}',
-                    '|b*|',
-                    f'{float(n_b):.4f}'
-                ]
-                writer.writerow(header_bstar)
-                
-                header_cstar = [
-                    'c*',
-                    f'{float(cstar[0]):.4f}',
-                    f'{float(cstar[1]):.4f}',
-                    f'{float(cstar[2]):.4f}',
-                    '|c*|',
-                    f'{float(n_c):.4f}'
-                ]
-                writer.writerow(header_cstar)
-                
-                header01 = [
-                    'Qx//(',
-                    f'{float(sv1[0]):.4f}',
-                    f'{float(sv1[1]):.4f}',
-                    f'{float(sv1[2]):.4f}',
-                    ')',
-                ]
-                writer.writerow(header01)
-                header02 = [
-                    'Qy//(',
-                    f'{float(sv2[0]):.4f}',
-                    f'{float(sv2[1]):.4f}',
-                    f'{float(sv2[2]):.4f}',
-                    ')',
-                ]
-                writer.writerow(header02)
-                header03 = [
-                    'Qz//(',
-                    f'{float(sv3[0]):.4f}',
-                    f'{float(sv3[1]):.4f}',
-                    f'{float(sv3[2]):.4f}',
-                    ')',
-                ]
-                writer.writerow(header03)
-                # この各結果を CSV に書き込む
-                for i in range(len(scan_cond_cE[0])):  # または len(scan_cond[0])
-                    
-                    header1 = ['div_1st_h','div_2nd_h','div_3rd_h','div_4th_h','div_1st_v','div_2nd_v','div_3rd_v','div_4th_v','mos_mono_h','mos_ana_h','mos_sam_h','mos_mono_v','mos_ana_v','mos_sam_v']  # ヘッダー名を必要に応じて調整
-                    writer.writerow(header1)
-                    row_cond = col_cond_cE[:, i]
-                    writer.writerow(row_cond)
-                    
-                    header2 = ['Ei','Ef','hw','h','k','l','C1','A1','C2','A2','C3','A3']
-                    writer.writerow(header2)
-                    row_scan = scan_cond_cE[:, i]  # 1列（スキャン条件1セット）
-                    writer.writerow(row_scan)
-                    header3 = ['resoluation matrix (Qx, Qy, hw, Qz)']
-                    writer.writerow(header3)
-                    # 分解能行列を4行4列でCSVに出力
-                    reso = reso_mat_cE[:, :, i]  # shape: (4, 4)
+                    reso = reso_mat[:, :, i]  # shape: (4, 4)
                     for row in reso:
                         writer.writerow(row)  # → [a11, a12, a13, a14] のように1行ずつ書かれる
         except Exception as e:
@@ -4633,13 +3729,9 @@ def save_cE_resomat():
 filemenu2 = tk.Menu(menubar,tearoff=0)
 menubar.add_cascade(label="output",menu=filemenu2)
 #fileメニュー(save)
-filemenu2.add_command(label="const Q scan table",command=save_cQ_table)
+filemenu2.add_command(label="save scan table",command=save_table)
 #fileメニュー(save)
-filemenu2.add_command(label="const E scan table",command=save_cE_table)
-#fileメニュー(save)
-filemenu2.add_command(label="const Q scan resolution matrix",command=save_cQ_resomat)
-#fileメニュー(save)
-filemenu2.add_command(label="const E scan resolution matrix",command=save_cE_resomat)
+filemenu2.add_command(label="save scan resolution matrix",command=save_resomat)
 
 #fileメニュー(exit)
 filemenu3 = tk.Menu(menubar,tearoff=0)
