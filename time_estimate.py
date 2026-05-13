@@ -3,10 +3,12 @@ import numpy as np
 from scipy.interpolate import interp1d
 
 def constqtime(flux_Ei, flux_cps, bpe, fixe, hw_ini, hw_fin, points, mcu):
-    hw_inc = (hw_fin-hw_ini)/(points-1)
-    hw_tab = np.arange(hw_ini, hw_fin, hw_inc)
-    if hw_tab[-1] != hw_fin:  # 最後の点が hw_fin でない場合
-        hw_tab = np.append(hw_tab, hw_fin)
+    hw_tab = np.ones(points)
+    if points == 1:
+        hw_tab = np.array([hw_ini])
+    else:
+        hw_inc = (hw_fin - hw_ini) / (points - 1)
+        hw_tab = np.linspace(hw_ini, hw_fin, points)
     
     if fixe==0: # ei fix
         Ef = np.zeros(len(hw_tab))

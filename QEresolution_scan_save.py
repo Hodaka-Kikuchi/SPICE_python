@@ -56,6 +56,7 @@ def calcresolution_save(apr_value,sense,astar,bstar,cstar,sv1,sv2,A_sets,C_sets,
     reso_mat = np.zeros((4,4,len(A_sets)))
     col_cond = np.zeros((14,len(A_sets)))
     scan_cond = np.zeros((12,len(A_sets)))
+    easy_reso = np.zeros((4,len(A_sets)))
     
     # matrix.shape[0]. shape はタプル (行数, 列数). shape[0] が行数、shape[1] が列数
     for index in range(len(A_sets)):
@@ -248,15 +249,29 @@ def calcresolution_save(apr_value,sense,astar,bstar,cstar,sv1,sv2,A_sets,C_sets,
             L2 = inst_param["sample_to_ana"]
             L3 = inst_param["ana_to_det"]
 
-            def focusing_curvature(L_1, L_2, theta):
+            def focusing_vert_curvature(L_1, L_2, theta):
                 # 有効焦点距離。ただし、単位をmmからmに直す必要がある。
-                f = 1.0 / (1.0/L_1 + 1.0/L_2)
+                #f = 1.0 / (1.0/L_1 + 1.0/L_2)
 
                 # θ をラジアンに変換
                 theta_rad = np.radians(theta)
 
                 # 曲率 R = 2*f*|sin(theta)|
-                R = 2.0 * f * np.abs(np.sin(theta_rad))
+                Rinv = (1.0/L_1 + 1.0/L_2)/(2.0*np.abs(np.sin(theta_rad)))
+                R = 1/Rinv
+
+                return R
+            
+            def focusing_hori_curvature(L_1, L_2, theta):
+                # 有効焦点距離。ただし、単位をmmからmに直す必要がある。
+                #f = 1.0 / (1.0/L_1 + 1.0/L_2)
+
+                # θ をラジアンに変換
+                theta_rad = np.radians(theta)
+
+                # 曲率 R = 2*f*|sin(theta)|
+                Rinv = (1.0/L_1 + 1.0/L_2)*np.abs(np.sin(theta_rad))/2
+                R = 1/Rinv
 
                 return R
 
@@ -264,20 +279,20 @@ def calcresolution_save(apr_value,sense,astar,bstar,cstar,sv1,sv2,A_sets,C_sets,
             if MVF == 0:
                 monorv = 1e10
             elif MVF ==1:
-                monorv = focusing_curvature(L0,L1,thetaM)
+                monorv = focusing_vert_curvature(L0,L1,thetaM)
             if MHF == 0:
                 monorh = 1e10
             elif MHF ==1:
-                monorh = focusing_curvature(L0,L1,thetaM)
+                monorh = focusing_hori_curvature(L0,L1,thetaM)
             if AVF == 0:
                 anarv = 1e10
             elif AVF ==1:
-                anarv = focusing_curvature(L2,L3,thetaA)
+                anarv = focusing_vert_curvature(L2,L3,thetaA)
             if AHF == 0:
                 anarh = 1e10
             elif AHF ==1:
-                anarh = focusing_curvature(L2,L3,thetaA)
-
+                anarh = focusing_hori_curvature(L2,L3,thetaA)
+            
             # ==== T matrix ====
             T = np.zeros((4, 13))
 
@@ -409,4 +424,65 @@ def calcresolution_save(apr_value,sense,astar,bstar,cstar,sv1,sv2,A_sets,C_sets,
         # これを(qx(axis1),qy(axis2),hw,qz)に置ける空間分布に変換する。
         
         reso_mat[:,:,index] = RM
-    return reso_mat,col_cond,scan_cond
+
+        # 簡易的な分解能の出力
+
+        # 楕円球の係数行列 RM と楕円球の方程式
+        # 4変数対応: x, y, z, w
+        def fun4(x, y, z, w, RM):
+            return (
+                RM[0, 0] * x**2
+                + RM[1, 1] * y**2
+                + RM[2, 2] * z**2
+                + RM[3, 3] * w**2
+                + 2 * RM[0, 1] * x * y
+                + 2 * RM[0, 2] * x * z
+                + 2 * RM[0, 3] * x * w
+                + 2 * RM[1, 2] * y * z
+                + 2 * RM[1, 3] * y * w
+                + 2 * RM[2, 3] * z * w
+                - 2 * np.log(2)
+            )
+
+        # 制約条件（楕円球の式 = 0 を満たす）
+        # 制約条件
+        def constraint(params, RM):
+            x, y, z, w = params
+            return fun4(x, y, z, w, RM)
+        
+        # 最大値を探索する関数
+        # 最大値を探索
+        def find_max_along_axis(RM, axis="x"):
+            initial_guess = [0, 0, 0, 0]  # 4次元原点
+            axis_map = {"x": 0, "y": 1, "z": 2, "w": 3}
+            idx = axis_map[axis]
+
+            def objective(params):
+                return -params[idx]  # 最大化したいので符号反転
+
+            constraints = {"type": "eq", "fun": constraint, "args": (RM,)}
+
+            result = minimize(
+                objective,
+                initial_guess,
+                method="SLSQP",
+                constraints=constraints,
+                options={"disp": False},
+            )
+            return result.x[idx], result.x  # 軸方向の最大値と座標
+        
+        # 各軸の最大値を計算
+        max_x, coords_x = find_max_along_axis(RM, axis="x")# Q//
+        max_y, coords_y = find_max_along_axis(RM, axis="y")# Q⊥
+        max_z, coords_z = find_max_along_axis(RM, axis="z")# E
+        max_w, coords_w = find_max_along_axis(RM, axis="w")# w
+
+        # 各軸の最大値を2倍した値
+        resolution_Q_parallel = 2 * max_x
+        resolution_Q_perpendicular = 2 * max_y
+        resolution_energy = 2 * max_z
+        resolution_Q_z = 2 * max_w
+
+        easy_reso[:,index] = [resolution_Q_parallel,resolution_Q_perpendicular,resolution_energy,resolution_Q_z]
+        
+    return reso_mat,col_cond,scan_cond,easy_reso

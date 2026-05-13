@@ -1422,12 +1422,12 @@ bpl5.grid(row=0, column=4,sticky="NSEW")
 bp_c2 = ttk.Entry(frame4b)
 bp_c2.grid(row=1, column=4,sticky="NSEW")
 
-bpl6 = tk.Label(frame4b,text='μ')
+bpl6 = tk.Label(frame4b,text='μ (axis 1)')
 bpl6.grid(row=0, column=5,sticky="NSEW")
 bp_mu = ttk.Entry(frame4b)
 bp_mu.grid(row=1, column=5,sticky="NSEW")
 
-bpl7 = tk.Label(frame4b,text='ν')
+bpl7 = tk.Label(frame4b,text='ν (axis 2)')
 bpl7.grid(row=0, column=6,sticky="NSEW")
 bp_nu = ttk.Entry(frame4b)
 bp_nu.grid(row=1, column=6,sticky="NSEW")
@@ -2461,40 +2461,37 @@ tab_002.rowconfigure(3, weight=1)
 
 l_sc_1 = tk.Label(tab_002,text='from', width=16)
 l_sc_1.grid(row=1, column=0,sticky="NSEW")
-
 l_sc_2 = tk.Label(tab_002,text='to', width=16)
 l_sc_2.grid(row=2, column=0,sticky="NSEW")
-
 l_cs_hw = tk.Label(tab_002,text='ℏω (meV)')
 l_cs_hw.grid(row=0, column=1,sticky="NSEW")
-e_cs_hwf = ttk.Entry(tab_002)
-e_cs_hwf.grid(row=1, column=1,sticky="NSEW")
-e_cs_hwt = ttk.Entry(tab_002)
-e_cs_hwt.grid(row=2, column=1,sticky="NSEW")
-
 l_cs_h = tk.Label(tab_002,text='h')
 l_cs_h.grid(row=0, column=2,sticky="NSEW")
-e_cs_hf = ttk.Entry(tab_002)
-e_cs_hf.grid(row=1, column=2,sticky="NSEW")
-e_cs_ht = ttk.Entry(tab_002)
-e_cs_ht.grid(row=2, column=2,sticky="NSEW")
-
 l_cs_k = tk.Label(tab_002,text='k')
 l_cs_k.grid(row=0, column=3,sticky="NSEW")
-e_cs_kf = ttk.Entry(tab_002)
-e_cs_kf.grid(row=1, column=3,sticky="NSEW")
-e_cs_kt = ttk.Entry(tab_002)
-e_cs_kt.grid(row=2, column=3,sticky="NSEW")
-
 l_cs_l = tk.Label(tab_002,text='l')
 l_cs_l.grid(row=0, column=4,sticky="NSEW")
+l_cs_n = tk.Label(tab_002,text='points')
+l_cs_n.grid(row=0, column=5,sticky="NSEW")
+
+e_cs_hwf = ttk.Entry(tab_002)
+e_cs_hwf.grid(row=1, column=1,sticky="NSEW")
+e_cs_hf = ttk.Entry(tab_002)
+e_cs_hf.grid(row=1, column=2,sticky="NSEW")
+e_cs_kf = ttk.Entry(tab_002)
+e_cs_kf.grid(row=1, column=3,sticky="NSEW")
 e_cs_lf = ttk.Entry(tab_002)
 e_cs_lf.grid(row=1, column=4,sticky="NSEW")
+
+e_cs_hwt = ttk.Entry(tab_002)
+e_cs_hwt.grid(row=2, column=1,sticky="NSEW")
+e_cs_ht = ttk.Entry(tab_002)
+e_cs_ht.grid(row=2, column=2,sticky="NSEW")
+e_cs_kt = ttk.Entry(tab_002)
+e_cs_kt.grid(row=2, column=3,sticky="NSEW")
 e_cs_lt = ttk.Entry(tab_002)
 e_cs_lt.grid(row=2, column=4,sticky="NSEW")
 
-l_cs_n = tk.Label(tab_002,text='points')
-l_cs_n.grid(row=0, column=5,sticky="NSEW")
 e_cs_n = ttk.Entry(tab_002)
 e_cs_n.grid(row=1, column=5,sticky="NSEW")
 
@@ -2817,7 +2814,7 @@ def scan_show_table():
     AHF = ana_HF.get()
     num_ana_h = float(abnh.get())
     
-    global reso_mat,col_cond,scan_cond
+    global reso_mat,col_cond,scan_cond,easy_reso
     # Entry ウィジェットの値を辞書にまとめる
     entry_values = {
         "div_1st_m": div_1st_m.get(),
@@ -2875,7 +2872,7 @@ def scan_show_table():
         sense = RorL.get()
         plot_spectrometer(inst_param,sense,A_sets,QE_sets)
 
-    reso_mat,col_cond,scan_cond = calcresolution_save(apr_value,sense,astar,bstar,cstar,sv1,sv2,A_sets,C_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,inst_param,entry_values) # reso matの計算のみ
+    reso_mat,col_cond,scan_cond,easy_reso = calcresolution_save(apr_value,sense,astar,bstar,cstar,sv1,sv2,A_sets,C_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,inst_param,entry_values) # reso matの計算のみ
     
     if fig_reci.get()==1:
         # 逆格子空間のki,kf,τベクトルを示す。
@@ -2915,7 +2912,7 @@ def scan_show_table():
             calcresolution_scan4(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE_sets,Ni_mir,bpe,fixe,focus_cond,inst_param,entry_values)
     plt.show()
     
-    return angletable4,reso_mat,col_cond,scan_cond
+    return angletable4,reso_mat,col_cond,scan_cond,easy_reso
 
 calc_scan_button = ttk.Button(tab_002, text="calc", command=scan_show_table, width=16)
 calc_scan_button.grid(row=3, column=0, columnspan=7, sticky="NSEW")
@@ -3716,8 +3713,13 @@ def save_resomat():
                     values = base_values + [result['mu'], result['nu']]
                     writer.writerow(values)
                     
-                    header3 = ['resoluation matrix (Qpara, Qperp, hw, Qz)']
+                    header3 = ['Q resolution//axis1 (r.l.u.)','Q resolution//axis2 (r.l.u.)','energy resolution (meV)','Q resolution//axis3  (r.l.u.)']  # ヘッダー名を必要に応じて調整
                     writer.writerow(header3)
+                    row_easy_reso = easy_reso[:, i]
+                    writer.writerow(row_easy_reso)
+                    
+                    header4 = ['resoluation matrix (Qpara, Qperp, hw, Qz)']
+                    writer.writerow(header4)
                     # 分解能行列を4行4列でCSVに出力
                     reso = reso_mat[:, :, i]  # shape: (4, 4)
                     for row in reso:
@@ -3725,6 +3727,164 @@ def save_resomat():
         except Exception as e:
             messagebox.showerror("保存エラー", f"ファイルの保存中にエラーが発生しました:\n{e}")
             
+def save_easy_reso():
+
+    # 保存ダイアログを表示してファイル名を取得
+    file_path = filedialog.asksaveasfilename(
+        defaultextension=".csv",
+        filetypes=[("CSV files", "*.csv"), ("All files", "*.*")],
+        title="Save as CSV"
+    )
+
+    if file_path:
+        try:
+            with open(file_path, mode='w', newline='') as file:
+                writer = csv.writer(file)
+
+                # 装置情報を出力
+                sense = RorL.get()
+                apr_value = apr_var.get()
+
+                MHF = mono_HF.get()
+                MVF = mono_VF.get()
+                AHF = ana_HF.get()
+                AVF = ana_VF.get()
+
+                num_mono_h = float(mbnh.get())
+                num_mono_v = float(mbnv.get())
+                num_ana_h = float(abnh.get())
+                num_ana_v = float(abnv.get())
+
+                # 近似法の文字変換
+                approx_name = "Popovic" if apr_value == "P" else "CooperNathans"
+
+                # Flat / Focus の変換
+                def flat_focus(val):
+                    return "Focus" if val == 1 else "Flat"
+                
+                inst_cond_header = [
+                    "sense",
+                    "approximation",
+                    "mono_horizontal",
+                    "mono_h_blades",
+                    "mono_vertical",
+                    "mono_v_blades",
+                    "ana_horizontal",
+                    "ana_h_blades",
+                    "ana_vertical",
+                    "ana_v_blades"
+                ]
+
+                # CSV へ書き込む辞書
+                inst_cond = [
+                    sense,
+                    approx_name,
+                    flat_focus(MHF),
+                    num_mono_h,
+                    flat_focus(MVF),
+                    num_mono_v,
+                    flat_focus(AHF),
+                    num_ana_h,
+                    flat_focus(AVF),
+                    num_ana_v
+                ]
+                
+                writer.writerow(inst_cond_header)
+                writer.writerow(inst_cond)
+
+                # 格子情報を出力
+                params = get_parameters()
+                writer.writerow(params.keys())
+                writer.writerow([f'{v:.4f}' for v in params.values()])
+                # サンプル点の取得
+                # 散乱面の取得
+                sv1 = np.array([float(sv1_h.get()), float(sv1_k.get()), float(sv1_l.get())])
+                sv2 = np.array([float(sv2_h.get()), float(sv2_k.get()), float(sv2_l.get())])
+                sv3 = np.array([float(sv3_h.get()), float(sv3_k.get()), float(sv3_l.get())])
+                # 最初の一行だけ header0 を書く
+                """
+                header0 = [
+                    f'Qx//({float(sv1[0]):.4f},{float(sv1[1]):.4f},{float(sv1[2]):.4f})',f'',f'',f'',
+                    f'Qy//({float(sv2[0]):.4f},{float(sv2[1]):.4f},{float(sv2[2]):.4f})'
+                ]
+                """
+                RLtable = on_Rlcalc()
+                astar = RLtable['astar']
+                bstar = RLtable['bstar']
+                cstar = RLtable['cstar']
+                alpha_star = RLtable['alpha_star']
+                beta_star = RLtable['beta_star']
+                gamma_star = RLtable['gamma_star']
+                n_a = RLtable['n_a']
+                n_b = RLtable['n_b']
+                n_c = RLtable['n_c']
+                
+                header_astar = [
+                    'a*',
+                    f'{float(astar[0]):.4f}',
+                    f'{float(astar[1]):.4f}',
+                    f'{float(astar[2]):.4f}',
+                    '|a*|',
+                    f'{float(n_a):.4f}'
+                ]
+                writer.writerow(header_astar)
+                
+                header_bstar = [
+                    'b*',
+                    f'{float(bstar[0]):.4f}',
+                    f'{float(bstar[1]):.4f}',
+                    f'{float(bstar[2]):.4f}',
+                    '|b*|',
+                    f'{float(n_b):.4f}'
+                ]
+                writer.writerow(header_bstar)
+                
+                header_cstar = [
+                    'c*',
+                    f'{float(cstar[0]):.4f}',
+                    f'{float(cstar[1]):.4f}',
+                    f'{float(cstar[2]):.4f}',
+                    '|c*|',
+                    f'{float(n_c):.4f}'
+                ]
+                writer.writerow(header_cstar)
+                
+                header01 = [
+                    'Qx//(',
+                    f'{float(sv1[0]):.4f}',
+                    f'{float(sv1[1]):.4f}',
+                    f'{float(sv1[2]):.4f}',
+                    ')',
+                ]
+                writer.writerow(header01)
+                header02 = [
+                    'Qy//(',
+                    f'{float(sv2[0]):.4f}',
+                    f'{float(sv2[1]):.4f}',
+                    f'{float(sv2[2]):.4f}',
+                    ')',
+                ]
+                writer.writerow(header02)
+                header03 = [
+                    'Qz//(',
+                    f'{float(sv3[0]):.4f}',
+                    f'{float(sv3[1]):.4f}',
+                    f'{float(sv3[2]):.4f}',
+                    ')',
+                ]
+                writer.writerow(header03)
+
+                header3 = ['Q resolution//axis1 (r.l.u.)','Q resolution//axis2 (r.l.u.)','energy resolution (meV)','Q resolution//axis3  (r.l.u.)']  # ヘッダー名を必要に応じて調整
+                writer.writerow(header3)
+                # この各結果を CSV に書き込む
+                for i in range(len(scan_cond[0])):  # または len(scan_cond[0])
+                    # ヘッダーを書き込む
+                    row_easy_reso = easy_reso[:, i]
+                    writer.writerow(row_easy_reso)
+                    
+        except Exception as e:
+            messagebox.showerror("保存エラー", f"ファイルの保存中にエラーが発生しました:\n{e}")
+
 #fileメニュー(save)
 filemenu2 = tk.Menu(menubar,tearoff=0)
 menubar.add_cascade(label="output",menu=filemenu2)
@@ -3732,6 +3892,8 @@ menubar.add_cascade(label="output",menu=filemenu2)
 filemenu2.add_command(label="save scan table",command=save_table)
 #fileメニュー(save)
 filemenu2.add_command(label="save scan resolution matrix",command=save_resomat)
+#fileメニュー(save)
+filemenu2.add_command(label="save scan resolution table",command=save_easy_reso)
 
 #fileメニュー(exit)
 filemenu3 = tk.Menu(menubar,tearoff=0)

@@ -450,15 +450,29 @@ def calcresolution_scan4(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE
             L2 = inst_param["sample_to_ana"]
             L3 = inst_param["ana_to_det"]
 
-            def focusing_curvature(L_1, L_2, theta):
+            def focusing_vert_curvature(L_1, L_2, theta):
                 # 有効焦点距離。ただし、単位をmmからmに直す必要がある。
-                f = 1.0 / (1.0/L_1 + 1.0/L_2)
+                #f = 1.0 / (1.0/L_1 + 1.0/L_2)
 
                 # θ をラジアンに変換
                 theta_rad = np.radians(theta)
 
                 # 曲率 R = 2*f*|sin(theta)|
-                R = 2.0 * f * np.abs(np.sin(theta_rad))
+                Rinv = (1.0/L_1 + 1.0/L_2)/(2.0*np.abs(np.sin(theta_rad)))
+                R = 1/Rinv
+
+                return R
+            
+            def focusing_hori_curvature(L_1, L_2, theta):
+                # 有効焦点距離。ただし、単位をmmからmに直す必要がある。
+                #f = 1.0 / (1.0/L_1 + 1.0/L_2)
+
+                # θ をラジアンに変換
+                theta_rad = np.radians(theta)
+
+                # 曲率 R = 2*f*|sin(theta)|
+                Rinv = (1.0/L_1 + 1.0/L_2)*np.abs(np.sin(theta_rad))/2
+                R = 1/Rinv
 
                 return R
 
@@ -466,19 +480,19 @@ def calcresolution_scan4(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE
             if MVF == 0:
                 monorv = 1e10
             elif MVF ==1:
-                monorv = focusing_curvature(L0,L1,thetaM)
+                monorv = focusing_vert_curvature(L0,L1,thetaM)
             if MHF == 0:
                 monorh = 1e10
             elif MHF ==1:
-                monorh = focusing_curvature(L0,L1,thetaM)
+                monorh = focusing_hori_curvature(L0,L1,thetaM)
             if AVF == 0:
                 anarv = 1e10
             elif AVF ==1:
-                anarv = focusing_curvature(L2,L3,thetaA)
+                anarv = focusing_vert_curvature(L2,L3,thetaA)
             if AHF == 0:
                 anarh = 1e10
             elif AHF ==1:
-                anarh = focusing_curvature(L2,L3,thetaA)
+                anarh = focusing_hori_curvature(L2,L3,thetaA)
 
             # ==== T matrix ====
             T = np.zeros((4, 13))
