@@ -370,7 +370,8 @@ def calcresolution_scan3(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE
 
             D[7, 10] = -D[5, 11]
             D[7, 12] = D[5, 11]
-
+        print(T)
+        print(D)
         # 計算
         term = np.linalg.inv(G + C.T @ F @ C)  # G + C' * F * C の逆行列
         HF = A @ term @ A.T  # A * (G + C' * F * C)^(-1) * A'
@@ -389,7 +390,7 @@ def calcresolution_scan3(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE
             elif AHF == 0:
                 Minv = B @ HF @ B.T #これもreslibと一致
         M = np.linalg.inv(Minv)
-        
+
         # RM 行列の設定
         #RM = np.zeros((4, 4))  # 4x4 のゼロ行列で初期化
         """
@@ -930,6 +931,7 @@ def calcresolution_scan3(apr_value,sense,astar,bstar,cstar,sv1,sv2,sv3,A_sets,QE
             pass
         # RMは(q//,q⊥,hw,qz)における空間分布
         # これを(qx(axis1),qy(axis2),hw,qz)に置ける空間分布に変換する。
+
         """
         # 保存するリスト
         data_list = []

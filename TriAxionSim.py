@@ -1,6 +1,6 @@
 # cd c:/Users/h34/Documents/Python/SPICE_python
 # 右上にバージョン情報を表示
-__version__ = '1.17.0'
+__version__ = '1.18.0'
 """
 セマンティック バージョニング (Semantic Versioning)
 セマンティック バージョニング（セムバ―、SemVer）は、バージョン番号を「MAJOR.MINOR.PATCH」の形式で表します。それぞれの部分には以下のような意味があります：
@@ -3873,7 +3873,7 @@ def save_easy_reso():
                     ')',
                 ]
                 writer.writerow(header03)
-
+                '''
                 header3 = ['Q resolution//axis1 (r.l.u.)','Q resolution//axis2 (r.l.u.)','energy resolution (meV)','Q resolution//axis3  (r.l.u.)']  # ヘッダー名を必要に応じて調整
                 writer.writerow(header3)
                 # この各結果を CSV に書き込む
@@ -3881,7 +3881,34 @@ def save_easy_reso():
                     # ヘッダーを書き込む
                     row_easy_reso = easy_reso[:, i]
                     writer.writerow(row_easy_reso)
-                    
+                '''
+                header = [
+                    'Ei','Ef','hw','h','k','l',
+                    'C1','A1','C2','A2','C3','A3',
+                    'mu','nu',
+                    'Q resolution//axis1 (r.l.u.)',
+                    'Q resolution//axis2 (r.l.u.)',
+                    'energy resolution (meV)',
+                    'Q resolution//axis3 (r.l.u.)'
+                ]
+
+                writer.writerow(header)
+
+                for i in range(len(scan_cond[0])):
+
+                    # --- Ei〜nu ---
+                    base_values = list(scan_cond[:, i])
+                    result = angletable4[i]
+                    values = base_values + [result['mu'], result['nu']]
+
+                    # --- resolution ---
+                    row_easy_reso = list(easy_reso[:, i])
+
+                    # --- 1行に結合 ---
+                    full_row = values + row_easy_reso
+
+                    writer.writerow(full_row)
+
         except Exception as e:
             messagebox.showerror("保存エラー", f"ファイルの保存中にエラーが発生しました:\n{e}")
 
