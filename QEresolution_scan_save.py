@@ -387,17 +387,69 @@ def calcresolution_save(apr_value,sense,astar,bstar,cstar,sv1,sv2,A_sets,C_sets,
         
         Qx = sv1[0]*astar+sv1[1]*bstar+sv1[2]*cstar
         Qy = sv2[0]*astar+sv2[1]*bstar+sv2[2]*cstar
+        #Qz = sv3[0]*astar+sv3[1]*bstar+sv3[2]*cstar
         Qvect = QE_sets[index][1]*astar+QE_sets[index][2]*bstar+QE_sets[index][3]*cstar
         
         # Q方向の単位ベクトル
         uq = Qvect / np.linalg.norm(Qvect)
 
         # MATLABの scalar(u,v) に対応 → 普通の内積でOK (すでに直交座標系に変換済みなので)
-        xq = np.dot(sv1, uq) / np.linalg.norm(sv1)
-        yq = np.dot(sv2, uq) / np.linalg.norm(sv2)
+        # ============================================================
+        # U, V の単位ベクトル
+        # ============================================================
 
-        # 回転角度
-        theta_rad = np.arctan2(yq, xq)
+        u_hat = Qx / np.linalg.norm(Qx)
+        v_hat = Qy / np.linalg.norm(Qy)
+
+        # ============================================================
+        # U に垂直な U-V 平面内の方向
+        #
+        # UVperp は
+        #   U に垂直
+        #   V の U に垂直な成分の方向
+        #
+        # したがって、U -> UVperp が
+        # U-V 平面内での正の回転方向になる。
+        # ============================================================
+
+        UVperp = v_hat - np.dot(v_hat, u_hat) * u_hat
+
+        UVperp_norm = np.linalg.norm(UVperp)
+
+        UVperp = UVperp / UVperp_norm
+
+
+        # ============================================================
+        # U, UVperp, Q の関係から signed angle を計算
+        # ============================================================
+
+        uq = Qvect / np.linalg.norm(Qvect)
+
+        # Q を U-V 平面に射影
+        Q_uv = (
+            np.dot(uq, u_hat) * u_hat
+            + np.dot(uq, UVperp) * UVperp
+        )
+
+        Q_uv_norm = np.linalg.norm(Q_uv)
+
+        Q_uv_hat = Q_uv / Q_uv_norm
+
+
+        # ============================================================
+        # U から Q までの角度
+        #
+        # cos(theta) = U・Q
+        # sin(theta) = UVperp・Q
+        #
+        # atan2 を使うことで -180 ～ +180 deg の
+        # signed angle になる。
+        # ============================================================
+
+        cos_theta = np.dot(u_hat, Q_uv_hat)
+        sin_theta = np.dot(UVperp, Q_uv_hat)
+
+        theta_rad = np.arctan2(sin_theta, cos_theta)
 
         # 回転行列（MATLABの tmat と同じ形）
         rot_mat = np.array([
