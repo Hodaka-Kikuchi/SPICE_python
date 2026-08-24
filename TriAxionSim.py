@@ -1,6 +1,6 @@
 # cd c:/Users/h34/Documents/Python/SPICE_python
 # 右上にバージョン情報を表示
-__version__ = '1.18.0'
+__version__ = '1.19.0'
 """
 セマンティック バージョニング (Semantic Versioning)
 セマンティック バージョニング（セムバ―、SemVer）は、バージョン番号を「MAJOR.MINOR.PATCH」の形式で表します。それぞれの部分には以下のような意味があります：
@@ -561,7 +561,6 @@ from fittingLC import fit_lattice_constants # lattice constantのフィッティ
 #from QEresolution_scan2 import calcresolution_scan2
 from QEresolution_scan3 import calcresolution_scan3 # スライダー形式、Qz方向にも拡張
 from QEresolution_scan4 import calcresolution_scan4 # 一覧表示に対応、Qz方向にも拡張
-from QEresolution_scan5 import calcresolution_scan5 # popovic
 from QEresolution_scan_save import calcresolution_save
 from fig_reciprocal_space import plot_reciprocal_space
 
