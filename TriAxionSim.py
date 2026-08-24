@@ -1463,11 +1463,13 @@ notebook00 = ttk.Notebook(frame6,style="example.TNotebook")
 # タブの作成
 tab_001 = tk.Frame(notebook00)# single Q-E point
 tab_002 = tk.Frame(notebook00)# scan simulation
+tab_005 = tk.Frame(notebook00)# Resolution convolution
 tab_003 = tk.Frame(notebook00)# lattice constant
 tab_004 = tk.Frame(notebook00)# constant E scan
 # notebookにタブを追加
 notebook00.add(tab_001, text="single Q-E point")
 notebook00.add(tab_002, text="scan simulation")
+notebook00.add(tab_005, text="Resolution convolution")
 notebook00.add(tab_003, text="lattice constant")
 notebook00.add(tab_004, text="toolbox")
 
@@ -2916,6 +2918,233 @@ def scan_show_table():
 
 calc_scan_button = ttk.Button(tab_002, text="calc", command=scan_show_table, width=16)
 calc_scan_button.grid(row=3, column=0, columnspan=7, sticky="NSEW")
+
+# 分解能　畳み込み　計算
+# 分解能 畳み込み 計算
+
+tab_005.columnconfigure(0, weight=5)
+tab_005.columnconfigure(1, weight=2)
+tab_005.rowconfigure(0, weight=1)
+
+# =========================
+# Calculation range
+# =========================
+
+range_frame = ttk.LabelFrame(
+    tab_005,
+    text="Calculation range"
+)
+
+range_frame.grid(
+    row=0,
+    column=0,
+    sticky="nsew"
+)
+
+range_frame.grid_propagate(False)
+
+range_frame.columnconfigure(0, weight=1)
+range_frame.columnconfigure(1, weight=1)
+range_frame.columnconfigure(2, weight=1)
+range_frame.columnconfigure(3, weight=1)
+range_frame.columnconfigure(4, weight=1)
+
+range_frame.rowconfigure(0, weight=1)
+range_frame.rowconfigure(1, weight=1)
+range_frame.rowconfigure(2, weight=1)
+range_frame.rowconfigure(3, weight=1)
+
+hkle_entry = {}
+
+variables = ["ℏω", "H", "K", "L"]
+ranges = ["from", "to", "step"]
+
+# header
+for i, name in enumerate(variables):
+
+    ttk.Label(
+        range_frame,
+        text=name,
+        anchor="center"
+    ).grid(
+        row=0,
+        column=i+1,
+        sticky="nsew"
+    )
+
+    hkle_entry[name] = {}
+
+
+# from / to / step
+for i, key in enumerate(ranges):
+
+    ttk.Label(
+        range_frame,
+        text=key,
+        width=16,
+        anchor="center"
+    ).grid(
+        row=i+1,
+        column=0,
+        sticky="nsew"
+    )
+
+    for j, name in enumerate(variables):
+
+        e = ttk.Entry(
+            range_frame
+        )
+
+        e.grid(
+            row=i+1,
+            column=j+1,
+            sticky="nsew"
+        )
+
+        hkle_entry[name][key] = e
+
+# =========================
+# Calculation control
+# =========================
+
+control_frame = ttk.LabelFrame(
+    tab_005,
+    text="Calculation control"
+)
+
+control_frame.grid(
+    row=0,
+    column=1,
+    sticky="nsew"
+)
+
+control_frame.grid_propagate(False)
+
+# column:
+# 0 : button
+# 1 : progress
+# 2 : status
+
+control_frame.columnconfigure(0, weight=1)
+control_frame.columnconfigure(1, weight=1)
+control_frame.rowconfigure(0, weight=1)
+control_frame.rowconfigure(1, weight=1)
+control_frame.rowconfigure(2, weight=1)
+control_frame.rowconfigure(3, weight=1)
+control_frame.rowconfigure(4, weight=1)
+
+# -------------------------
+# File selection
+# -------------------------
+
+file_label = ttk.Label(
+    control_frame,
+    text="table file"
+)
+
+file_label.grid(
+    row=0,
+    column=0,
+    sticky="nsew"
+)
+
+file_entry = ttk.Entry(
+    control_frame
+)
+
+file_entry.grid(
+    row=1,
+    column=0,
+    columnspan=2,
+    sticky="nsew"
+)
+
+def select_file():
+
+    filename = filedialog.askopenfilename(
+        filetypes=[
+            ("CSV files", "*.csv")
+        ]
+    )
+
+    if filename:
+
+        file_entry.delete(
+            0,
+            tk.END
+        )
+
+        file_entry.insert(
+            0,
+            filename
+        )
+
+browse_button = ttk.Button(
+    control_frame,
+    text="Browse",
+    command=select_file
+)
+
+browse_button.grid(
+    row=0,
+    column=1,
+    sticky="nsew"
+)
+
+# -------------------------
+# Calculation
+# -------------------------
+
+def start_calculation():
+
+    pass
+
+calc_button = ttk.Button(
+    control_frame,
+    text="Calculate",
+    command=start_calculation
+)
+
+calc_button.grid(
+    row=2,
+    column=0,
+    columnspan=2,
+    sticky="nsew"
+)
+
+# -------------------------
+# Progress bar
+# -------------------------
+
+progress = ttk.Progressbar(
+    control_frame,
+    orient="horizontal",
+    mode="determinate"
+)
+
+progress.grid(
+    row=3,
+    column=0,
+    columnspan=2,
+    sticky="ew"
+)
+
+
+# -------------------------
+# Status
+# -------------------------
+
+status_label = ttk.Label(
+    control_frame,
+    text="Ready"
+)
+
+status_label.grid(
+    row=4,
+    column=0,
+    columnspan=2,
+    sticky="w"
+)
 
 # グリッドの重みを設定
 tab_003.columnconfigure(0, weight=1)
